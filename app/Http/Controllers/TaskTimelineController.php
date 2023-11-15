@@ -73,17 +73,26 @@ class TaskTimelineController extends Controller
     }
 
     public function traineeEditTask(Request $request, $taskID){
+
+        $startDate = new DateTime($request->input('startDate'));
+        $endDate = new DateTime($request->input('endDate'));
+
+        //terminate the function when the user chooses invalid date (end date < start date)
+        if($endDate < $startDate){
+            return redirect()->route('trainee-task-detail', $taskID)->with('warning', 'Failed to change the task! Invalid date chosen!');
+        }
         //add a new task to DB
         $task = TaskTimeline::where('id', $taskID)->first();
         $task->task_name = $request->input('taskName');
-        $task->task_start_date = $request->input('startDate');
-        $task->task_end_date = $request->input('endDate');
+        $task->task_start_date = $startDate;
+        $task->task_end_date = $endDate;
         $task->task_status = $request->input('status');
         $task->task_priority = $request->input('priority');
         $taskDetail = [
             "Description" => $request->input('taskDescription'),
         ];
         $task->task_detail = json_encode($taskDetail);
+
         $task->save();
 
         return redirect()->route('trainee-task-detail', $taskID)->with('success', 'New task added.');
@@ -93,21 +102,33 @@ class TaskTimelineController extends Controller
         $task = TaskTimeline::find($taskID);
         $startDate = new DateTime($task->task_start_date);
         $endDate = new DateTime($task->task_end_date);
-        $interval = new DateInterval('P1D'); // 1 day interval
+    
+        // Define a function to check if a given date is a Saturday or Sunday
+        $isWeekend = function($date) {
+            return $date->format('N') >= 6; // 6 is Saturday, 7 is Sunday
+        };
+    
+        // Create a DateInterval for 1 day
+        $interval = new DateInterval('P1D');
+    
+        // Create a DatePeriod, excluding weekends
         $dateRange = new DatePeriod($startDate, $interval, $endDate->modify('+1 day'));
+        $dateRange = array_filter(iterator_to_array($dateRange), function($date) use ($isWeekend) {
+            return !$isWeekend($date);
+        });
+    
         $comments = json_decode($task->task_overall_comment, true);
-
         $timelineData = json_decode($task->timeline, true);
-
+    
         $user_role = Auth::user()->role_id;
-        if($user_role == 3){
-            return view('trainee-task-detail', compact('task', 'dateRange', 'timelineData','comments'));
-        }
-        elseif($user_role ==2){
+    
+        if ($user_role == 3) {
+            return view('trainee-task-detail', compact('task', 'dateRange', 'timelineData', 'comments'));
+        } elseif ($user_role == 2) {
             return view('sv-view-trainee-task-detail', compact('task', 'dateRange', 'timelineData', 'comments'));
         }
-        
     }
+    
 
     public function showDailyTaskDetailForTrainee($date, $taskID){
         $dailyTask = TaskTimeline::find($taskID);
