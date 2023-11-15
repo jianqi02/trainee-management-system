@@ -12,10 +12,9 @@ class Seating extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'seat_name',
-        'trainee_id',
-        'seat_status',
+        'seat_detail',
         'week',
         'start_date',
+        'end_date',
     ];
 }

@@ -52,29 +52,6 @@ class AdminController extends Controller
         $month = $dateTime->format('m'); // Month in two digits, e.g., 01 for January
         $year = $dateTime->format('Y'); // Year in four digits, e.g., 2023
 
-        // To get the total number of empty seats
-        $emptySeatCount = Seating::where('trainee_id', null)
-        ->where('week', $weekRequired)
-        ->where('seat_status', 'Available')
-        ->count();
-
-        // To get the total number of occupied seats
-        $occupiedSeatCount = Seating::where('trainee_id', '!=', null)
-            ->where('week', $weekRequired)
-            ->count();
-
-        // To get the total number of seats
-        $totalSeatCount = Seating::where('seat_status', 'Available')
-            ->where('week', $weekRequired)
-            ->count();
-
-        $weeklyData = [
-            'week' => $weekRequired,
-            'empty_seat_count' => $emptySeatCount,
-            'occupied_seat_count' => $occupiedSeatCount,
-            'total_seat_count' => $totalSeatCount,
-        ];
-
         $trainees = Trainee::all();
         $traineeInfo = AllTrainee::all();
         $seatings = Seating::all();
@@ -91,79 +68,85 @@ class AdminController extends Controller
 
         $totalTrainee = AllTrainee::count();
 
-         // Define an array of all possible seat names
-         $allSeatNames = [];
-         for ($i = 1; $i <= 20; $i++) {
-             $seatNumber = str_pad($i, 2, '0', STR_PAD_LEFT); // Format as CSM01 to CSM20
-             $allSeatNames[] = 'CSM' . $seatNumber; 
+        $get_the_seat_detail = Seating::where('week', $weekRequired)->pluck('seat_detail')->first();
+        $emptySeatCount = 0;
+        $occupiedSeatCount = 0;
+        $totalSeatCount = 0;
+        $seatDetail = json_decode($get_the_seat_detail, true);
+         // Check if $seatDetail is not null before using it
+         if ($seatDetail !== null) {
+             // Check if $seatDetail is not null and is an array before using it
+             if (is_array($seatDetail)) {
+                 //to get the total number of empty seats (trainee id = Not Assigned & seat status = Available)
+                 $emptySeatCount = count(
+                     array_filter($seatDetail, function ($seat) {
+                         return isset($seat['trainee_id']) && isset($seat['seat_status']) &&
+                             $seat['trainee_id'] === 'Not Assigned' && $seat['seat_status'] === 'Available';
+                     })
+                 );
+                 $occupiedSeatCount = count(
+                    array_filter($seatDetail, function ($seat) {
+                        return isset($seat['trainee_id']) && isset($seat['seat_status']) &&
+                            $seat['trainee_id'] !== 'Not Assigned' && $seat['seat_status'] === 'Available';
+                    })
+                );
+                $totalSeatCount = count(
+                    array_filter($seatDetail, function ($seat) {
+                        return isset($seat['seat_status']) &&
+                            $seat['seat_status'] === 'Available';
+                    })
+                );
+             } 
          }
- 
-         $tSeatNames = [];
-         for ($i = 1; $i <= 2; $i++) {
-             $tSeatNames[] = 'T' . $i;
-         }
- 
-         $roundTableSeatNames = ['Round-Table'];
-         $seatingArray = []; // Initialize the main array to hold weeks
+
+        // Calculate the total available seat ,occupied seat number, total seat number and for that week
+        $weeklyData = [];
+        $weeklyData['empty_seat_count'] = $emptySeatCount;
+        $weeklyData['occupied_seat_count'] = $occupiedSeatCount; 
+        $weeklyData['total_seat_count'] = $totalSeatCount;
+
+        // Define an array of all possible seat names
+        $allSeatNames = [];
+        for ($i = 1; $i <= env('TOTAL_SEATS_1ST_FLOOR'); $i++) {
+            $seatNumber = str_pad($i, 2, '0', STR_PAD_LEFT); // Format as CSM01 to CSM20
+            $allSeatNames[] = 'CSM' . $seatNumber; 
+        }
+
+        $tSeatNames = [];
+        for ($i = 1; $i <= 17; $i++) {
+            $tSeatNumber = str_pad($i, 2, '0', STR_PAD_LEFT); // Format as T01 to T17
+            $tSeatNames[] = 'T' . $tSeatNumber;
+        }
+        
+        // Check if a record doesn't exist with the specified conditions
+        //to check whether the seat information for that week is exist or not.
+        $exist = true;
+        if (Seating::where('week', $weekRequired)->doesntExist()) {
+           $exist = false;
+        }
 
         // Fetch trainee_id data from the seatings table for the selected week
-        $traineeIdData = Seating::where('week', $weekRequired)
-            ->select('seat_name', 'trainee_id', 'seat_status')
-            ->get()
-            ->keyBy('seat_name') // Organize data by seat_name
-            ->toArray();
+        $seatingData = Seating::where('week', $weekRequired)
+            ->first();
 
-        $weekData = [];
+        if ($seatingData) {
+            // Decode the seat_detail JSON
+            $seatDetail = json_decode($seatingData->seat_detail, true);
+        
+            // Replace the trainee_id with trainee name
+            foreach ($seatDetail as &$seatInfo) {
+                $trainee_name = AllTrainee::where('id',$seatInfo['trainee_id'])->pluck('name')->first();
+                $seatInfo['trainee_id'] = $trainee_name ?? 'Not Assigned';
+            }
+        
+            // Encode the updated seat_detail back to JSON
+            $seatingData = json_encode($seatDetail);
 
-        // Create the predefined array and populate trainee_id values
-        foreach ($allSeatNames as $seatName) {
-            $traineeId = $traineeIdData[$seatName]['trainee_id'] ?? null;
-            $seatStatus = $traineeIdData[$seatName]['seat_status'] ?? 'Not Available';
-            $trainee = $traineeInfo->where('id', $traineeId)->first();
-            $traineeName = $trainee ? $trainee->name : 'Not Assigned';
-            $weekData[] = [
-                'seat_name' => $seatName,
-                'trainee_id' => $traineeId,
-                'seat_status' => $seatStatus,
-                'trainee_name' => $traineeName,
-                'start_date' => $start_date,
-                'end_date' => $end_date,
-            ];
+            return view('admin-dashboard', compact('trainees','seatingData','count','totalTrainee','logbooks','weeksInMonth', 'weeklyData','weekRequired','start_date','end_date','exist'));
         }
-
-
-        foreach ($tSeatNames as $seatName) {
-            $traineeId = $traineeIdData[$seatName]['trainee_id'] ?? null;
-            $trainee = $traineeInfo->where('id', $traineeId)->first();
-            $traineeName = $trainee ? $trainee->name : 'Not Assigned';
-            $weekData[] = [
-                'seat_name' => $seatName,
-                'trainee_id' => $traineeId,
-                'seat_status' => 'Available',
-                'trainee_name' => $traineeName,
-                'start_date' => $start_date,
-                'end_date' => $end_date,
-            ];
+        else{
+            return view('admin-dashboard', compact('trainees','seatingData','count','totalTrainee','logbooks','weeksInMonth', 'weeklyData','weekRequired','start_date','end_date','exist'));
         }
-
-
-        foreach ($roundTableSeatNames as $seatName) {
-            $traineeId = $traineeIdData[$seatName]['trainee_id'] ?? null;
-            $trainee = $traineeInfo->where('id', $traineeId)->first();
-            $traineeName = $trainee ? $trainee->name : 'Not Assigned';
-            $weekData[] = [
-                'seat_name' => $seatName,
-                'trainee_id' => $traineeId,
-                'seat_status' => 'Available',
-                'trainee_name' => $traineeName,
-                'start_date' => $start_date,
-                'end_date' => $end_date,
-            ];
-        }
-
-        $seatingArray[$weekRequired] = $weekData;
-
-        return view('admin-dashboard', compact('trainees','seatingArray','count','totalTrainee','logbooks','weeksInMonth', 'weeklyData','weekRequired','start_date','end_date'));
     }
 
     public function showAllTrainee()

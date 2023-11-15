@@ -27,122 +27,153 @@ class SeatingController extends Controller
         $formattedEndDate = Carbon::createFromFormat('d/m/Y', $endDate)->format('Y-m-d');
         $formattedStartDate = Carbon::createFromFormat('d/m/Y', $startDate)->format('Y-m-d');
 
-        //finding all trainees that have not been assigned in the selected week yet.
-        $trainees = AllTrainee::leftJoin('seatings', function ($join) use ($week) {
-            $join->on('alltrainees.id', '=', 'seatings.trainee_id')
-                 ->where('seatings.week', '=', $week);
-         })
-         //the trainee internship start date should earlier than this end date.
-         ->whereDate('alltrainees.internship_start', '<=', $formattedEndDate)
-         //exclude the trainees that already ended their internship.
-         //ex. The trainee internship ends at 10 Nov, the current date is 11Nov
-         ->whereDate('alltrainees.internship_end', '>=', $currentDate) 
-         ->whereDate('alltrainees.internship_end', '>=', $formattedStartDate)
-         ->whereNull('seatings.trainee_id')
-         ->select('alltrainees.*')
-         ->get();
+        //to get the assigned trainee id list
+        $assignedTraineeIds = Seating::where('week', $week)
+        ->pluck('seat_detail')
+        ->map(function ($seatDetail) {
+            $seatDetailArray = json_decode($seatDetail, true);
+            return collect($seatDetailArray)->pluck('trainee_id')->toArray();
+        })
+        ->flatten()
+        ->filter(function ($traineeId) {
+            return $traineeId !== 'Not Assigned';
+        })
+        ->toArray();
 
+        $trainees = AllTrainee::leftJoin('seatings', function ($join) use ($week) {
+            $join->on('alltrainees.id', '=', \DB::raw("JSON_UNQUOTE(JSON_EXTRACT(seatings.seat_detail, '$.*.trainee_id'))"))
+                ->where('seatings.week', '=', $week);
+        })
+        // the trainee internship start date should be earlier than this end date.
+        ->whereDate('alltrainees.internship_start', '<=', $formattedEndDate)
+        // exclude the trainees that already ended their internship.
+        // ex. The trainee internship ends at 10 Nov, the current date is 11 Nov
+        ->whereDate('alltrainees.internship_end', '>=', $currentDate)
+        ->whereDate('alltrainees.internship_end', '>=', $formattedStartDate)
+        //get the trainee id which is not yet assigned.
+        ->whereNotIn('alltrainees.id', $assignedTraineeIds)
+        ->get();
+    
          $traineeInfo = AllTrainee::all();
 
-         $emptySeatCount = Seating::where('trainee_id', null)
-             ->where('week', $week)
-            ->where('seat_status', 'Available')
-             ->count();
-
+         $emptySeatCount = 0;
+ 
+         $get_the_seat_detail = Seating::where('week', $week)->pluck('seat_detail')->first();
+         $seatDetail = json_decode($get_the_seat_detail, true);
+         // Check if $seatDetail is not null before using it
+         if ($seatDetail !== null) {
+             // Check if $seatDetail is not null and is an array before using it
+             if (is_array($seatDetail)) {
+                 //to get the total number of empty seats (trainee id = Not Assigned & seat status = Available)
+                 $emptySeatCount = count(
+                     array_filter($seatDetail, function ($seat) {
+                         return isset($seat['trainee_id']) && isset($seat['seat_status']) &&
+                             $seat['trainee_id'] === 'Not Assigned' && $seat['seat_status'] === 'Available';
+                     })
+                 );
+             } 
+         }
         // Define an array of all possible seat names
         $allSeatNames = [];
         for ($i = 1; $i <= env('TOTAL_SEATS_1ST_FLOOR'); $i++) {
-            $seatNumber = str_pad($i, env('SEAT_NO_FIRST_DIGIT'), '0', STR_PAD_LEFT); // Format as CSM01 to CSM20
+            $seatNumber = str_pad($i, 2, '0', STR_PAD_LEFT); // Format as CSM01 to CSM20
             $allSeatNames[] = 'CSM' . $seatNumber; 
         }
 
         $tSeatNames = [];
-        for ($i = 1; $i <= 2; $i++) {
-            $tSeatNames[] = 'T' . $i;
+        for ($i = 1; $i <= 17; $i++) {
+            $tSeatNumber = str_pad($i, 2, '0', STR_PAD_LEFT); // Format as T01 to T17
+            $tSeatNames[] = 'T' . $tSeatNumber;
         }
-
-        foreach ($tSeatNames as $tSeatName) {
-            $existingSeat = Seating::where('seat_name', $tSeatName)
-                ->where('week', $week)
-                ->first();
         
-            if (!$existingSeat) {
-                // If the seat doesn't exist, create a new record
-                Seating::create([
-                    'seat_name' => $tSeatName,
-                    'trainee_id' => null, // Set to null or a default value
-                    'seat_status' => 'Available', // Set the default status
-                    'week' => $week, // Set the default week
-                    'start_date' => $startDate,
-                ]);
+        // Check if a record doesn't exist with the specified conditions
+        if (Seating::where('week', $week)->doesntExist()) {
+            // If the record doesn't exist, create a new one
+            Seating::create([
+                'seat_detail' => null,
+                'week' => $week,
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+            ]);
+
+            foreach ($allSeatNames as $allSeatName) {
+                // Fetch the existing seat inside the loop
+                $existingSeat = Seating::where('week', $week)->first();
+            
+                // If the seat doesn't exist, set the seat_detail values
+                if (!$existingSeat || !data_get($existingSeat->seat_detail, $allSeatName)) {
+                    // If $existingSeat is null or $allSeatName doesn't exist in seat_detail
+                    $seatDetail = $existingSeat ? json_decode($existingSeat->seat_detail, true) : [];
+            
+                    $seatDetail[$allSeatName] = [
+                        'trainee_id' => 'Not Assigned',
+                        'seat_status' => 'Not Available',
+                    ];
+            
+                    $existingSeat->seat_detail = json_encode($seatDetail);
+                    $existingSeat->save();
+                }
             }
-        }
-
-        $roundTableSeatNames = ['Round-Table'];
-
-        foreach ($roundTableSeatNames as $roundTableSeatName) {
-            $existingSeat = Seating::where('seat_name', $roundTableSeatName)
-                ->where('week', $week)
-                ->first();
-        
-            if (!$existingSeat) {
-                // If the seat doesn't exist, create a new record
-                Seating::create([
-                    'seat_name' => $roundTableSeatName,
-                    'trainee_id' => null, // Set to null or a default value
-                    'seat_status' => 'Available', // Set the default status
-                    'week' => $week, // Set the default week
-                    'start_date' => $startDate,
-                ]);
+            
+            foreach ($tSeatNames as $tSeatName) {
+                // Fetch the existing seat inside the loop
+                $existingSeat = Seating::where('week', $week)->first();
+            
+                // If the seat doesn't exist, set the seat_detail values
+                if (!$existingSeat || !data_get($existingSeat->seat_detail, $tSeatName)) {
+                    // If $existingSeat is null or $tSeatName doesn't exist in seat_detail
+                    $seatDetail = $existingSeat ? json_decode($existingSeat->seat_detail, true) : [];
+            
+                    $seatDetail[$tSeatName] = [
+                        'trainee_id' => 'Not Assigned',
+                        'seat_status' => 'Available',
+                    ];
+            
+                    $existingSeat->seat_detail = json_encode($seatDetail);
+                    $existingSeat->save();
+                }
+            }
+    
+            $roundTableSeatNames = ['Round-Table'];
+    
+            foreach ($roundTableSeatNames as $roundTableSeatName) {
+                $existingSeat = Seating::where('week', $week)->first();
+            
+                // If the seat doesn't exist, set the seat_detail values
+                if (!$existingSeat || !data_get($existingSeat->seat_detail, $roundTableSeatName)) {
+                    // If $existingSeat is null or $roundTableSeatName doesn't exist in seat_detail
+                    $seatDetail = $existingSeat ? json_decode($existingSeat->seat_detail, true) : [];
+            
+                    $seatDetail[$roundTableSeatName] = [
+                        'trainee_id' => 'Not Assigned',
+                        'seat_status' => 'Available',
+                    ];
+            
+                    $existingSeat->seat_detail = json_encode($seatDetail);
+                    $existingSeat->save();
+                }
             }
         }
 
         // Fetch trainee_id data from the seatings table for the selected week
-        $traineeIdData = Seating::where('week', $week)
-            ->select('seat_name', 'trainee_id', 'seat_status')
-            ->get()
-            ->keyBy('seat_name') // Organize data by seat_name
-            ->toArray();
+        $seatingData = Seating::where('week', $week)
+            ->first();
 
-        // Create the predefined array and populate trainee_id values
-        $seatingArray = [];
-        foreach ($allSeatNames as $seatName) {
-            $traineeId = $traineeIdData[$seatName]['trainee_id'] ?? null;
-            $seatStatus = $traineeIdData[$seatName]['seat_status'] ?? 'Not Available';
-            $trainee = $traineeInfo->where('id', $traineeId)->first();
-            $traineeName = $trainee ? $trainee->name : 'Not Assigned';
-            $seatingArray[] = [
-                'seat_name' => $seatName,
-                'trainee_name' => $traineeName,
-                'seat_status' => $seatStatus
-            ];
+        if ($seatingData) {
+            // Decode the seat_detail JSON
+            $seatDetail = json_decode($seatingData->seat_detail, true);
+        
+            // Replace the trainee_id with trainee name
+            foreach ($seatDetail as &$seatInfo) {
+                $trainee_name = AllTrainee::where('id',$seatInfo['trainee_id'])->pluck('name')->first();
+                $seatInfo['trainee_id'] = $trainee_name ?? 'Not Assigned';
+            }
+        
+            // Encode the updated seat_detail back to JSON
+            $seatingData = json_encode($seatDetail);
+        
+            return view('seating-arrange', compact('seatingData','trainees','emptySeatCount', 'week', 'startDate', 'endDate'));
         }
-
-        foreach ($tSeatNames as $seatName) {
-            $traineeId = $traineeIdData[$seatName]['trainee_id'] ?? null;
-            $seatStatus = $traineeIdData[$seatName]['seat_status'] ?? 'Not Available';
-            $trainee = $traineeInfo->where('id', $traineeId)->first();
-            $traineeName = $trainee ? $trainee->name : 'Not Assigned';
-            $seatingArray[] = [
-                'seat_name' => $seatName,
-                'trainee_name' => $traineeName,
-                'seat_status' => $seatStatus
-            ];
-        }
-
-        foreach ($roundTableSeatNames as $seatName) {
-            $traineeId = $traineeIdData[$seatName]['trainee_id'] ?? null;
-            $seatStatus = $traineeIdData[$seatName]['seat_status'] ?? 'Not Available';
-            $trainee = $traineeInfo->where('id', $traineeId)->first();
-            $traineeName = $trainee ? $trainee->name : 'Not Assigned';
-            $seatingArray[] = [
-                'seat_name' => $seatName,
-                'trainee_name' => $traineeName,
-                'seat_status' => $seatStatus
-            ];
-        }
-
-        return view('seating-arrange', compact('seatingArray','trainees','emptySeatCount', 'week', 'startDate', 'endDate'));
     }
 
     public function getRandomTrainee(Request $request)
@@ -162,113 +193,100 @@ class SeatingController extends Controller
         $formattedStartDate = Carbon::createFromFormat('d/m/Y', $startDate)->format('Y-m-d');
 
         //Clear all the record before perform the random assign method.
-        Seating::where('week', $week)->update(['trainee_id' => null]);
+        $newTraineeId = 'Not Assigned';
+        $seatData = Seating::where('week', $week)->first();
 
+        if ($seatData) {
+            // Decode the seat_detail JSON
+            $seat = json_decode($seatData->seat_detail, true);
+        
+            // Loop over each seat and update trainee_id to "Not Assigned"
+            foreach ($seat as $seatName => &$seatInfo) {
+                $seatInfo['trainee_id'] = 'Not Assigned';
+            }
+        
+            // Update the seat_detail in the database
+            $seatData->update(['seat_detail' => json_encode($seat)]);
+        }
+
+        // Define the predefined tiers
+        $firstTierSeats = [];
+        $secondTierSeats = [];
+        $thirdTierSeats = [];
+
+        // Loop over each seat and categorize it into the tiers
+        foreach ($seat as $seatName => $seatInfo) {
+            if (preg_match('/^T/', $seatName)) {
+                $firstTierSeats[] = $seatName;
+            } elseif (preg_match('/^CSM[0-9]+/', $seatName)) {
+                $secondTierSeats[] = $seatName;
+            } elseif ($seatName === 'Round-Table') {
+                $thirdTierSeats[] = $seatName;
+            }
+        }
+
+        // Sort the seats within each tier
+        sort($firstTierSeats);
+        sort($secondTierSeats);
+
+        // Combine the seats from all tiers (first -> second -> third tier)
+        $orderedSeats = array_merge($firstTierSeats, $secondTierSeats, $thirdTierSeats);
+
+        //shuffle all the trainee for generating a random trainee list to perform the random assign.
         $trainees = AllTrainee::whereDate('internship_start', '<=', $formattedEndDate)
             ->whereDate('internship_end', '>=', $currentDate)
             ->whereDate('internship_end', '>=', $formattedStartDate)
             ->get(['id']);
-
         $shuffledIDs = $trainees->pluck('id')->shuffle();
         $assignedTrainees = [];
-
-        // Get all seatings and loop through them to assign shuffled names
-        $seatings = Seating::where('week', $week)->orderBy('seat_name')->get();
-
         $index = 0;
-
-        //predefined seat order according to the priority (first tier > second tier > third tier)
-        $first_tier_seats = Seating::where('seat_name', 'REGEXP', '^T')
-            ->where('week', $week)
-            ->orderBy('seat_name')
-            ->pluck('seat_name')
-            ->toArray();
-        $second_tier_seats = Seating::where('seat_name', 'REGEXP', 'CSM[0-9]+')
-            ->where('week', $week)
-            ->orderBy('seat_name')
-            ->pluck('seat_name')
-            ->toArray();
-        $third_tier_seats = Seating::where('seat_name', 'Round-Table')
-            ->where('week', $week)
-            ->pluck('seat_name')
-            ->toArray();
         
-
-        //assign seat for first tier seats
-        foreach ($first_tier_seats as $first_tier_seat_name) {
-            foreach ($seatings as $seating) {
-                if ($seating->seat_name === $first_tier_seat_name) {
-                    // Check if there are more shuffled names to assign
-                    if ($index < count($shuffledIDs)) {
-                        // Assign a shuffled name to the 'trainee_id' column
-                        $seating->trainee_id = $shuffledIDs[$index];
-                        $assignedTrainees[] = $shuffledIDs[$index];
-                        $seating->save();
-                        $index++;
-                    } else {
-                        // If there are no more shuffled names, you can choose to break the loop or handle it differently
-                        break;
-                    }
+        //perform random assign function
+        foreach($orderedSeats as $seatName){
+            //only can assign to a seat that is available
+            if($seat[$seatName]['seat_status'] == 'Available'){
+                if ($index < count($shuffledIDs)) {
+                    //assign the trainee to the seat and udpate the record.
+                    $seat[$seatName]['trainee_id'] = $shuffledIDs[$index];
+    
+                    //add the trainee into another array ( for assigned only )
+                    $assignedTrainees[] = $shuffledIDs[$index];
+    
+                    $index++;
+                }
+                else{
+                    //If there are no more shuffled names, terminate the function.
+                    break;
                 }
             }
         }
 
-        //assign seat for second tier seats
-        foreach ($second_tier_seats as $second_tier_seat_name) {
-            foreach ($seatings as $seating) {
-                if ($seating->seat_name === $second_tier_seat_name) {
-                    // Check if there are more shuffled names to assign
-                    if ($index < count($shuffledIDs)) {
-                        // Assign a shuffled name to the 'trainee_id' column
-                        $seating->trainee_id = $shuffledIDs[$index];
-                        $assignedTrainees[] = $shuffledIDs[$index];
-                        $seating->save();
-                        $index++;
-                    } else {
-                        // If there are no more shuffled names, you can choose to break the loop or handle it differently
-                        break;
-                    }
-                }
-            }
-        }
+        // Encode the updated $seat array back to JSON and save it
+        $updatedSeatDetail = json_encode($seat);
+        Seating::where('week', $week)
+        ->update(['seat_detail' => $updatedSeatDetail]);
 
-        //assign seat for third tier seats
-        foreach ($third_tier_seats as $third_tier_seat_name) {
-            foreach ($seatings as $seating) {
-                if ($seating->seat_name === $third_tier_seat_name) {
-                    // Check if there are more shuffled names to assign
-                    if ($index < count($shuffledIDs)) {
-                        // Assign a shuffled name to the 'trainee_id' column
-                        $seating->trainee_id = $shuffledIDs[$index];
-                        $assignedTrainees[] = $shuffledIDs[$index];
-                        $seating->save();
-                        $index++;
-                    } else {
-                        // If there are no more shuffled names, you can choose to break the loop or handle it differently
-                        break;
-                    }
-                }
-            }
+        if (count($assignedTrainees) < count($shuffledIDs)) {
+            $unassignedTrainee = array_diff($shuffledIDs->toArray(), $assignedTrainees);
+            return redirect()
+                ->route('seating-arrange', ['week' => $week])
+                ->with('warning', count($unassignedTrainee) . ' trainees are not assigned to any seats. Please assign them manually.');
         }
-            if (count($assignedTrainees) < count($shuffledIDs)) {
-                $unassignedTrainee = array_diff($shuffledIDs->toArray(), $assignedTrainees);
-                return redirect()
-                    ->route('seating-arrange', ['week' => $week])
-                    ->with('warning', count($unassignedTrainee) . ' trainees are not assigned to any seats. Please assign them manually.');
-            }
-            $seatingsArray = $seatings->values()->toArray();
-            return redirect()->route('seating-arrange', ['week' => $week])->with('success', 'Seats random-assigned successfully');
+        return redirect()->route('seating-arrange', ['week' => $week])->with('success', 'Seats random-assigned successfully');
     }
 
     public function getSeatData($seat, Request $request)
     {
         $week = $request->query('week');
         // Retrieve seat data from the "seatings" table based on the seat identifier
-        $seatData = Seating::where('seat_name', $seat)->where('week', $week)->first();
-        if($seatData == null){
+        $seatData = Seating::where('week', $week)->pluck('seat_detail')->first();
+        $seatDetail = json_decode($seatData, true);
+
+        if($seatDetail[$seat] == null){
             return response()->json(['trainee_id' => 'Not Assigned']);
         }
-        $trainee = AllTrainee::where('id', $seatData->trainee_id)->first();
+
+        $trainee = AllTrainee::find($seatDetail[$seat]['trainee_id']);
         $traineeName = $trainee ? $trainee->name : 'Not Assigned';
 
         return response()->json(['trainee_id' => $traineeName]);
@@ -278,13 +296,14 @@ class SeatingController extends Controller
     {
         $week = $request->query('week');
         // Find the seat data in the "seatings" table
-        $seatData = Seating::where('seat_name', $seat)->where('week', $week)->first();
+        $seatData = Seating::where('week', $week)->pluck('seat_detail')->first();
+        $seatDetail = json_decode($seatData, true);
     
-        if ($seatData) {
+        if ($seatDetail[$seat]) {
             
             // Clear the seat by setting the trainee_id column to an empty string
-            $seatData->trainee_id = null;
-            $seatData->save();
+            $seatDetail[$seat]['trainee_id'] = 'Not Assigned';
+            Seating::where('week', $week)->update(['seat_detail' => json_encode($seatDetail)]);
     
             return redirect()->back()->with('success', 'Trainee removed successfully');
         }
@@ -299,40 +318,45 @@ class SeatingController extends Controller
         $dateTime->setISODate($dateTime->format('o'), $dateTime->format('W'), 1);
         $startDate = $dateTime->format('d/m/Y');  // Start of the week
         // Retrieve seat data from the "seatings" table based on the seat identifier
-        $seatData = Seating::where('seat_name', $seat)->where('week', $week)->first();
-        if($seatData != null){
-            $traineeId = $seatData->trainee_id;
-
-            // Delete the row
-            $seatData->delete();
-        } else{
-            Seating::create([
-                'seat_name' => $seat,
-                'trainee_id' => null,
-                'seat_status' => 'Available',
-                'week' => $week,
-                'start_date' => $startDate,
-            ]);
+        $seatData = Seating::where('week', $week)->pluck('seat_detail')->first();
+        if ($seatData) {
+            $seatDetail = json_decode($seatData, true);
+    
+            if (isset($seatDetail[$seat])) { // Check if the key exists in the array
+                if ($seatDetail[$seat]['seat_status'] == 'Available') {
+                    $seatDetail[$seat]['trainee_id'] = 'Not Assigned';
+                    $seatDetail[$seat]['seat_status'] = 'Not Available';
+                } else {
+                    $seatDetail[$seat]['seat_status'] = 'Available';
+                }
+    
+                // Update the seat_detail column in the database
+                Seating::where('week', $week)->update(['seat_detail' => json_encode($seatDetail)]);
+    
+                return redirect()->back()->with('success', 'Seat changed successfully');
+            }
         }
-
-        return redirect()->back()->with('success', 'Seat changed successfully');
+    
+        return redirect()->back()->with('error', 'Seat not found');
     }
 
     public function assignSeatForTrainee($trainee_selected, $seat, Request $request)
     {
         // Find the seat data in the "seatings" table
         $week = $request->query('week');
-        $seatData = Seating::where('seat_name', $seat)->where('week', $week)->first();
+        $seatData = Seating::where('week', $week)->pluck('seat_detail')->first();
+        $seatDetail = json_decode($seatData, true);
+        
         $id = AllTrainee::where('name', $trainee_selected)->first()->id;
     
-        if ($seatData) {
-            if($seatData == null){
+        if ($seatDetail[$seat]) {
+            if($seatDetail[$seat]['seat_status'] == 'Not Available'){
                 return redirect()->back()->with('error', 'You cannot assign a trainee to a seat that is not available.');
             }
             
             // Assign the seat to the trainee by setting the trainee_id column to the trainee's name
-            $seatData->trainee_id = $id;
-            $seatData->save();
+            $seatDetail[$seat]['trainee_id'] = $id;
+            Seating::where('week', $week)->update(['seat_detail' => json_encode($seatDetail)]);
     
             return redirect()->back()->with('success', 'Seat assigned successfully');
         }

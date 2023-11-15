@@ -260,98 +260,52 @@ class TraineeController extends Controller
         $year = date('Y');
         $month = date('m');
 
-        $weeksInMonth = Seating::whereYear(DB::raw("STR_TO_DATE(start_date, '%d/%m/%Y')"), $year)
-            ->whereMonth(DB::raw("STR_TO_DATE(start_date, '%d/%m/%Y')"), $month)
-            ->select('week')
-            ->distinct()
-            ->orderby('week', 'asc')
-            ->get()
-            ->pluck('week')
-            ->toArray();
+        // use current year and month to retrieve the seating plan related to this month.
+        $weeksInMonth = Seating::where(function($query) use ($year, $month) {
+            $query->whereYear(DB::raw("STR_TO_DATE(start_date, '%d/%m/%Y')"), $year)
+                ->whereMonth(DB::raw("STR_TO_DATE(start_date, '%d/%m/%Y')"), $month);
+        })
+        ->orWhere(function($query) use ($year, $month) {
+            $query->whereYear(DB::raw("STR_TO_DATE(end_date, '%d/%m/%Y')"), $year)
+                ->whereMonth(DB::raw("STR_TO_DATE(end_date, '%d/%m/%Y')"), $month);
+        })
+        ->select('week')
+        ->distinct()
+        ->orderBy('week', 'asc')
+        ->get()
+        ->pluck('week')
+        ->toArray();
 
-        $traineeInfo = Trainee::all();
+        $seatingArray = []; // Initialize the main array to hold weeks
 
-            // Define an array of all possible seat names
-         $allSeatNames = [];
-         for ($i = 1; $i <= 20; $i++) {
-             $seatNumber = str_pad($i, 2, '0', STR_PAD_LEFT); // Format as CSM01 to CSM20
-             $allSeatNames[] = 'CSM' . $seatNumber; 
-         }
- 
-         $tSeatNames = [];
-         for ($i = 1; $i <= 2; $i++) {
-             $tSeatNames[] = 'T' . $i;
-         }
- 
-         $roundTableSeatNames = ['Round-Table'];
-         $seatingArray = []; // Initialize the main array to hold weeks
-
-         foreach ($weeksInMonth as $week) {
-
+        foreach ($weeksInMonth as $week) {
             $dateTime = new DateTime($week);
             $dateTime->setISODate($dateTime->format('o'), $dateTime->format('W'), 1);
             $startDate = $dateTime->format('d/m/Y');  // Start of the week
             $dateTime->setISODate($dateTime->format('o'), $dateTime->format('W'), 7);
             $endDate = $dateTime->format('d/m/Y');  // End of the week 
 
-            // Fetch trainee_id data from the seatings table for the selected week
-            $traineeIdData = Seating::where('week', $week)
-                ->select('seat_name', 'trainee_id', 'seat_status')
-                ->get()
-                ->keyBy('seat_name') // Organize data by seat_name
-                ->toArray();
+            // Fetch the seat detail from DB
+            $seatingDetailForAWeek = Seating::where('week', $week)->first();
 
-            $weekData = [];
-    
-            // Create the predefined array and populate trainee_id values
-            foreach ($allSeatNames as $seatName) {
-                $traineeId = $traineeIdData[$seatName]['trainee_id'] ?? null;
-                $seatStatus = $traineeIdData[$seatName]['seat_status'] ?? 'Not Available';
-                $trainee = $traineeInfo->where('id', $traineeId)->first();
-                $traineeName = $trainee ? $trainee->name : 'Not Assigned';
-                $weekData[] = [
-                    'seat_name' => $seatName,
-                    'trainee_id' => $traineeId,
-                    'seat_status' => $seatStatus,
-                    'trainee_name' => $traineeName,
-                    'start_date' => $startDate,
-                    'end_date' => $endDate,
-                ];
+            $seatDetail = json_decode($seatingDetailForAWeek->seat_detail, true);
+
+
+            //replace the trainee id with trainee name
+            foreach ($seatDetail as &$seatInfo) {
+                $trainee_name = AllTrainee::where('id',$seatInfo['trainee_id'])->pluck('name')->first();
+                $seatInfo['trainee_id'] = $trainee_name ?? 'Not Assigned';
             }
 
-    
-            foreach ($tSeatNames as $seatName) {
-                $traineeId = $traineeIdData[$seatName]['trainee_id'] ?? null;
-                $trainee = $traineeInfo->where('id', $traineeId)->first();
-                $traineeName = $trainee ? $trainee->name : 'Not Assigned';
-                $weekData[] = [
-                    'seat_name' => $seatName,
-                    'trainee_id' => $traineeId,
-                    'seat_status' => 'Available',
-                    'trainee_name' => $traineeName,
-                    'start_date' => $startDate,
-                    'end_date' => $endDate,
-                ];
-            }
+            $seatingData[$week] = [
+                'seating_plan' => $seatDetail,
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+            ];
+            
 
-    
-            foreach ($roundTableSeatNames as $seatName) {
-                $traineeId = $traineeIdData[$seatName]['trainee_id'] ?? null;
-                $trainee = $traineeInfo->where('id', $traineeId)->first();
-                $traineeName = $trainee ? $trainee->name : 'Not Assigned';
-                $weekData[] = [
-                    'seat_name' => $seatName,
-                    'trainee_id' => $traineeId,
-                    'seat_status' => 'Available',
-                    'trainee_name' => $traineeName,
-                    'start_date' => $startDate,
-                    'end_date' => $endDate,
-                ];
-            }
-
-            $seatingArray[$week] = $weekData;
         }
-        return view('trainee-view-seating', compact('weeksInMonth', 'seatingArray'));
+        return view('trainee-view-seating', compact('weeksInMonth', 'seatingData'));
     }
 }
 

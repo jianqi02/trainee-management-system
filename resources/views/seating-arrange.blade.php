@@ -80,6 +80,7 @@
     .assign-bar-wrapper{
         display: flex;
         flex-direction: column;
+        width: 350px;
     }
 
     .card {
@@ -196,6 +197,9 @@
             <div id="carouselExample" class="carousel slide">
                 <div class="carousel-inner">
                   <div class="carousel-item active">
+                    @php
+                        $seat = json_decode($seatingData, true);
+                    @endphp
                     <p class="text-center">Ground Floor Map (Level 1)</p>
                         <table id="map_level1">
                             <tbody>
@@ -207,30 +211,30 @@
                                 </tr>
                                 <!-- Row 1 -->
                                 <tr>
-                                    <td id="CSM11" class="assign-popover" style="background-color: {{ $seatingArray[10]['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
-                                        @if($seatingArray[10]['seat_status'] != 'Not Available')
-                                            {{$seatingArray[10]['seat_name']}} ({{$seatingArray[10]['trainee_name']}})
+                                    <td id="CSM11" class="assign-popover" style="background-color: {{ $seat['CSM11']['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
+                                        @if( $seat['CSM11']['seat_status'] != 'Not Available')
+                                            CSM11 ({{ $seat['CSM11']['trainee_id']}})
                                         @else
                                             OTHER
                                         @endif
                                     </td>
-                                    <td id="CSM12" class="assign-popover" style="background-color: {{ $seatingArray[11]['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
-                                        @if($seatingArray[11]['seat_status'] != 'Not Available')
-                                            {{$seatingArray[11]['seat_name']}} ({{$seatingArray[11]['trainee_name']}})
+                                    <td id="CSM12" class="assign-popover" style="background-color: {{ $seat['CSM12']['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
+                                        @if($seat['CSM12']['seat_status'] != 'Not Available')
+                                            CSM12 ({{$seat['CSM12']['trainee_id']}})
                                         @else
                                             OTHER
                                         @endif
                                     </td>
-                                    <td id="CSM01" class="assign-popover" style="background-color: {{ $seatingArray[0]['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
-                                        @if($seatingArray[0]['seat_status'] != 'Not Available')
-                                            {{$seatingArray[0]['seat_name']}} ({{$seatingArray[0]['trainee_name']}})
+                                    <td id="CSM01" class="assign-popover" style="background-color: {{ $seat['CSM01']['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
+                                        @if($seat['CSM01']['seat_status'] != 'Not Available')
+                                            CSM01 ({{$seat['CSM01']['trainee_id']}})
                                         @else
                                             OTHER
                                         @endif
                                     </td>
-                                    <td id="CSM02" class="assign-popover" style="background-color: {{ $seatingArray[1]['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
-                                        @if($seatingArray[1]['seat_status'] != 'Not Available')
-                                            {{$seatingArray[1]['seat_name']}} ({{$seatingArray[1]['trainee_name']}})
+                                    <td id="CSM02" class="assign-popover" style="background-color: {{ $seat['CSM02']['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
+                                        @if($seat['CSM02']['seat_status'] != 'Not Available')
+                                            CSM02 ({{$seat['CSM02']['trainee_id']}})
                                         @else
                                             OTHER
                                         @endif
@@ -238,30 +242,30 @@
                                 </tr>
                                 <!-- Row 2 -->
                                 <tr>
-                                    <td id="CSM13" class="assign-popover" style="background-color: {{ $seatingArray[12]['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
-                                        @if($seatingArray[12]['seat_status'] != 'Not Available')
-                                            {{$seatingArray[12]['seat_name']}} ({{$seatingArray[12]['trainee_name']}})
+                                    <td id="CSM13" class="assign-popover" style="background-color: {{ $seat['CSM13']['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
+                                        @if($seat['CSM13']['seat_status'] != 'Not Available')
+                                            CSM13 ({{$seat['CSM13']['trainee_id']}})
                                         @else
                                             OTHER
                                         @endif
                                     </td>
-                                    <td id="CSM14" class="assign-popover" style="background-color: {{ $seatingArray[13]['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
-                                        @if($seatingArray[13]['seat_status'] != 'Not Available')
-                                            {{$seatingArray[13]['seat_name']}} ({{$seatingArray[13]['trainee_name']}})
+                                    <td id="CSM14" class="assign-popover" style="background-color: {{ $seat['CSM14']['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
+                                        @if($seat['CSM14']['seat_status'] != 'Not Available')
+                                            CSM14 ({{$seat['CSM14']['trainee_id']}})
                                         @else
                                             OTHER
                                         @endif
                                     </td>
-                                    <td id="CSM03" class="assign-popover" style="background-color: {{ $seatingArray[2]['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
-                                        @if($seatingArray[2]['seat_status'] != 'Not Available')
-                                            {{$seatingArray[2]['seat_name']}} ({{$seatingArray[2]['trainee_name']}})
+                                    <td id="CSM03" class="assign-popover" style="background-color: {{ $seat['CSM03']['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
+                                        @if($seat['CSM03']['seat_status'] != 'Not Available')
+                                            CSM03 ({{$seat['CSM03']['trainee_id']}})
                                         @else
                                             OTHER
                                         @endif 
                                     </td>
-                                    <td id="CSM04" class="assign-popover" style="background-color: {{ $seatingArray[3]['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
-                                        @if($seatingArray[3]['seat_status'] != 'Not Available')
-                                            {{$seatingArray[3]['seat_name']}} ({{$seatingArray[3]['trainee_name']}})
+                                    <td id="CSM04" class="assign-popover" style="background-color: {{ $seat['CSM04']['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
+                                        @if($seat['CSM04']['seat_status'] != 'Not Available')
+                                            CSM04 ({{$seat['CSM04']['trainee_id']}})
                                         @else
                                             OTHER
                                         @endif
@@ -269,30 +273,30 @@
                                 </tr>
                                 <!-- Row 3 -->
                                 <tr>
-                                    <td id="CSM15" class="assign-popover" style="background-color: {{ $seatingArray[14]['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
-                                        @if($seatingArray[14]['seat_status'] != 'Not Available')
-                                            {{$seatingArray[14]['seat_name']}} ({{$seatingArray[14]['trainee_name']}})
+                                    <td id="CSM15" class="assign-popover" style="background-color: {{ $seat['CSM15']['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
+                                        @if($seat['CSM15']['seat_status'] != 'Not Available')
+                                            CSM15 ({{$seat['CSM15']['trainee_id']}})
                                         @else
                                             OTHER
                                         @endif
                                     </td>
-                                    <td id="CSM16" class="assign-popover" style="background-color: {{ $seatingArray[15]['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
-                                        @if($seatingArray[15]['seat_status'] != 'Not Available')
-                                            {{$seatingArray[15]['seat_name']}} ({{$seatingArray[15]['trainee_name']}})
+                                    <td id="CSM16" class="assign-popover" style="background-color: {{ $seat['CSM16']['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
+                                        @if($seat['CSM16']['seat_status'] != 'Not Available')
+                                            CSM16 ({{$seat['CSM16']['trainee_id']}})
                                         @else
                                             OTHER
                                         @endif
                                     </td>
-                                    <td id="CSM05" class="assign-popover" style="background-color: {{ $seatingArray[4]['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
-                                        @if($seatingArray[4]['seat_status'] != 'Not Available')
-                                            {{$seatingArray[4]['seat_name']}} ({{$seatingArray[4]['trainee_name']}})
+                                    <td id="CSM05" class="assign-popover" style="background-color: {{ $seat['CSM05']['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
+                                        @if($seat['CSM05']['seat_status'] != 'Not Available')
+                                            CSM05 ({{$seat['CSM05']['trainee_id']}})
                                         @else
                                             OTHER
                                         @endif
                                     </td>
-                                    <td id="CSM06" class="assign-popover" style="background-color: {{ $seatingArray[5]['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
-                                        @if($seatingArray[5]['seat_status'] != 'Not Available')
-                                            {{$seatingArray[5]['seat_name']}} ({{$seatingArray[5]['trainee_name']}})
+                                    <td id="CSM06" class="assign-popover" style="background-color: {{ $seat['CSM06']['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
+                                        @if($seat['CSM06']['seat_status'] != 'Not Available')
+                                            CSM06 ({{$seat['CSM06']['trainee_id']}})
                                         @else
                                             OTHER
                                         @endif
@@ -300,30 +304,30 @@
                                 </tr>
                                 <!-- Row 4 -->
                                 <tr>
-                                    <td id="CSM17" class="assign-popover" style="background-color: {{ $seatingArray[16]['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
-                                        @if($seatingArray[16]['seat_status'] != 'Not Available')
-                                            {{$seatingArray[16]['seat_name']}} ({{$seatingArray[16]['trainee_name']}})
+                                    <td id="CSM17" class="assign-popover" style="background-color: {{ $seat['CSM17']['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
+                                        @if($seat['CSM17']['seat_status'] != 'Not Available')
+                                            CSM17 ({{$seat['CSM17']['trainee_id']}})
                                         @else
                                             OTHER
                                         @endif
                                     </td>
-                                    <td id="CSM18" class="assign-popover" style="background-color: {{ $seatingArray[17]['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
-                                        @if($seatingArray[17]['seat_status'] != 'Not Available')
-                                            {{$seatingArray[17]['seat_name']}} ({{$seatingArray[17]['trainee_name']}})
+                                    <td id="CSM18" class="assign-popover" style="background-color: {{ $seat['CSM18']['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
+                                        @if($seat['CSM18']['seat_status'] != 'Not Available')
+                                            CSM18 ({{$seat['CSM18']['trainee_id']}})
                                         @else
                                             OTHER
                                         @endif
                                     </td>
-                                    <td id="CSM07" class="assign-popover" style="background-color: {{ $seatingArray[6]['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
-                                        @if($seatingArray[6]['seat_status'] != 'Not Available')
-                                            {{$seatingArray[6]['seat_name']}} ({{$seatingArray[6]['trainee_name']}})
+                                    <td id="CSM07" class="assign-popover" style="background-color: {{ $seat['CSM07']['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
+                                        @if($seat['CSM07']['seat_status'] != 'Not Available')
+                                            CSM07 ({{$seat['CSM07']['trainee_id']}})
                                         @else
                                             OTHER
                                         @endif
                                     </td>
-                                    <td id="CSM08" class="assign-popover" style="background-color: {{ $seatingArray[7]['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
-                                        @if($seatingArray[7]['seat_status'] != 'Not Available')
-                                            {{$seatingArray[7]['seat_name']}} ({{$seatingArray[7]['trainee_name']}})
+                                    <td id="CSM08" class="assign-popover" style="background-color: {{ $seat['CSM08']['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
+                                        @if($seat['CSM08']['seat_status'] != 'Not Available')
+                                            CSM08 ({{$seat['CSM08']['trainee_id']}})
                                         @else
                                             OTHER
                                         @endif
@@ -331,30 +335,30 @@
                                 </tr>
                                 <!-- Row 5 -->
                                 <tr>
-                                    <td id="CSM19" class="assign-popover" style="background-color: {{ $seatingArray[18]['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
-                                        @if($seatingArray[18]['seat_status'] != 'Not Available')
-                                            {{$seatingArray[18]['seat_name']}} ({{$seatingArray[18]['trainee_name']}})
+                                    <td id="CSM19" class="assign-popover" style="background-color: {{ $seat['CSM19']['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
+                                        @if($seat['CSM19']['seat_status'] != 'Not Available')
+                                            CSM19 ({{$seat['CSM19']['trainee_id']}})
                                         @else
                                             OTHER
                                         @endif
                                     </td>
-                                    <td id="CSM20" class="assign-popover" style="background-color: {{ $seatingArray[19]['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
-                                        @if($seatingArray[19]['seat_status'] != 'Not Available')
-                                            {{$seatingArray[19]['seat_name']}} ({{$seatingArray[19]['trainee_name']}})
+                                    <td id="CSM20" class="assign-popover" style="background-color: {{ $seat['CSM20']['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
+                                        @if($seat['CSM20']['seat_status'] != 'Not Available')
+                                            CSM20 ({{$seat['CSM20']['trainee_id']}})
                                         @else
                                             OTHER
                                         @endif
                                     </td>
-                                    <td id="CSM09" class="assign-popover" style="background-color: {{ $seatingArray[8]['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
-                                        @if($seatingArray[8]['seat_status'] != 'Not Available')
-                                            {{$seatingArray[8]['seat_name']}} ({{$seatingArray[8]['trainee_name']}})
+                                    <td id="CSM09" class="assign-popover" style="background-color: {{ $seat['CSM09']['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
+                                        @if($seat['CSM09']['seat_status'] != 'Not Available')
+                                            CSM09 ({{$seat['CSM09']['trainee_id']}})
                                         @else
                                             OTHER
                                         @endif
                                     </td>
-                                    <td id="CSM10" class="assign-popover" style="background-color: {{ $seatingArray[9]['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
-                                        @if($seatingArray[9]['seat_status'] != 'Not Available')
-                                            {{$seatingArray[9]['seat_name']}} ({{$seatingArray[9]['trainee_name']}})
+                                    <td id="CSM10" class="assign-popover" style="background-color: {{ $seat['CSM10']['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
+                                        @if($seat['CSM10']['seat_status'] != 'Not Available')
+                                            CSM10 ({{$seat['CSM10']['trainee_id']}})
                                         @else
                                             OTHER
                                         @endif
@@ -365,61 +369,227 @@
                   </div>
                   <div class="carousel-item">
                     <p class="text-center">Second Floor Map (Level 3)</p>
-                    <table id="map_level3">
+                    <table style="width: 80%;">
                         <tbody>
                             <tr>
-                                <td rowspan="2" colspan="3" style="background-color: #D3D3D3;">Director's Room</td>
-                                <td rowspan="2" colspan="9" style="background-color: #D3D3D3;"></td>
+                                <td style="width: 30.3944%; background-color: rgb(148, 148, 148);" colspan="3">Director Room</td>
+                                <td style="width: 69.3736%; background-color: rgb(211, 211, 211);" rowspan="2" colspan="5">
+                                    <div style="text-align: right;">Exit&gt;&gt;</div>
+                                </td>
                             </tr>
                             <tr>
-                            </tr>
-                            <!-- Row 1 -->
-                            <tr>
-                                <td id="T1" class="assign-popover" style="background-color: #90EE90;">T1 ({{$seatingArray[20]['trainee_name']}})</td>
-                                <td id="T2" class="assign-popover" style="background-color: #90EE90;">T2 ({{$seatingArray[21]['trainee_name']}})</td>
-                                <td id="Round-Table" class="assign-popover" style="background-color: #90EE90;">Round Table ({{$seatingArray[22]['trainee_name']}}) </td>
-                                <td colspan="9" style="background-color: #D3D3D3; text-align: right;"><strong>Exit>></strong></td>
-                            </tr>
-                            <!-- Row 2 -->
-                            <tr>
-                                <td rowspan="7" style="background-color: #D3D3D3;"></td>
-                                <td colspan="9" style="background-color: #D3D3D3;"></td>
-                                <td rowspan="7" colspan="3" style="background-color: #D3D3D3;"></td>
-                            </tr>
-                            <!-- Row 3 -->
-                            <tr>
-                                <td style="background-color: #90EE90;"> </td>
-                                <td style="background-color: #90EE90;"> </td>
-                                <td style="background-color: #90EE90;"> </td>
-                                <td style="background-color: #90EE90;"> </td>
-                            </tr>
-                            <!-- Row 4 -->
-                            <tr>
-                                <td style="background-color: #90EE90;"> </td>
-                                <td style="background-color: #90EE90;"> </td>
-                                <td style="background-color: #90EE90;"> </td>
-                                <td style="background-color: #90EE90;"> </td>
-                            </tr>
-                            <!-- Row 5 -->
-                            <tr>
-                                <td colspan="10" style="background-color: #D3D3D3;"></td>
+                                <td style="width: 15.9768%; background-color: rgb(144, 238, 144);">
+                                    <div style="text-align: center;" class="assign-popover" id="T01">
+                                        @if($seat['T01']['seat_status'] != 'Not Available')
+                                            T01 ({{$seat['T01']['trainee_id']}})
+                                        @else
+                                            OTHER
+                                        @endif
+                                    </div>
+                                </td>
+                                <td style="width: 15.9768%; background-color: rgb(144, 238, 144);">
+                                    <div style="text-align: center;" class="assign-popover" id="T02">
+                                        @if($seat['T02']['seat_status'] != 'Not Available')
+                                            T02 ({{$seat['T02']['trainee_id']}})
+                                        @else
+                                            OTHER
+                                        @endif
+                                    </div>
+                                </td>
+                                <td style="width: 15.9768%; background-color: rgb(144, 238, 144);">
+                                    <div style="text-align: center;" class="assign-popover" id="Round-Table">
+                                        @if($seat['Round-Table']['seat_status'] != 'Not Available')
+                                        Round Table ({{$seat['Round-Table']['trainee_id']}})
+                                    @else
+                                        OTHER
+                                    @endif
+                                    </div>
+                                </td>
                             </tr>
                             <tr>
-                                <td style="background-color: #90EE90;"> </td>
-                                <td style="background-color: #90EE90;"> </td>
-                                <td style="background-color: #90EE90;"> </td>
-                                <td style="background-color: #90EE90;"> </td>
+                                <td style="width: 9.9768%; background-color: rgb(211, 211, 211);" rowspan="4"><br></td>
+                                <td style="width: 40.3712%; background-color: rgb(211, 211, 211);" colspan="4"><br></td>
+                                <td style="width: 49.42%; background-color: rgb(211, 211, 211);" colspan="3" rowspan="8"><br></td>
                             </tr>
                             <tr>
-                                <td style="background-color: #90EE90;"> </td>
-                                <td style="background-color: #90EE90;"> </td>
-                                <td style="background-color: #90EE90;"> </td>
-                                <td style="background-color: #90EE90;"> </td>
+                                <td style="width: 9.9768%; background-color: rgb(148, 148, 148);"><br></td>
+                                <td style="width: 10.4408%; background-color: rgb(148, 148, 148);"><br></td>
+                                <td style="width: 15.9768%; background-color: rgb(148, 148, 148);"><br></td>
+                                <td style="width: 15.9768%; background-color: rgb(148, 148, 148);"><br></td>
                             </tr>
                             <tr>
-                                <td colspan="8" style="background-color: #D3D3D3;"></td>
+                                <td style="width: 9.9768%; background-color: rgb(148, 148, 148);"><br></td>
+                                <td style="width: 10.4408%; background-color: rgb(148, 148, 148);"><br></td>
+                                <td style="width: 9.9768%; background-color: rgb(148, 148, 148);"><br></td>
+                                <td style="width: 10%; background-color: rgb(148, 148, 148);"><br></td>
                             </tr>
-                            <!-- Add more rows as needed -->
+                            <tr>
+                                <td style="width: 40.3712%; background-color: rgb(211, 211, 211);" colspan="4"><br></td>
+                            </tr>
+                            <tr>
+                                <td style="width: 9.9768%; background-color: rgb(148, 148, 148);"><br></td>
+                                <td style="width: 9.9768%; background-color: rgb(148, 148, 148);"><br></td>
+                                <td style="width: 10.4408%; background-color: rgb(148, 148, 148);"><br></td>
+                                <td style="width: 9.9768%; background-color: rgb(148, 148, 148);"><br></td>
+                                <td style="width: 10.0186%; background-color: rgb(148, 148, 148);"><br></td>
+                            </tr>
+                            <tr>
+                                <td style="width: 9.9768%; background-color: rgb(144, 238, 144);">
+                                    <div style="text-align: center;" class="assign-popover" id="T03">
+                                        @if($seat['T03']['seat_status'] != 'Not Available')
+                                            T03 ({{$seat['T03']['trainee_id']}})
+                                        @else
+                                            OTHER
+                                        @endif
+                                    </div>
+                                </td>
+                                <td style="width: 9.9768%; background-color: rgb(144, 238, 144);">
+                                    <div style="text-align: center;" class="assign-popover" id="T04">
+                                        @if($seat['T04']['seat_status'] != 'Not Available')
+                                            T04 ({{$seat['T04']['trainee_id']}})
+                                        @else
+                                            OTHER
+                                        @endif
+                                    </div>
+                                </td>
+                                <td style="width: 10.4408%; background-color: rgb(144, 238, 144);">
+                                    <div style="text-align: center;" class="assign-popover" id="T05">
+                                        @if($seat['T05']['seat_status'] != 'Not Available')
+                                            T05 ({{$seat['T05']['trainee_id']}})
+                                        @else
+                                            OTHER
+                                        @endif
+                                    </div>
+                                </td>
+                                <td style="width: 9.9768%; background-color: rgb(144, 238, 144);">
+                                    <div style="text-align: center;" class="assign-popover" id="T06">
+                                        @if($seat['T06']['seat_status'] != 'Not Available')
+                                            T06 ({{$seat['T06']['trainee_id']}})
+                                        @else
+                                            OTHER
+                                        @endif
+                                    </div>
+                                </td>
+                                <td style="width: 10.0186%; background-color: rgb(148, 148, 148);"><br></td>
+                            </tr>
+                            <tr>
+                                <td style="width: 10%; background-color: rgb(211, 211, 211);"><br></td>
+                                <td style="width: 9.9768%; background-color: rgb(211, 211, 211);" rowspan="5"><br></td>
+                                <td style="width: 20.4176%; background-color: rgb(211, 211, 211);" colspan="2" rowspan="2"><br></td>
+                                <td style="width: 9.9768%; background-color: rgb(211, 211, 211);" rowspan="5"><br></td>
+                            </tr>
+                            <tr>
+                                <td style="width: 9.9768%; background-color: rgb(144, 238, 144);">
+                                    <div style="text-align: center;" class="assign-popover" id="T07">
+                                        @if($seat['T07']['seat_status'] != 'Not Available')
+                                            T07 ({{$seat['T07']['trainee_id']}})
+                                        @else
+                                            OTHER
+                                        @endif
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width: 9.9768%; background-color: rgb(144, 238, 144);">
+                                    <div style="text-align: center;" class="assign-popover" id="T08">
+                                        @if($seat['T08']['seat_status'] != 'Not Available')
+                                            T08 ({{$seat['T08']['trainee_id']}})
+                                        @else
+                                            OTHER
+                                        @endif
+                                    </div>
+                                </td>
+                                <td style="width: 10.4408%; background-color: rgb(144, 238, 144);">
+                                    <div style="text-align: center;" class="assign-popover" id="T09">
+                                        @if($seat['T09']['seat_status'] != 'Not Available')
+                                            T09 ({{$seat['T09']['trainee_id']}})
+                                        @else
+                                            OTHER
+                                        @endif
+                                    </div>
+                                </td>
+                                <td style="width: 9.9768%; background-color: rgb(144, 238, 144);">
+                                    <div style="text-align: center;" class="assign-popover" id="T10">
+                                        @if($seat['T10']['seat_status'] != 'Not Available')
+                                            T10 ({{$seat['T10']['trainee_id']}})
+                                        @else
+                                            OTHER
+                                        @endif
+                                    </div>
+                                </td>
+                                <td style="width: 15.9768%; background-color: rgb(144, 238, 144);">
+                                    <div style="text-align: center;" class="assign-popover" id="T15">
+                                        @if($seat['T15']['seat_status'] != 'Not Available')
+                                            T15 ({{$seat['T15']['trainee_id']}})
+                                        @else
+                                            OTHER
+                                        @endif
+                                    </div>
+                                </td>
+                                <td style="width: 15.9768%; background-color: rgb(148, 148, 148);"><br></td>
+                                <td style="width: 29.8701%; background-color: rgb(211, 211, 211);" rowspan="3"><br></td>
+                            </tr>
+                            <tr>
+                                <td style="width: 9.9768%; background-color: rgb(211, 211, 211);" rowspan="2"><br></td>
+                                <td style="width: 10.4408%; background-color: rgb(144, 238, 144);">
+                                    <div style="text-align: center;" class="assign-popover" id="T11">
+                                        @if($seat['T11']['seat_status'] != 'Not Available')
+                                            T11 ({{$seat['T11']['trainee_id']}})
+                                        @else
+                                            OTHER
+                                        @endif
+                                    </div>
+                                </td>
+                                <td style="width: 9.9768%; background-color: rgb(144, 238, 144);">
+                                    <div style="text-align: center;"class="assign-popover" id="T12">
+                                        @if($seat['T12']['seat_status'] != 'Not Available')
+                                            T12 ({{$seat['T12']['trainee_id']}})
+                                        @else
+                                            OTHER
+                                        @endif
+                                    </div>
+                                </td>
+                                <td style="width: 10.0185%; background-color: rgb(144, 238, 144);">
+                                    <div style="text-align: center;" class="assign-popover" id="T16">
+                                        @if($seat['T16']['seat_status'] != 'Not Available')
+                                            T16 ({{$seat['T16']['trainee_id']}})
+                                        @else
+                                            OTHER
+                                        @endif
+                                    </div>
+                                </td>
+                                <td style="width: 10.0185%; background-color: rgb(148, 148, 148);"><br></td>
+                            </tr>
+                            <tr>
+                                <td style="width: 10.4408%; background-color: rgb(144, 238, 144);">
+                                    <div style="text-align: center;" class="assign-popover" id="T13">
+                                        @if($seat['T13']['seat_status'] != 'Not Available')
+                                            T13 ({{$seat['T13']['trainee_id']}})
+                                        @else
+                                            OTHER
+                                        @endif
+                                    </div>
+                                </td>
+                                <td style="width: 9.9768%; background-color: rgb(144, 238, 144);">
+                                    <div style="text-align: center;" class="assign-popover" id="T14">
+                                        @if($seat['T14']['seat_status'] != 'Not Available')
+                                            T14 ({{$seat['T14']['trainee_id']}})
+                                        @else
+                                            OTHER
+                                        @endif
+                                    </div>
+                                </td>
+                                <td style="width: 10.0185%; background-color: rgb(144, 238, 144);">
+                                    <div style="text-align: center;" class="assign-popover" id="T17">
+                                        @if($seat['T17']['seat_status'] != 'Not Available')
+                                            T17 ({{$seat['T17']['trainee_id']}})
+                                        @else
+                                            OTHER
+                                        @endif
+                                    </div>
+                                </td>
+                                <td style="width: 10.0185%; background-color: rgb(148, 148, 148);"><br></td>
+                            </tr>
                         </tbody>
                     </table>
                   </div>
@@ -469,120 +639,114 @@
 
 </div>
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        var popoverButtons = document.querySelectorAll(".assign-popover");
-        var popoverContent = document.getElementById("popoverContent");
-        var closePopover = document.getElementById("close-popover");
-        var removeBtn = document.getElementById("remove-trainee-btn");
-        var assignBtn = document.getElementById("assign-seat-btn");
-        var changeOwnershipButton = document.getElementById("change-ownership-btn");
-        var week = document.getElementById("weekInfo").value;
-        var lastClickedButtonId = null;
-    
-        // Add click event listeners to all td elements with class "assign-popover"
-        popoverButtons.forEach(function (popoverButton) {
-            popoverButton.addEventListener("click", function () {
-                var seat = popoverButton.getAttribute("id");
-                var seat_name = popoverButton.textContent;
-                var extractedSeatName = seat_name.split(' (')[0];
-    
-                // If a button is already selected, deselect it
-                if (lastClickedButtonId) {
-                    document.getElementById(lastClickedButtonId).classList.remove("selected");
-                }
-    
-                document.querySelector(".card-title").textContent = "Selected: " + extractedSeatName;
-    
-                // Select the clicked button
-                popoverButton.classList.add("selected");
-                lastClickedButtonId = seat;
-    
-                // Create a new XMLHttpRequest for fetching seat data
-                var req = new XMLHttpRequest();
-                req.open("GET", "/get-seat-data/" + seat + "?week=" + week, true);
-                req.send();
-    
-                req.onreadystatechange = function () {
-                    if (req.readyState === 4 && req.status === 200) {
-                        // Parse the JSON response
-                        var data = JSON.parse(req.responseText);
-    
-                        // Update the popover content with the retrieved data
-                        document.querySelector(".card-text").textContent = "Trainee Assigned: " + data.trainee_id;
-                        popoverContent.style.display = "block";
-                    } else if (req.readyState === 4 && req.status !== 200) {
-                        console.error("Error fetching seat data. Status code: " + req.status);
-                    }
-                };
-    
-                // Add a click event listener to the "Remove" button
-                removeBtn.addEventListener("click", function () {
-                    if (lastClickedButtonId) {
-                        // Implement your remove logic here for the selected seat
-                        var req = new XMLHttpRequest();
-                        req.open("GET", "/remove-seat/" + lastClickedButtonId + "?week=" + week, true);
-                        req.send();
-                    }
-                });
-    
-                // Add a click event listener to the "Assign" button
-                assignBtn.addEventListener("click", function () {
-                    var trainee_selected = getSelectedListItemContent();
-                    if (trainee_selected) {
-                        var req = new XMLHttpRequest();
-                        req.open("GET", "/assign-seat-for-trainee/" + trainee_selected + "/" + lastClickedButtonId + "?week=" + week , true);
-                        req.send();
-                    } else {
-                        // Handle the case where no item is selected
-                    }
-                });
+ document.addEventListener("DOMContentLoaded", function () {
+    var popoverButtons = document.querySelectorAll(".assign-popover");
+    var popoverContent = document.getElementById("popoverContent");
+    var closePopover = document.getElementById("close-popover");
+    var removeBtn = document.getElementById("remove-trainee-btn");
+    var assignBtn = document.getElementById("assign-seat-btn");
+    var changeOwnershipButton = document.getElementById("change-ownership-btn");
+    var week = document.getElementById("weekInfo").value;
+    var lastClickedButtonId = null;
 
-                
-                changeOwnershipButton.addEventListener("click", function () {
-                    if (lastClickedButtonId) {
-                        // Send the selectedCellId to your controller using an HTTP request (e.g., AJAX)
-                        var req = new XMLHttpRequest();
-                        req.open("GET", "/change-ownership/" + lastClickedButtonId + "?week=" + week, true);
-                        req.send();
-                }
-                });
-    
-                popoverContent.style.display = "block";
-            });
-        });
-    
-        // Close the popover when the "Close" button is clicked
-        closePopover.addEventListener("click", function () {
-            popoverContent.style.display = "none";
-    
-            // Deselect the last clicked button
+    // Add click event listeners to all td elements with class "assign-popover"
+    popoverButtons.forEach(function (popoverButton) {
+        popoverButton.addEventListener("click", function () {
+            var seat = popoverButton.getAttribute("id");
+            var seat_name = popoverButton.textContent;
+            var extractedSeatName = seat_name.split(' (')[0];
+
+            // If a button is already selected, deselect it
             if (lastClickedButtonId) {
                 document.getElementById(lastClickedButtonId).classList.remove("selected");
-                lastClickedButtonId = null;
             }
+
+            document.querySelector(".card-title").textContent = "Selected: " + extractedSeatName;
+
+            // Select the clicked button
+            popoverButton.classList.add("selected");
+            lastClickedButtonId = seat;
+
+            // Create a new XMLHttpRequest for fetching seat data
+            var req = new XMLHttpRequest();
+            req.open("GET", "/get-seat-data/" + seat + "?week=" + week, true);
+            req.send();
+
+            req.onreadystatechange = function () {
+                if (req.readyState === 4 && req.status === 200) {
+                    // Parse the JSON response
+                    var data = JSON.parse(req.responseText);
+
+                    // Update the popover content with the retrieved data
+                    document.querySelector(".card-text").textContent = "Trainee Assigned: " + data.trainee_id;
+                    popoverContent.style.display = "block";
+                } else if (req.readyState === 4 && req.status !== 200) {
+                    console.error("Error fetching seat data. Status code: " + req.status);
+                }
+            };
         });
     });
-    
+
+    // Add a click event listener to the "Remove" button
+    removeBtn.addEventListener("click", function () {
+        if (lastClickedButtonId) {
+            // Implement your remove logic here for the selected seat
+            var req = new XMLHttpRequest();
+            req.open("GET", "/remove-seat/" + lastClickedButtonId + "?week=" + week, true);
+            req.send();
+        }
+    });
+
+    // Add a click event listener to the "Assign" button
+    assignBtn.addEventListener("click", function () {
+        var trainee_selected = getSelectedListItemContent();
+        if (trainee_selected) {
+            var req1 = new XMLHttpRequest();
+            req1.open("GET", "/assign-seat-for-trainee/" + trainee_selected + "/" + lastClickedButtonId + "?week=" + week, true);
+            req1.send();
+        } else {
+            // Handle the case where no item is selected
+        }
+    });
+
+    // Add a click event listener to the "Change Ownership" button
+    changeOwnershipButton.addEventListener("click", function () {
+        if (lastClickedButtonId) {
+            // Send the selectedCellId to your controller using an HTTP request (e.g., AJAX)
+            var req2= new XMLHttpRequest();
+            req2.open("GET", "/change-ownership/" + lastClickedButtonId + "?week=" + week, true);
+            req2.send();
+        }
+    });
+
+    // Close the popover when the "Close" button is clicked
+    closePopover.addEventListener("click", function () {
+        popoverContent.style.display = "none";
+
+        // Deselect the last clicked button
+        if (lastClickedButtonId) {
+            document.getElementById(lastClickedButtonId).classList.remove("selected");
+            lastClickedButtonId = null;
+        }
+    });
+
     // Add click event listeners to all list items to make the list selectable
-    document.addEventListener("DOMContentLoaded", function () {
-        // Get the list and list items
-        const list = document.getElementById("selectable-list");
-        const listItems = list.querySelectorAll("li");
-    
-        // Add click event listeners to list items
-        listItems.forEach(function (item) {
-            item.addEventListener("click", function () {
-                // Clear the selected class from all items
-                listItems.forEach(function (li) {
-                    li.classList.remove("selected");
-                });
-    
-                // Add the selected class to the clicked item
-                item.classList.add("selected");
+    const list = document.getElementById("selectable-list");
+    const listItems = list.querySelectorAll("li");
+
+    // Add click event listeners to list items
+    listItems.forEach(function (item) {
+        item.addEventListener("click", function () {
+            // Clear the selected class from all items
+            listItems.forEach(function (li) {
+                li.classList.remove("selected");
             });
+
+            // Add the selected class to the clicked item
+            item.classList.add("selected");
         });
     });
-    
+
     function getSelectedListItemContent() {
         const selectedTraineeListItem = document.querySelector("#selectable-list .selected");
         if (selectedTraineeListItem) {
@@ -591,7 +755,10 @@
         } else {
             return null;
         }
-    }    
+    }
+});
+
+
 </script>
     
 
