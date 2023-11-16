@@ -31,11 +31,26 @@ class TaskTimelineController extends Controller
         return view('sv-view-trainee-task-timeline', compact('tasks', 'traineeID'));
     }
 
+    public function adminViewTraineeTaskTimeline($traineeID){
+        //get all the task for this trainee
+        $tasks = TaskTimeline::where('trainee_id', $traineeID)->get();
+
+        return view('admin-view-trainee-task-timeline', compact('tasks', 'traineeID'));
+    }
+
     public function traineeAddNewTask(Request $request){
         $user = Auth::user();
 
         //get trainee id
         $trainee_id = Trainee::where('sains_email', $user->email)->pluck('id')->first();
+
+        $startDate = new DateTime($request->input('startDate'));
+        $endDate = new DateTime($request->input('endDate'));
+
+        //terminate the function when the user chooses invalid date (end date < start date)
+        if($endDate < $startDate){
+            return redirect()->route('trainee-task-timeline')->with('warning', 'Failed to add new task! Invalid date chosen!');
+        }
 
         //add a new task to DB
         $task = new TaskTimeline();
@@ -55,6 +70,13 @@ class TaskTimelineController extends Controller
     }
 
     public function traineeAddNewTaskSV(Request $request, $traineeID){
+        $startDate = new DateTime($request->input('startDate'));
+        $endDate = new DateTime($request->input('endDate'));
+
+        //terminate the function when the user chooses invalid date (end date < start date)
+        if($endDate < $startDate){
+            return redirect()->route('sv-view-trainee-task-timeline', $traineeID)->with('warning', 'Failed to add new task! Invalid date chosen!');
+        }
         //add a new task to DB
         $task = new TaskTimeline();
         $task->trainee_id = $traineeID;
@@ -69,7 +91,14 @@ class TaskTimelineController extends Controller
         $task->task_detail = json_encode($taskDetail);
         $task->save();
 
-        return redirect()->route('sv-view-trainee-task-timeline', $traineeID)->with('success', 'New task added.');
+        $user_role = Auth::user()->role_id;
+        if($user_role == 2){
+            return redirect()->route('sv-view-trainee-task-timeline', $traineeID)->with('success', 'New task added.');
+        }
+        elseif($user_role == 1){
+            return redirect()->route('admin-view-trainee-task-timeline', $traineeID)->with('success', 'New task added.');
+        }
+       
     }
 
     public function traineeEditTask(Request $request, $taskID){
@@ -126,6 +155,8 @@ class TaskTimelineController extends Controller
             return view('trainee-task-detail', compact('task', 'dateRange', 'timelineData', 'comments'));
         } elseif ($user_role == 2) {
             return view('sv-view-trainee-task-detail', compact('task', 'dateRange', 'timelineData', 'comments'));
+        } elseif ($user_role == 1 ){
+            return view('admin-view-trainee-task-detail', compact('task', 'dateRange', 'timelineData', 'comments'));
         }
     }
     
@@ -150,6 +181,9 @@ class TaskTimelineController extends Controller
         }
         elseif($user_role == 2){
             return view('sv-view-trainee-daily-task-detail', compact('date', 'taskDetail', 'taskID', 'dayOfWeek'));
+        }
+        elseif($user_role == 1){
+            return view('admin-view-trainee-daily-task-detail', compact('date', 'taskDetail', 'taskID', 'dayOfWeek'));
         }
        
     }
@@ -195,6 +229,10 @@ class TaskTimelineController extends Controller
         elseif($user_role == 2){
             $comment['Supervisor'] = $request->input('comment');
         }
+        elseif($user_role == 1){
+            $comment['Supervisor'] = $request->input('commentSV');
+            $comment['Trainee'] = $request->input('commentTR');
+        }
 
         $task->task_overall_comment = json_encode($comment);
         $task->save();
@@ -212,6 +250,10 @@ class TaskTimelineController extends Controller
             }
             elseif($user_role == 3){
                 $timeline[$date]['Trainee'] = $request->input('comment');
+            }
+            elseif($user_role == 1){
+                $timeline[$date]['Supervisor'] = $request->input('commentSV');
+                $timeline[$date]['Trainee'] = $request->input('commentTR');
             }
     
             // Update the timeline in the database
@@ -263,8 +305,12 @@ class TaskTimelineController extends Controller
         if($user_role == 3){
             return redirect()->route('trainee-task-timeline')->with('success', 'Task deleted.');
         }
+        //admin and supervisor will use same page.
         elseif($user_role == 2){
             return redirect()->route('sv-view-trainee-task-timeline', ['traineeID' => $traineeID])->with('success', 'Task deleted.');
+        }
+        elseif($user_role == 1 ){
+            return redirect()->route('admin-view-trainee-task-timeline', ['traineeID' => $traineeID])->with('success', 'Task deleted.');
         }
     }
 }

@@ -1,4 +1,4 @@
-@extends('layouts.sv')
+@extends('layouts.admin')
 
 @section('content')
 <head>

@@ -156,6 +156,7 @@
                                         <td>
                                             <!-- Add your buttons/actions here -->
                                             <a class="btn btn-secondary" href="{{ route('admin-go-profile', ['traineeName' => urlencode($trainee->name)]) }}">View Profile</a>
+                                            <a class="btn btn-secondary" href="{{ route('admin-view-trainee-task-timeline', ['traineeID' => $trainee->id]) }}">Task Timeline</a>
                                             <a class="btn btn-secondary" href="{{ route('change-account-status', ['selected' => urlencode($trainee->name)]) }}">Change Account Status</a>
                                         </td>
                                     </tr>
