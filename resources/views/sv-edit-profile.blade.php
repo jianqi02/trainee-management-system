@@ -30,6 +30,15 @@
         <div class="supervisor-edit-profile-container">
             <div class="container mt-5">
                 <h1>Edit Profile</h1>
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 <form method="POST" action="{{ route('update-profile-sv') }}" enctype="multipart/form-data">
                     @csrf
                     <div class="mb-3">

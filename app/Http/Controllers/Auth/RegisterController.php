@@ -56,12 +56,30 @@ class RegisterController extends Controller
      */
     protected function validator(array $data)
     {
+        // the name should not contain any special character and number
+        // the email should follow "@sains.com.my" format
+        // the password should contain at least 8 characters, 1 uppercase character and 1 special character.
         return Validator::make($data, [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'name' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z\s]+$/'],
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                'unique:users',
+                'regex:/^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$/',
+                'ends_with:@sains.com.my',
+            ],
             'role' => ['required', 'string', 'in:3,2'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'confirmed',
+                'regex:/^(?=.*[A-Z])(?=.*[!@#$%^&*()_+])[a-zA-Z0-9!@#$%^&*()_+]+$/',
+            ],
         ]);
+             
     }
 
     /**

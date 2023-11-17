@@ -76,10 +76,10 @@ class TraineeController extends Controller
 
     public function updateProfile(Request $request){
         $validatedData = $request->validate([
-            'fullName' => 'required|string|max:255',
-            'phoneNum' => 'required|string|max:255',
+            'fullName' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z\s]+$/'],
+            'phoneNum' => ['required', 'string', 'max:255', 'regex:/^[0-9\+]+$/'],
             'expertise' => 'nullable|string',
-            'personalEmail' => 'required|email',
+            'personalEmail' => ['required', 'email', 'regex:/^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$/'],
             'graduateDate' => 'nullable|date',
             'profilePicture' => 'image|mimes:jpeg,png,jpg|max:2048',
         ]);

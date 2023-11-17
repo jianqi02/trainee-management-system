@@ -307,10 +307,24 @@ class AdminController extends Controller
 
     public function createUser(Request $request){
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
+            'name' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z\s]+$/'],
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                'unique:users',
+                'regex:/^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$/',
+                'ends_with:@sains.com.my',
+            ],
             'role' => 'required|in:2,3',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'confirmed',
+                'regex:/^(?=.*[A-Z])(?=.*[!@#$%^&*()_+])[a-zA-Z0-9!@#$%^&*()_+]+$/',
+            ],
         ]);
 
         User::create([
@@ -557,7 +571,7 @@ class AdminController extends Controller
         ->first();
 
         $comments = Comment::where('trainee_id', $trainee->id)
-        ->select('comments.comment', 'supervisors.name')
+        ->select('comments.comment', 'supervisors.name','comments.id')
         ->join('supervisors', 'comments.supervisor_id', '=', 'supervisors.id')
         ->get();
 
@@ -596,5 +610,14 @@ class AdminController extends Controller
 
         // Redirect the user to a success page
         return redirect()->route('admin-go-profile', $traineeName)->with('success', 'Resume uploaded successfully');
+    }
+
+    public function changeSVComment(Request $request, $commentID){
+        $comment = Comment::find($commentID);
+        $editedComment = $request->input('editedComment');
+        $comment->comment = $editedComment;
+        $comment->save();
+
+        return redirect()->back()->with('success', 'Comment edited successfully.');
     }
 }

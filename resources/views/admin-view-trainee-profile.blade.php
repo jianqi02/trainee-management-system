@@ -7,6 +7,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seating Arrangement</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha384-ySjggmTo4xMz5FFojZE/Cm2JfV6vKSDA8D84jfuze8Fo7EBt8Fck+nP3RS5ZxYU3" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
     <!-- Include Bootstrap CSS from CDN -->
     <title>My Profile</title>
     <style>
@@ -269,12 +275,37 @@
         <div class="profile-heading">
             <h3>Comment</h3>
         </div>
-
         @foreach($comments as $comment)
         <div class="comment">
             <p class="comment-label" style="margin-top: 10px; margin-bottom: -10px;">Comment from {{ $comment->name }}</p>
             <div class="comment-text">
                 {{ $comment->comment }}
+                <a href="#" data-toggle="modal" data-target="#editCommentModal{{ $comment->id }}">
+                    <i class="fa fa-pencil" style="color: blue; margin-left: 5px;"></i>
+                </a>
+            </div>
+        </div>    
+
+        <div class="modal fade" id="editCommentModal{{ $comment->id }}" tabindex="-1" role="dialog" aria-labelledby="editCommentModalLabel{{ $comment->id }}" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editCommentModalLabel{{ $comment->id }}">Edit Comment</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Add a form for editing the comment -->
+                        <form action="{{ route('change-sv-comment', ['commentID' => $comment->id]) }}" method="post">
+                            @csrf
+                            <!-- Add input fields for editing the comment -->
+                            <textarea class="form-control" name="editedComment">{{ $comment->comment }}</textarea>
+                            <br>
+                            <button type="submit" class="btn btn-primary">Confirm</button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
         @endforeach

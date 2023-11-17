@@ -94,6 +94,7 @@ Route::delete('/remove-logbooks/{logbook}/{name}', [AdminController::class, 'des
 Route::post('/admin-upload-logbook/{name}', [AdminController::class, 'uploadLogbook'])->name('admin-upload-logbook');
 Route::get('/admin-go-profile/{traineeName}', [AdminController::class, 'adminGoTraineeProfile'])->name('admin-go-profile');
 Route::post('/admin-upload-resume/{traineeName}', [AdminController::class, 'adminUploadResume'])->name('admin-upload-resume');
+Route::post('/change-sv-comment/{commentID}', [AdminController::class, 'changeSVComment'])->name('change-sv-comment');
 
 //seating-related function
 Route::get('/seating-arrange', [SeatingController::class, 'index'])->name('seating-arrange');
