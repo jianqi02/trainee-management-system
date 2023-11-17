@@ -154,11 +154,35 @@
                                         <td>{{ $trainee->sains_email }}</td>
                                         <td>{{ $trainee->acc_status }}</td>
                                         <td>
-                                            <!-- Add your buttons/actions here -->
-                                            <a class="btn btn-secondary" href="{{ route('admin-go-profile', ['traineeName' => urlencode($trainee->name)]) }}">View Profile</a>
-                                            <a class="btn btn-secondary" href="{{ route('admin-view-trainee-task-timeline', ['traineeID' => $trainee->id]) }}">Task Timeline</a>
-                                            <a class="btn btn-secondary" href="{{ route('change-account-status', ['selected' => urlencode($trainee->name)]) }}">Change Account Status</a>
+                                            <a href="{{ route('admin-go-profile', ['traineeName' => urlencode($trainee->name)]) }}" style="text-decoration: none; font-size: 24px; color: grey; margin-left: 20%;" title="View Profile">
+                                                <i class="fa fa-user" aria-hidden="true"></i>
+                                            </a>
+                                            <a href="{{ route('admin-view-trainee-task-timeline', ['traineeID' => $trainee->id]) }}" style="text-decoration: none; font-size: 24px; color: grey; margin-left: 20px;" title="View Task Timeline">
+                                                <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512"><path d="M128 72a24 24 0 1 1 0 48 24 24 0 1 1 0-48zm32 97.3c28.3-12.3 48-40.5 48-73.3c0-44.2-35.8-80-80-80S48 51.8 48 96c0 32.8 19.7 61 48 73.3V224H32c-17.7 0-32 14.3-32 32s14.3 32 32 32H288v54.7c-28.3 12.3-48 40.5-48 73.3c0 44.2 35.8 80 80 80s80-35.8 80-80c0-32.8-19.7-61-48-73.3V288H608c17.7 0 32-14.3 32-32s-14.3-32-32-32H544V169.3c28.3-12.3 48-40.5 48-73.3c0-44.2-35.8-80-80-80s-80 35.8-80 80c0 32.8 19.7 61 48 73.3V224H160V169.3zM488 96a24 24 0 1 1 48 0 24 24 0 1 1 -48 0zM320 392a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"/></svg>
+                                            </a>
+                                            <a href="#" style="text-decoration: none; font-size: 24px; color: grey; margin-left: 20px;" title="Change Account Status" data-toggle="modal" data-target="#confirmChangeStatusModal">
+                                                <i class="fa fa-exchange" aria-hidden="true"></i>
+                                            </a>
                                         </td>
+                                        <div class="modal fade" id="confirmChangeStatusModal" tabindex="-1" role="dialog" aria-labelledby="confirmChangeStatusModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="confirmChangeStatusModalLabel">Confirm Change Account Status</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        Are you sure you want to change {{ $trainee->name }}'s account status?
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                        <a id="confirmChangeStatusBtn" class="btn btn-primary" href="{{ route('change-account-status', ['selected' => urlencode($trainee->name)]) }}">Confirm</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -229,7 +253,9 @@
                                         <td>{{ $supervisor->sains_email }}</td>
                                         <td>
                                             <!-- Add your buttons/actions here -->
-                                            <a class="btn btn-secondary" href="{{ route('admin-edit-profile', ['selected' => urlencode($supervisor->name)]) }}">Edit Profile</a>
+                                            <a href="{{ route('admin-edit-profile', ['selected' => urlencode($supervisor->name)]) }}" style="text-decoration: none; color: grey; font-size: 24px; margin-left: 30%;" title="Edit Profile">
+                                            <i class="fa fa-pencil"></i>
+                                        </a>
                                         </td>
                                     </tr>
                                 @endforeach

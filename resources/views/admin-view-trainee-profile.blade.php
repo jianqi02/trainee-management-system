@@ -311,7 +311,7 @@
         </div>
 
         <div class="profile-buttons">
-            <a href="#" class="btn btn-primary">View Task Timeline</a>
+            <a href="{{ route('admin-view-trainee-task-timeline', ['traineeID' => $trainee->id]) }}" class="btn btn-primary">View Task Timeline</a>
         </div>
     </div>
 </body>

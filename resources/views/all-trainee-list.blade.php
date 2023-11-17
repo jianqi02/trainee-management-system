@@ -239,7 +239,7 @@
                                             <a class="icon-link" href="{{ route('edit-record' , ['id' => $trainee->id])}}">
                                                 <i class="fas fa-edit action-btn"></i>
                                                 <span class="tooltip">Edit Record</span>
-                                            </a>
+                                            </a>                                   
                                         </td>
                                     </tr>
                                 @endforeach

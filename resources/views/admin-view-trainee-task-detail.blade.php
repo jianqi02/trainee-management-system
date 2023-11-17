@@ -271,7 +271,7 @@
                             <div class="timeline__middle">
                                 <div class="timeline__point"></div>
                             </div>
-                            <a href="{{ route('trainee-daily-task-detail', ['date' => $date->format('Y-m-d'), 'taskID' => $task->id]) }}" class="timeline__component timeline__component--bg" data-date="{{ $date->format('Y-m-d') }}">
+                            <a href="{{ route('trainee-daily-task-detail', ['date' => $date->format('Y-m-d'), 'taskID' => $task->id]) }}" class="timeline__component timeline__component--bg" data-date="{{ $date->format('Y-m-d') }}" style="text-decoration:none; color: inherit;">
                                 <h2 class="timeline__title">
                                     @if(!empty($timeline[$strDate]))
                                         {{ $timeline[$strDate]->Name }}
@@ -281,7 +281,7 @@
                                 </h2>
                             </a>
                         @else
-                            <a href="{{ route('trainee-daily-task-detail', ['date' => $date->format('Y-m-d'), 'taskID' => $task->id]) }}" class="timeline__component timeline__component--bg" data-date="{{ $date->format('Y-m-d') }}">
+                            <a href="{{ route('trainee-daily-task-detail', ['date' => $date->format('Y-m-d'), 'taskID' => $task->id]) }}" class="timeline__component timeline__component--bg" data-date="{{ $date->format('Y-m-d') }}" style="text-decoration:none; color: inherit;">
                                 <h2 class="timeline__title">
                                     @if(!empty($timeline[$strDate]))
                                         {{ $timeline[$strDate]->Name }}

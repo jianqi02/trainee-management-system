@@ -120,7 +120,7 @@
             <!-- List of Tasks -->
 
             @foreach ($tasks as $task)
-                <a href="{{ route('trainee-task-detail', ['taskID' => $task->id]) }}" class="task-card-link">
+                <a href="{{ route('trainee-task-detail', ['taskID' => $task->id]) }}" class="task-card-link" style="text-decoration:none;">
                     <div class="card mb-3 task-card">
                         <div class="card-body">
                             <h5 class="card-title">{{ $task->task_name }}</h5>

@@ -203,162 +203,156 @@
                     <p class="text-center">Ground Floor Map (Level 1)</p>
                         <table id="map_level1">
                             <tbody>
-                                <!-- Entrance / Exit -->
                                 <tr>
                                     <td colspan="2" style="background-color: #D3D3D3;"> </td>
                                     <td rowspan="6" style="background-color: #D3D3D3;"> </td>
                                     <td colspan="2" style="text-align: right; background-color: #D3D3D3;"><strong>Exit>></strong></td>
                                 </tr>
-                                <!-- Row 1 -->
                                 <tr>
-                                    <td id="CSM11" class="assign-popover" style="background-color: {{ $seat['CSM11']['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
+                                    <td id="CSM11" class="assign-popover" style="background-color: #90EE90;">
                                         @if( $seat['CSM11']['seat_status'] != 'Not Available')
-                                            CSM11 ({{ $seat['CSM11']['trainee_id']}})
+                                            CSM11 <div style="font-size: 12px;">({{ $seat['CSM11']['trainee_id']}})</div>
                                         @else
                                             OTHER
                                         @endif
                                     </td>
-                                    <td id="CSM12" class="assign-popover" style="background-color: {{ $seat['CSM12']['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
+                                    <td id="CSM12" class="assign-popover" style="background-color:#90EE90;">
                                         @if($seat['CSM12']['seat_status'] != 'Not Available')
-                                            CSM12 ({{$seat['CSM12']['trainee_id']}})
+                                            CSM12 <div style="font-size: 12px;">({{$seat['CSM12']['trainee_id']}})</div>
                                         @else
                                             OTHER
                                         @endif
                                     </td>
-                                    <td id="CSM01" class="assign-popover" style="background-color: {{ $seat['CSM01']['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
+                                    <td id="CSM01" class="assign-popover" style="background-color:#90EE90;">
                                         @if($seat['CSM01']['seat_status'] != 'Not Available')
-                                            CSM01 ({{$seat['CSM01']['trainee_id']}})
+                                            CSM01 <div style="font-size: 12px;">({{$seat['CSM01']['trainee_id']}})</div>
                                         @else
                                             OTHER
                                         @endif
                                     </td>
-                                    <td id="CSM02" class="assign-popover" style="background-color: {{ $seat['CSM02']['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
+                                    <td id="CSM02" class="assign-popover" style="background-color: #90EE90;">
                                         @if($seat['CSM02']['seat_status'] != 'Not Available')
-                                            CSM02 ({{$seat['CSM02']['trainee_id']}})
+                                            CSM02 <div style="font-size: 12px;">({{$seat['CSM02']['trainee_id']}})</div>
                                         @else
                                             OTHER
                                         @endif
                                     </td>
                                 </tr>
-                                <!-- Row 2 -->
                                 <tr>
-                                    <td id="CSM13" class="assign-popover" style="background-color: {{ $seat['CSM13']['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
+                                    <td id="CSM13" class="assign-popover" style="background-color:#90EE90;">
                                         @if($seat['CSM13']['seat_status'] != 'Not Available')
-                                            CSM13 ({{$seat['CSM13']['trainee_id']}})
+                                            CSM13 <div style="font-size: 12px;">({{$seat['CSM13']['trainee_id']}})</div>
                                         @else
                                             OTHER
                                         @endif
                                     </td>
-                                    <td id="CSM14" class="assign-popover" style="background-color: {{ $seat['CSM14']['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
+                                    <td id="CSM14" class="assign-popover" style="background-color:#90EE90;">
                                         @if($seat['CSM14']['seat_status'] != 'Not Available')
-                                            CSM14 ({{$seat['CSM14']['trainee_id']}})
+                                            CSM14 <div style="font-size: 12px;">({{$seat['CSM14']['trainee_id']}})</div>
                                         @else
                                             OTHER
                                         @endif
                                     </td>
-                                    <td id="CSM03" class="assign-popover" style="background-color: {{ $seat['CSM03']['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
+                                    <td id="CSM03" class="assign-popover" style="background-color:#90EE90;">
                                         @if($seat['CSM03']['seat_status'] != 'Not Available')
-                                            CSM03 ({{$seat['CSM03']['trainee_id']}})
+                                            CSM03 <div style="font-size: 12px;">({{$seat['CSM03']['trainee_id']}})</div>
                                         @else
                                             OTHER
                                         @endif 
                                     </td>
-                                    <td id="CSM04" class="assign-popover" style="background-color: {{ $seat['CSM04']['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
+                                    <td id="CSM04" class="assign-popover" style="background-color:#90EE90;">
                                         @if($seat['CSM04']['seat_status'] != 'Not Available')
-                                            CSM04 ({{$seat['CSM04']['trainee_id']}})
+                                            CSM04 <div style="font-size: 12px;">({{$seat['CSM04']['trainee_id']}})</div>
                                         @else
                                             OTHER
                                         @endif
                                     </td>
                                 </tr>
-                                <!-- Row 3 -->
                                 <tr>
-                                    <td id="CSM15" class="assign-popover" style="background-color: {{ $seat['CSM15']['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
+                                    <td id="CSM15" class="assign-popover" style="background-color: #90EE90;">
                                         @if($seat['CSM15']['seat_status'] != 'Not Available')
-                                            CSM15 ({{$seat['CSM15']['trainee_id']}})
+                                            CSM15 <div style="font-size: 12px;">({{$seat['CSM15']['trainee_id']}})</div>
                                         @else
                                             OTHER
                                         @endif
                                     </td>
-                                    <td id="CSM16" class="assign-popover" style="background-color: {{ $seat['CSM16']['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
+                                    <td id="CSM16" class="assign-popover" style="background-color: #90EE90;">
                                         @if($seat['CSM16']['seat_status'] != 'Not Available')
-                                            CSM16 ({{$seat['CSM16']['trainee_id']}})
+                                            CSM16 <div style="font-size: 12px;">({{$seat['CSM16']['trainee_id']}})</div>
                                         @else
                                             OTHER
                                         @endif
                                     </td>
-                                    <td id="CSM05" class="assign-popover" style="background-color: {{ $seat['CSM05']['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
+                                    <td id="CSM05" class="assign-popover" style="background-color:#90EE90;">
                                         @if($seat['CSM05']['seat_status'] != 'Not Available')
-                                            CSM05 ({{$seat['CSM05']['trainee_id']}})
+                                            CSM05 <div style="font-size: 12px;">({{$seat['CSM05']['trainee_id']}})</div>
                                         @else
                                             OTHER
                                         @endif
                                     </td>
-                                    <td id="CSM06" class="assign-popover" style="background-color: {{ $seat['CSM06']['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
+                                    <td id="CSM06" class="assign-popover" style="background-color: #90EE90;">
                                         @if($seat['CSM06']['seat_status'] != 'Not Available')
-                                            CSM06 ({{$seat['CSM06']['trainee_id']}})
+                                            CSM06 <div style="font-size: 12px;">({{$seat['CSM06']['trainee_id']}})</div>
                                         @else
                                             OTHER
                                         @endif
                                     </td>
                                 </tr>
-                                <!-- Row 4 -->
                                 <tr>
-                                    <td id="CSM17" class="assign-popover" style="background-color: {{ $seat['CSM17']['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
+                                    <td id="CSM17" class="assign-popover" style="background-color:#90EE90;">
                                         @if($seat['CSM17']['seat_status'] != 'Not Available')
-                                            CSM17 ({{$seat['CSM17']['trainee_id']}})
+                                            CSM17 <div style="font-size: 12px;">({{$seat['CSM17']['trainee_id']}})</div>
                                         @else
                                             OTHER
                                         @endif
                                     </td>
-                                    <td id="CSM18" class="assign-popover" style="background-color: {{ $seat['CSM18']['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
+                                    <td id="CSM18" class="assign-popover" style="background-color:#90EE90;">
                                         @if($seat['CSM18']['seat_status'] != 'Not Available')
-                                            CSM18 ({{$seat['CSM18']['trainee_id']}})
+                                            CSM18 <div style="font-size: 12px;">({{$seat['CSM18']['trainee_id']}})</div>
                                         @else
                                             OTHER
                                         @endif
                                     </td>
-                                    <td id="CSM07" class="assign-popover" style="background-color: {{ $seat['CSM07']['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
+                                    <td id="CSM07" class="assign-popover" style="background-color:#90EE90;">
                                         @if($seat['CSM07']['seat_status'] != 'Not Available')
-                                            CSM07 ({{$seat['CSM07']['trainee_id']}})
+                                            CSM07 <div style="font-size: 12px;">({{$seat['CSM07']['trainee_id']}})</div>
                                         @else
                                             OTHER
                                         @endif
                                     </td>
-                                    <td id="CSM08" class="assign-popover" style="background-color: {{ $seat['CSM08']['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
+                                    <td id="CSM08" class="assign-popover" style="background-color:#90EE90;">
                                         @if($seat['CSM08']['seat_status'] != 'Not Available')
-                                            CSM08 ({{$seat['CSM08']['trainee_id']}})
+                                            CSM08 <div style="font-size: 12px;">({{$seat['CSM08']['trainee_id']}})</div>
                                         @else
                                             OTHER
                                         @endif
                                     </td>
                                 </tr>
-                                <!-- Row 5 -->
                                 <tr>
-                                    <td id="CSM19" class="assign-popover" style="background-color: {{ $seat['CSM19']['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
+                                    <td id="CSM19" class="assign-popover" style="background-color:#90EE90;">
                                         @if($seat['CSM19']['seat_status'] != 'Not Available')
-                                            CSM19 ({{$seat['CSM19']['trainee_id']}})
+                                            CSM19 <div style="font-size: 12px;">({{$seat['CSM19']['trainee_id']}})</div>
                                         @else
                                             OTHER
                                         @endif
                                     </td>
-                                    <td id="CSM20" class="assign-popover" style="background-color: {{ $seat['CSM20']['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
+                                    <td id="CSM20" class="assign-popover" style="background-color: #90EE90;">
                                         @if($seat['CSM20']['seat_status'] != 'Not Available')
-                                            CSM20 ({{$seat['CSM20']['trainee_id']}})
+                                            CSM20 <div style="font-size: 12px;">({{$seat['CSM20']['trainee_id']}})</div>
                                         @else
                                             OTHER
                                         @endif
                                     </td>
-                                    <td id="CSM09" class="assign-popover" style="background-color: {{ $seat['CSM09']['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
+                                    <td id="CSM09" class="assign-popover" style="background-color: #90EE90;">
                                         @if($seat['CSM09']['seat_status'] != 'Not Available')
-                                            CSM09 ({{$seat['CSM09']['trainee_id']}})
+                                            CSM09 <div style="font-size: 12px;">({{$seat['CSM09']['trainee_id']}})</div>
                                         @else
                                             OTHER
                                         @endif
                                     </td>
-                                    <td id="CSM10" class="assign-popover" style="background-color: {{ $seat['CSM10']['seat_status'] !== 'Not Available' ? '#90EE90' : 'none' }};">
+                                    <td id="CSM10" class="assign-popover" style="background-color:#90EE90;">
                                         @if($seat['CSM10']['seat_status'] != 'Not Available')
-                                            CSM10 ({{$seat['CSM10']['trainee_id']}})
+                                            CSM10 <div style="font-size: 12px;">({{$seat['CSM10']['trainee_id']}})</div>
                                         @else
                                             OTHER
                                         @endif
@@ -381,7 +375,7 @@
                                 <td style="width: 15.9768%; background-color: rgb(144, 238, 144);">
                                     <div style="text-align: center;" class="assign-popover" id="T01">
                                         @if($seat['T01']['seat_status'] != 'Not Available')
-                                            T01 ({{$seat['T01']['trainee_id']}})
+                                            T01 <div style="font-size: 12px;">({{$seat['T01']['trainee_id']}})</div>
                                         @else
                                             OTHER
                                         @endif
@@ -390,7 +384,7 @@
                                 <td style="width: 15.9768%; background-color: rgb(144, 238, 144);">
                                     <div style="text-align: center;" class="assign-popover" id="T02">
                                         @if($seat['T02']['seat_status'] != 'Not Available')
-                                            T02 ({{$seat['T02']['trainee_id']}})
+                                            T02 <div style="font-size: 12px;">({{$seat['T02']['trainee_id']}})</div>
                                         @else
                                             OTHER
                                         @endif
@@ -399,7 +393,7 @@
                                 <td style="width: 15.9768%; background-color: rgb(144, 238, 144);">
                                     <div style="text-align: center;" class="assign-popover" id="Round-Table">
                                         @if($seat['Round-Table']['seat_status'] != 'Not Available')
-                                        Round Table ({{$seat['Round-Table']['trainee_id']}})
+                                        Round Table <div style="font-size: 12px;">({{$seat['Round-Table']['trainee_id']}})</div>
                                     @else
                                         OTHER
                                     @endif
@@ -437,7 +431,7 @@
                                 <td style="width: 9.9768%; background-color: rgb(144, 238, 144);">
                                     <div style="text-align: center;" class="assign-popover" id="T03">
                                         @if($seat['T03']['seat_status'] != 'Not Available')
-                                            T03 ({{$seat['T03']['trainee_id']}})
+                                            T03 <div style="font-size: 12px;">({{$seat['T03']['trainee_id']}})</div>
                                         @else
                                             OTHER
                                         @endif
@@ -446,7 +440,7 @@
                                 <td style="width: 9.9768%; background-color: rgb(144, 238, 144);">
                                     <div style="text-align: center;" class="assign-popover" id="T04">
                                         @if($seat['T04']['seat_status'] != 'Not Available')
-                                            T04 ({{$seat['T04']['trainee_id']}})
+                                            T04 <div style="font-size: 12px;">({{$seat['T04']['trainee_id']}})</div>
                                         @else
                                             OTHER
                                         @endif
@@ -455,7 +449,7 @@
                                 <td style="width: 10.4408%; background-color: rgb(144, 238, 144);">
                                     <div style="text-align: center;" class="assign-popover" id="T05">
                                         @if($seat['T05']['seat_status'] != 'Not Available')
-                                            T05 ({{$seat['T05']['trainee_id']}})
+                                            T05 <div style="font-size: 12px;">({{$seat['T05']['trainee_id']}})</div>
                                         @else
                                             OTHER
                                         @endif
@@ -464,7 +458,7 @@
                                 <td style="width: 9.9768%; background-color: rgb(144, 238, 144);">
                                     <div style="text-align: center;" class="assign-popover" id="T06">
                                         @if($seat['T06']['seat_status'] != 'Not Available')
-                                            T06 ({{$seat['T06']['trainee_id']}})
+                                            T06 <div style="font-size: 12px;">({{$seat['T06']['trainee_id']}})</div>
                                         @else
                                             OTHER
                                         @endif
@@ -482,7 +476,7 @@
                                 <td style="width: 9.9768%; background-color: rgb(144, 238, 144);">
                                     <div style="text-align: center;" class="assign-popover" id="T07">
                                         @if($seat['T07']['seat_status'] != 'Not Available')
-                                            T07 ({{$seat['T07']['trainee_id']}})
+                                            T07 <div style="font-size: 12px;">({{$seat['T07']['trainee_id']}})</div>
                                         @else
                                             OTHER
                                         @endif
@@ -493,7 +487,7 @@
                                 <td style="width: 9.9768%; background-color: rgb(144, 238, 144);">
                                     <div style="text-align: center;" class="assign-popover" id="T08">
                                         @if($seat['T08']['seat_status'] != 'Not Available')
-                                            T08 ({{$seat['T08']['trainee_id']}})
+                                            T08 <div style="font-size: 12px;">({{$seat['T08']['trainee_id']}})</div>
                                         @else
                                             OTHER
                                         @endif
@@ -502,7 +496,7 @@
                                 <td style="width: 10.4408%; background-color: rgb(144, 238, 144);">
                                     <div style="text-align: center;" class="assign-popover" id="T09">
                                         @if($seat['T09']['seat_status'] != 'Not Available')
-                                            T09 ({{$seat['T09']['trainee_id']}})
+                                            T09 <div style="font-size: 12px;">({{$seat['T09']['trainee_id']}})</div>
                                         @else
                                             OTHER
                                         @endif
@@ -511,7 +505,7 @@
                                 <td style="width: 9.9768%; background-color: rgb(144, 238, 144);">
                                     <div style="text-align: center;" class="assign-popover" id="T10">
                                         @if($seat['T10']['seat_status'] != 'Not Available')
-                                            T10 ({{$seat['T10']['trainee_id']}})
+                                            T10 <div style="font-size: 12px;">({{$seat['T10']['trainee_id']}})</div>
                                         @else
                                             OTHER
                                         @endif
@@ -520,7 +514,7 @@
                                 <td style="width: 15.9768%; background-color: rgb(144, 238, 144);">
                                     <div style="text-align: center;" class="assign-popover" id="T15">
                                         @if($seat['T15']['seat_status'] != 'Not Available')
-                                            T15 ({{$seat['T15']['trainee_id']}})
+                                            T15 <div style="font-size: 12px;">({{$seat['T15']['trainee_id']}})</div>
                                         @else
                                             OTHER
                                         @endif
@@ -534,7 +528,7 @@
                                 <td style="width: 10.4408%; background-color: rgb(144, 238, 144);">
                                     <div style="text-align: center;" class="assign-popover" id="T11">
                                         @if($seat['T11']['seat_status'] != 'Not Available')
-                                            T11 ({{$seat['T11']['trainee_id']}})
+                                            T11 <div style="font-size: 12px;">({{$seat['T11']['trainee_id']}})</div>
                                         @else
                                             OTHER
                                         @endif
@@ -543,7 +537,7 @@
                                 <td style="width: 9.9768%; background-color: rgb(144, 238, 144);">
                                     <div style="text-align: center;"class="assign-popover" id="T12">
                                         @if($seat['T12']['seat_status'] != 'Not Available')
-                                            T12 ({{$seat['T12']['trainee_id']}})
+                                            T12 <div style="font-size: 12px;">({{$seat['T12']['trainee_id']}})</div>
                                         @else
                                             OTHER
                                         @endif
@@ -552,7 +546,7 @@
                                 <td style="width: 10.0185%; background-color: rgb(144, 238, 144);">
                                     <div style="text-align: center;" class="assign-popover" id="T16">
                                         @if($seat['T16']['seat_status'] != 'Not Available')
-                                            T16 ({{$seat['T16']['trainee_id']}})
+                                            T16 <div style="font-size: 12px;">({{$seat['T16']['trainee_id']}})</div>
                                         @else
                                             OTHER
                                         @endif
@@ -564,7 +558,7 @@
                                 <td style="width: 10.4408%; background-color: rgb(144, 238, 144);">
                                     <div style="text-align: center;" class="assign-popover" id="T13">
                                         @if($seat['T13']['seat_status'] != 'Not Available')
-                                            T13 ({{$seat['T13']['trainee_id']}})
+                                            T13 <div style="font-size: 12px;">({{$seat['T13']['trainee_id']}})</div>
                                         @else
                                             OTHER
                                         @endif
@@ -573,7 +567,7 @@
                                 <td style="width: 9.9768%; background-color: rgb(144, 238, 144);">
                                     <div style="text-align: center;" class="assign-popover" id="T14">
                                         @if($seat['T14']['seat_status'] != 'Not Available')
-                                            T14 ({{$seat['T14']['trainee_id']}})
+                                            T14 <div style="font-size: 12px;">({{$seat['T14']['trainee_id']}})</div>
                                         @else
                                             OTHER
                                         @endif
@@ -582,7 +576,7 @@
                                 <td style="width: 10.0185%; background-color: rgb(144, 238, 144);">
                                     <div style="text-align: center;" class="assign-popover" id="T17">
                                         @if($seat['T17']['seat_status'] != 'Not Available')
-                                            T17 ({{$seat['T17']['trainee_id']}})
+                                            T17 <div style="font-size: 12px;">({{$seat['T17']['trainee_id']}})</div>
                                         @else
                                             OTHER
                                         @endif
@@ -629,7 +623,29 @@
                         <input type="week" id="week" name="week" value="{{ $week }}">
                         <input type="submit" value="Show Seating Plan">
                     </form>
-                    <a href="/seating-arrange/random?week={{ $week }}" class="btn btn-primary-ex2">Random Assign</a>
+                    <a href="#" class="btn btn-primary-ex2" data-toggle="modal" data-target="#confirmRandomAssignModal">Random Assign</a>
+
+                    <div class="modal fade" id="confirmRandomAssignModal" tabindex="-1" role="dialog" aria-labelledby="confirmRandomAssignModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="confirmRandomAssignModalLabel">Confirm Random Assignment</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    Are you sure you want to perform a random assignment? This action cannot be undone.
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    <a href="/seating-arrange/random?week={{ $week }}" class="btn btn-primary">Confirm</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
                     <a href="" class="btn btn-primary-ex2">Refresh</a>
                 </div>
             </div>

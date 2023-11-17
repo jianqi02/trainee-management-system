@@ -7,6 +7,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Supervisor Assignment</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
 </head>
 <style>
     body {
@@ -129,7 +130,7 @@
                             <tbody>
                                 @foreach ($trainees as $trainee)
                                     <tr id="supervisor-{{ $trainee->name }}">
-                                        <td>{{ $trainee->name}}</td>
+                                        <td style="width: 30%;">{{ $trainee->name}}</td>
                                         <td>
                                             @foreach ($assignedSupervisorList as $assignment)
                                             <!-- Check if the current trainee is assigned to the current supervisor -->
@@ -141,8 +142,12 @@
                                         <td>
                                             <!-- Add your buttons/actions here -->
                                             
-                                            <a class="btn btn-secondary" href="{{ route('admin-assign-supervisor-function', ['selected_trainee' => urlencode($trainee->name)]) }}">Assign Supervisor</a>
-                                            <a class="btn btn-secondary" href="{{ route('admin-remove-assigned-supervisor-function', ['selected_trainee' => urlencode($trainee->name)]) }}">Remove Assigned Supervisor</a>
+                                            <a href="{{ route('admin-assign-supervisor-function', ['selected_trainee' => urlencode($trainee->name)]) }}" style="text-decoration: none;" title="Assign Supervisor">
+                                                <i class="fas fa-user-plus action-btn" style="color: grey; font-size: 24px;"></i>
+                                            </a>
+                                            <a href="{{ route('admin-remove-assigned-supervisor-function', ['selected_trainee' => urlencode($trainee->name)]) }}" style="text-decoration: none; margin-left: 20px;" title="Remove Assigned Supervisor">
+                                                <i class="fa fa-trash" style="color: grey; font-size: 24px;"></i>
+                                            </a>
                                         </td>
                                     </tr>
                                 @endforeach
