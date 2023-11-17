@@ -8,6 +8,7 @@ use App\Models\Seating;
 use App\Models\Trainee;
 use App\Models\AllTrainee;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 
 class SeatingController extends Controller
@@ -60,6 +61,7 @@ class SeatingController extends Controller
  
          $get_the_seat_detail = Seating::where('week', $week)->pluck('seat_detail')->first();
          $seatDetail = json_decode($get_the_seat_detail, true);
+
          // Check if $seatDetail is not null before using it
          if ($seatDetail !== null) {
              // Check if $seatDetail is not null and is an array before using it
@@ -199,7 +201,7 @@ class SeatingController extends Controller
         if ($seatData) {
             // Decode the seat_detail JSON
             $seat = json_decode($seatData->seat_detail, true);
-        
+
             // Loop over each seat and update trainee_id to "Not Assigned"
             foreach ($seat as $seatName => &$seatInfo) {
                 $seatInfo['trainee_id'] = 'Not Assigned';
@@ -228,6 +230,7 @@ class SeatingController extends Controller
         // Sort the seats within each tier
         sort($firstTierSeats);
         sort($secondTierSeats);
+        sort($thirdTierSeats);
 
         // Combine the seats from all tiers (first -> second -> third tier)
         $orderedSeats = array_merge($firstTierSeats, $secondTierSeats, $thirdTierSeats);
@@ -240,7 +243,9 @@ class SeatingController extends Controller
         $shuffledIDs = $trainees->pluck('id')->shuffle();
         $assignedTrainees = [];
         $index = 0;
-        
+
+        $seat = json_decode($seatData->seat_detail, true);
+
         //perform random assign function
         foreach($orderedSeats as $seatName){
             //only can assign to a seat that is available
@@ -253,10 +258,6 @@ class SeatingController extends Controller
                     $assignedTrainees[] = $shuffledIDs[$index];
     
                     $index++;
-                }
-                else{
-                    //If there are no more shuffled names, terminate the function.
-                    break;
                 }
             }
         }

@@ -210,10 +210,32 @@
                                                 <i class="fas fa-user-plus action-btn"></i>
                                                 <span class="tooltip">Assign Supervisor</span>
                                             </a>
-                                            <a class="icon-link" href="{{ route('delete-trainee-record' , ['id' => $trainee->id])}}">
+                                            <a class="icon-link" href="#" data-toggle="modal" data-target="#confirmDeleteModal" data-record-id="{{ $trainee->id }}">
                                                 <i class="fas fa-trash-alt action-btn"></i>
                                                 <span class="tooltip">Delete Record</span>
                                             </a>
+
+                                            <!-- Modal for double confirmation -->
+                                            <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="confirmDeleteModalLabel">Confirm Deletion</h5>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            Are you sure you want to delete this record?
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                            <a id="confirmDeleteButton" href="#" class="btn btn-danger">Confirm Delete</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
                                             <a class="icon-link" href="{{ route('edit-record' , ['id' => $trainee->id])}}">
                                                 <i class="fas fa-edit action-btn"></i>
                                                 <span class="tooltip">Edit Record</span>
@@ -286,6 +308,15 @@
             tbody.appendChild(row);
         });
     }
+
+    $('#confirmDeleteModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget); // Button that triggered the modal
+        var recordId = button.data('record-id'); // Extract record ID from data- attribute
+        var confirmDeleteButton = $('#confirmDeleteButton');
+        
+        // Update the href attribute with the correct route including the recordId
+        confirmDeleteButton.attr('href', "{{ url('delete-trainee-record') }}/" + recordId);
+    });
 </script>
 </html>
 
