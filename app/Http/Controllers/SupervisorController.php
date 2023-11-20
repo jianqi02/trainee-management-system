@@ -182,7 +182,6 @@ class SupervisorController extends Controller
         $notification->notifiable_id = $trainee_id;
         $notification->data = json_encode([
             'data' => 'Your supervisor ' . $supervisor_name . ' has signed your logbook.',
-            'style' => 'color: black; font-weight: bold;',
             'name' => $name,
         ]);
         $notification->save(); // Save the notification to the database

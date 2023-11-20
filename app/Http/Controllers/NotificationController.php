@@ -80,11 +80,11 @@ class NotificationController extends Controller
             $trainee_id = Trainee::where('sains_email', $user->email)->pluck('id')->first();
             $trainee_name = Trainee::where('sains_email', $user->email)->pluck('name')->first();
 
-
+            // calculate the total number of notification that related to this trainee
             $notificationCount = DB::table('notifications')
-            ->where('notifiable_id', $trainee_id)
-            ->where('notifiable_type', 'App\Models\Supervisor')
-            ->count();
+                ->where('notifiable_id', $trainee_id)
+                ->whereJsonContains('data->name', $trainee_name)
+                ->count();
 
             //limit the maximum numbers of notifications to 99.
             if ($notificationCount >= 99) {
@@ -103,7 +103,7 @@ class NotificationController extends Controller
             }
 
             $notifications = DB::table('notifications')->where('notifiable_id', $trainee_id)
-            ->where('notifiable_type', 'App\Models\Supervisor')
+            ->whereJsonContains('data->name', $trainee_name)
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
@@ -150,9 +150,10 @@ class NotificationController extends Controller
         }  
         //trainee
         else{
+            $trainee_name = Trainee::where('sains_email', $user->email)->pluck('name')->first();
             $traineeID = Trainee::where('sains_email', $user->email)->pluck('id')->first();
             $notifications = Notification::where('notifiable_id', $traineeID)
-                ->where('notifiable_type', 'App\Models\Supervisor')
+                ->whereJsonContains('data->name', $trainee_name)
                 ->whereNull('read_at')
                 ->get();
 

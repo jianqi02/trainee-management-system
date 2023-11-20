@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Timeline</title>
+    
     <style>
         .task-container{
             margin-left: 200px;
@@ -118,9 +119,20 @@
             <hr>
 
             <!-- List of Tasks -->
-
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="sortDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="margin-bottom: 20px;">
+                    Sort by
+                </button>
+                <div class="dropdown-menu" aria-labelledby="sortDropdown">
+                    <a class="dropdown-item" href="#" data-sort="priority">Priority</a>
+                    <a class="dropdown-item" href="#" data-sort="status">Status</a>
+                    <a class="dropdown-item" href="#" data-sort="end-date">End Date</a>
+                    <a class="dropdown-item" href="#" data-sort="start-date">Start Date</a>
+                </div>
+            </div>
+            
             @foreach ($tasks as $task)
-            <a href="{{ route('trainee-task-detail', ['taskID' => $task->id]) }}" class="task-card-link">
+            <a href="{{ route('trainee-task-detail', ['taskID' => $task->id]) }}" class="task-card-link {{ strtolower($task->task_priority) }}" style="text-decoration: none;">
                 <div class="card mb-3 task-card">
                     <div class="card-body">
                         <h5 class="card-title">{{ $task->task_name }}</h5>
@@ -172,9 +184,9 @@
                         <div class="form-group">
                             <label for="priority">Priority:</label>
                             <select id="priority" name="priority" required>
-                                <option value="High" {{ $task->task_priority === 'High' ? 'selected' : '' }}>High</option>
-                                <option value="Medium" {{ $task->task_priority === 'Medium' ? 'selected' : '' }}>Medium</option>
-                                <option value="Low" {{ $task->task_priority === 'Low' ? 'selected' : '' }}>Low</option>
+                                <option value="High">High</option>
+                                <option value="Medium">Medium</option>
+                                <option value="Low">Low</option>
                             </select>
                         </div>
                         <button type="submit" class="btn btn-primary btn-add-task">Add Task</button>
@@ -240,6 +252,51 @@
             confirmDeleteModal.style.display = 'none';
         });
     });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var sortDropdown = document.getElementById('sortDropdown');
+            var taskCards = document.querySelectorAll('.task-card-link');
+
+            sortDropdown.addEventListener('click', function (e) {
+                if (e.target.tagName === 'A') {
+                    var sortBy = e.target.getAttribute('data-sort');
+                    sortTasks(sortBy);
+                }
+            });
+
+            function sortTasks(sortBy) {
+                taskCards.forEach(function (taskCard) {
+                    taskCard.style.order = getOrderValue(taskCard, sortBy);
+                });
+            }
+
+            function getOrderValue(taskCard, sortBy) {
+                switch (sortBy) {
+                    case 'priority':
+                        return taskCard.classList.contains('high') ? 1 : 2;
+                    case 'status':
+                        return getStatusOrderValue(taskCard);
+                    case 'end-date':
+                        return new Date(taskCard.querySelector('.card-text strong[data-sort="end-date"]').textContent).getTime();
+                    case 'start-date':
+                        return new Date(taskCard.querySelector('.card-text strong[data-sort="start-date"]').textContent).getTime();
+                    default:
+                        return 0;
+                }
+            }
+
+            function getStatusOrderValue(taskCard) {
+                var status = taskCard.querySelector('.card-text strong[data-sort="status"]').textContent.toLowerCase();
+                switch (status) {
+                    case 'completed':
+                        return 1;
+                    case 'pending':
+                        return 2;
+                    default:
+                        return 3;
+                }
+            }
+        });
     </script>
 </body>
 @endsection

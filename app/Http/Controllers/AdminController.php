@@ -325,6 +325,12 @@ class AdminController extends Controller
                 'confirmed',
                 'regex:/^(?=.*[A-Z])(?=.*[!@#$%^&*()_+])[a-zA-Z0-9!@#$%^&*()_+]+$/',
             ],
+        ],[
+            'name.regex' => 'The name field should only contain letters and spaces.',
+            'email.regex' => 'The email field should be a valid SAINS email address.',
+            'email.ends_with' => 'The email field should end with @sains.com.my.',
+            'role.in' => 'The role field should be either 2 or 3.',
+            'password.regex' => 'The password field should contain at least one uppercase letter and one special character.',
         ]);
 
         User::create([
@@ -341,11 +347,8 @@ class AdminController extends Controller
                 'sains_email' => $request->input('email'),
                 'phone_number' => NULL,
                 'password' => Hash::make($request->input('password')),
-                'internship_start' => NULL,
-                'internship_end' => NULL,
                 'graduate_date' => NULL,
                 'expertise' => 'Not Specified',
-                'seat_status' => 'Not Assigned',
                 'supervisor_status' => 'Not Assigned',
                 'resume_path' => NULL,
                 'acc_status' => 'Active',

@@ -5,9 +5,13 @@ namespace App\Http\Controllers;
 use DateTime;
 use DatePeriod;
 use DateInterval;
+use Ramsey\Uuid\Uuid;
 use App\Models\Trainee;
+use App\Models\AllTrainee;
+use App\Models\Notification;
 use App\Models\TaskTimeline;
 use Illuminate\Http\Request;
+use App\Models\TraineeAssign;
 use Illuminate\Support\Facades\Auth;
 
 class TaskTimelineController extends Controller
@@ -106,16 +110,27 @@ class TaskTimelineController extends Controller
         $startDate = new DateTime($request->input('startDate'));
         $endDate = new DateTime($request->input('endDate'));
 
+        $user = Auth::user();
+        $traineeName = Trainee::where('sains_email', $user->email)->pluck('name')->first();
+        $traineeID = AllTrainee::where('name', 'LIKE', $traineeName)->pluck('id')->first();
+        
+        $taskName = TaskTimeline::find($taskID)->pluck('task_name')->first();
+
+
         //terminate the function when the user chooses invalid date (end date < start date)
         if($endDate < $startDate){
             return redirect()->route('trainee-task-detail', $taskID)->with('warning', 'Failed to change the task! Invalid date chosen!');
         }
+
+        //get the status 
+        $status = $request->input('status');
+
         //add a new task to DB
         $task = TaskTimeline::where('id', $taskID)->first();
         $task->task_name = $request->input('taskName');
         $task->task_start_date = $startDate;
         $task->task_end_date = $endDate;
-        $task->task_status = $request->input('status');
+        $task->task_status = $status;
         $task->task_priority = $request->input('priority');
         $taskDetail = [
             "Description" => $request->input('taskDescription'),
@@ -123,6 +138,38 @@ class TaskTimelineController extends Controller
         $task->task_detail = json_encode($taskDetail);
 
         $task->save();
+
+        //use the id in list to search for the trainee's supervisor
+        $assigned_supervisor_ids = TraineeAssign::where('trainee_id', $traineeID)
+            ->pluck('assigned_supervisor_id');
+
+        //send a notification to this trainee's supervisor when the trainee mark his or her task as Completed. 
+        if ($status == 'Completed') {
+            foreach ($assigned_supervisor_ids as $assigned_supervisor_id) {
+                // Check if a similar notification already exists
+                $existingNotification = Notification::where('type', 'task completed')
+                    ->where('notifiable_type', 'App\Models\Trainee')
+                    ->where('notifiable_id', $assigned_supervisor_id)
+                    ->where('data', json_encode([
+                        'data' => 'You trainee ' . $traineeName . ' has completed task ' . $taskName,
+                    ]))
+                    ->first();
+
+                // If the notification doesn't exist, create and save a new one
+                if (!$existingNotification) {
+                    $notification = new Notification();
+                    $notification->id = Uuid::uuid4(); // Generate a UUID for the id
+                    $notification->type = 'task completed';
+                    $notification->notifiable_type = 'App\Models\Trainee';
+                    $notification->notifiable_id = $assigned_supervisor_id;
+                    $notification->data = json_encode([
+                        'data' => 'You trainee ' . $traineeName . ' has completed task ' . $taskName,
+                    ]);
+                    $notification->save(); // Save the notification to the database
+                }
+            }
+        }
+
 
         return redirect()->route('trainee-task-detail', $taskID)->with('success', 'New task added.');
     }

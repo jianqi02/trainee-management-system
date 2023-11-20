@@ -43,7 +43,6 @@ class NotificationComposer
                     $uuid = Uuid::uuid4();
                     $notifyData = json_encode([
                         'data' => 'The internship of trainee ' . $intern->name . ' will start on ' . $intern->internship_start,
-                        'style' => 'color: blue;',
                     ]);
 
                     $notification->id = $uuid;
@@ -67,7 +66,6 @@ class NotificationComposer
                     $uuid = Uuid::uuid4();
                     $notifyData = json_encode([
                         'data' => 'The internship of trainee ' . $intern->name . ' will end on ' . $intern->internship_end,
-                        'style' => 'color: red;',
                     ]);
 
                     $notification->id = $uuid;

@@ -78,8 +78,14 @@ class RegisterController extends Controller
                 'confirmed',
                 'regex:/^(?=.*[A-Z])(?=.*[!@#$%^&*()_+])[a-zA-Z0-9!@#$%^&*()_+]+$/',
             ],
+        ], [
+            'name.regex' => 'The name field should only contain letters and spaces.',
+            'email.regex' => 'The email field should be a valid SAINS email address.',
+            'email.ends_with' => 'The email field should end with @sains.com.my.',
+            'role.in' => 'The role field should be either 2 or 3.',
+            'password.regex' => 'The password field should contain at least one uppercase letter and one special character.',
         ]);
-             
+                   
     }
 
     /**
@@ -162,7 +168,6 @@ class RegisterController extends Controller
             $notification->notifiable_id = 0;
             $notification->data = json_encode([
                 'data' => 'Trainee ' . $data['name'] . ' has registered.',
-                'style' => 'color: black;',
             ]);
             $notification->save(); // Save the notification to the database
         }

@@ -17,6 +17,10 @@
                             <div class="col-md-6">
                                 <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
 
+                                <small id="nameHelp" class="form-text text-muted">
+                                    Enter your full name as per official records.
+                                </small>
+
                                 @error('name')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -59,6 +63,10 @@
 
                             <div class="col-md-6">
                                 <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="new-password">
+
+                                <small id="passwordHelp" class="form-text text-muted">
+                                    The password should contain at least 8 characters, 1 uppercase character and 1 special character.
+                                </small>
 
                                 @error('password')
                                     <span class="invalid-feedback" role="alert">

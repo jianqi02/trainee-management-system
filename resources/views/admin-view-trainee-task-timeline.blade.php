@@ -172,9 +172,9 @@
                         <div class="form-group">
                             <label for="priority">Priority:</label>
                             <select id="priority" name="priority" required>
-                                <option value="High" {{ $task->task_priority === 'High' ? 'selected' : '' }}>High</option>
-                                <option value="Medium" {{ $task->task_priority === 'Medium' ? 'selected' : '' }}>Medium</option>
-                                <option value="Low" {{ $task->task_priority === 'Low' ? 'selected' : '' }}>Low</option>
+                                <option value="High">High</option>
+                                <option value="Medium">Medium</option>
+                                <option value="Low">Low</option>
                             </select>
                         </div>
                         <button type="submit" class="btn btn-primary btn-add-task">Add Task</button>

@@ -195,7 +195,7 @@ class TraineeController extends Controller
         //get the id of the trainee in the list (all trainee list)
         $id_in_list = AllTrainee::where('name', 'LIKE', $trainee)->pluck('id');
 
-        //use the id in list to search for the trainee's
+        //use the id in list to search for the trainee's supervisor
         $assigned_supervisor_ids = TraineeAssign::whereIn('trainee_id', $id_in_list)
             ->pluck('assigned_supervisor_id');
         
@@ -208,7 +208,6 @@ class TraineeController extends Controller
             $notification->notifiable_id = $assigned_supervisor_id;
             $notification->data = json_encode([
                 'data' => 'Your trainee ' . $trainee . ' has uploaded a logbook.',
-                'style' => 'color: black; font-weight: bold;',
             ]);
             $notification->save(); // Save the notification to the database
         }

@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers\Auth;
 
+use Carbon\Carbon;
+use Ramsey\Uuid\Uuid;
+use App\Models\Trainee;
+use App\Models\Notification;
+use App\Models\TaskTimeline;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
-use App\Models\Trainee;
 
 class LoginController extends Controller
 {
@@ -72,7 +76,45 @@ class LoginController extends Controller
         } elseif ($user->role_id === 2) {
             return '/sv-homepage'; // Redirect supervisors to supervisor homepage
         } elseif ($user->role_id === 3 ) {
+            // check the task information
+            // when today is 1 day before the due date, send a notification to the trainee.
+            $traineeID = $trainee->id;
+            $tasks = TaskTimeline::where('trainee_id', $traineeID)->get();
+            
+            foreach ($tasks as $task) {
+                $dueDate = Carbon::parse($task->task_end_date);
+                $oneDayAfterCurrentTime = Carbon::now()->addDay();
+                
+                // Check if the task end date is 1 day after the current time
+                if ($dueDate->isSameDay($oneDayAfterCurrentTime)) {
+                    $traineeName = $trainee->name;
+            
+                    // Check if a similar notification already exists
+                    $existingNotification = Notification::where([
+                        'type' => 'Task Due Date',
+                        'notifiable_type' => 'App\Models\TaskTimeline',
+                        'notifiable_id' => $traineeID,
+                        'data->name' => $traineeName, // Assuming 'name' is stored in the 'data' field
+                    ])->first();
+            
+                    // If no similar notification exists, create and save a new one
+                    if (!$existingNotification) {
+                        $notification = new Notification();
+                        $notification->id = Uuid::uuid4(); // Generate a UUID for the id
+                        $notification->type = 'Task Due Date';
+                        $notification->notifiable_type = 'App\Models\TaskTimeline';
+                        $notification->notifiable_id = $traineeID;
+                        $notification->data = json_encode([
+                            'data' => 'Your task ' . $task->task_name . ' is due tomorrow.',
+                            'name' => $traineeName,
+                        ]);
+                        $notification->save(); // Save the notification to the database
+                    }
+                }
+            }
+
             return '/homepage'; // Redirect trainees to trainee homepage
+
         } else{
             return redirect('/login')->with('status', 'Invalid Account.');
         }

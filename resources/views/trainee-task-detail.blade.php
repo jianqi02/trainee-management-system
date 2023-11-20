@@ -197,6 +197,7 @@
                     <div class="card-body">
                         <h5 class="card-title">{{ $task->task_name }}</h5>
                         <p class="card-text">
+                            <strong>Description: </strong><br>
                             {!! nl2br(e($taskDetail->Description)) !!}
                             <br>
                             <br>
@@ -216,7 +217,7 @@
                 <div id="taskModal" class="modal">
                     <div class="modal-content">
                         <span class="close" id="closeModal">&times;</span>
-                        <h2>Edit New Task</h2>
+                        <h2>Edit This Task</h2>
                         <form id="taskForm" action="{{ route('trainee-edit-task', ['taskID' => $task->id]) }}" method="post">
                             @csrf
                             <div class="form-group">
@@ -271,7 +272,7 @@
                             <div class="timeline__middle">
                                 <div class="timeline__point"></div>
                             </div>
-                            <a href="{{ route('trainee-daily-task-detail', ['date' => $date->format('Y-m-d'), 'taskID' => $task->id]) }}" class="timeline__component timeline__component--bg" data-date="{{ $date->format('Y-m-d') }}">
+                            <a href="{{ route('trainee-daily-task-detail', ['date' => $date->format('Y-m-d'), 'taskID' => $task->id]) }}" class="timeline__component timeline__component--bg" data-date="{{ $date->format('Y-m-d') }}" style="text-decoration: none; color: inherit;">
                                 <h2 class="timeline__title">
                                     @if(!empty($timeline[$strDate]))
                                         {{ $timeline[$strDate]->Name }}
@@ -281,7 +282,7 @@
                                 </h2>
                             </a>
                         @else
-                            <a href="{{ route('trainee-daily-task-detail', ['date' => $date->format('Y-m-d'), 'taskID' => $task->id]) }}" class="timeline__component timeline__component--bg" data-date="{{ $date->format('Y-m-d') }}">
+                            <a href="{{ route('trainee-daily-task-detail', ['date' => $date->format('Y-m-d'), 'taskID' => $task->id]) }}" class="timeline__component timeline__component--bg" data-date="{{ $date->format('Y-m-d') }}" style="text-decoration: none; color: inherit;">
                                 <h2 class="timeline__title">
                                     @if(!empty($timeline[$strDate]))
                                         {{ $timeline[$strDate]->Name }}

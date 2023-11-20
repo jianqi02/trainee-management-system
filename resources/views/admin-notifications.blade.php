@@ -39,9 +39,6 @@
             .read-notification {
                 background-color: #ffffff; 
             }
-
-            
-
         </style>
     </head>
     <body>
