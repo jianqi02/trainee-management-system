@@ -52,7 +52,14 @@ class AdminController extends Controller
         $month = $dateTime->format('m'); // Month in two digits, e.g., 01 for January
         $year = $dateTime->format('Y'); // Year in four digits, e.g., 2023
 
-        $trainees = Trainee::all();
+        $trainees = Trainee::join('alltrainees', function ($join) {
+            $join->on('trainees.name', '=', 'alltrainees.name')
+                ->whereRaw('LOWER(trainees.name) LIKE LOWER(alltrainees.name)');
+        })
+        ->select('trainees.*', 'alltrainees.internship_start', 'alltrainees.internship_end')
+        ->get();
+    
+
         $traineeInfo = AllTrainee::all();
         $seatings = Seating::all();
         $logbooks = Logbook::all();
