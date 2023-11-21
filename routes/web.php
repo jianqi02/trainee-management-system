@@ -125,6 +125,7 @@ Route::get('/delete-task/{taskId}', [TaskTimelineController::class, 'deleteTask'
 // Task Timeline function for supervisor
 Route::get('/sv-view-trainee-task-timeline/{traineeID}', [TaskTimelineController::class, 'svViewTraineeTaskTimeline'])->name('sv-view-trainee-task-timeline');
 Route::post('/trainee-add-new-task-sv/{traineeID}', [TaskTimelineController::class, 'traineeAddNewTaskSV'])->name('trainee-add-new-task-sv');
+Route::get('/sort-tasks/{sort?}/{order?}/{traineeID?}', [TaskTimelineController::class, 'index'])->name('sort-tasks');
 
 // Task Timeline function for admin
 Route::get('/admin-view-trainee-task-timeline/{traineeID}', [TaskTimelineController::class, 'adminViewTraineeTaskTimeline'])->name('admin-view-trainee-task-timeline');

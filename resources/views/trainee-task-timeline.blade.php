@@ -24,6 +24,11 @@
             border-radius: 5px;
         }
 
+        .btn-secondary {
+            background-color: #d3d3d3;
+            color: #000000;
+        }
+
         /* Hover effect */
         .btn-primary:hover {
             background-color: #d3d3d3; /* Change to your preferred color on hover */
@@ -116,21 +121,42 @@
             @if(session('warning'))
                 <div class="alert alert-warning">{{ session('warning') }}</div>
             @endif
-            <hr>
+            <hr style="border-top: 1px solid #000; margin-top: 20px; margin-bottom: 20px;">
 
-            <!-- List of Tasks -->
-            <div class="dropdown">
-                <button class="btn btn-secondary dropdown-toggle" type="button" id="sortDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="margin-bottom: 20px;">
-                    Sort by
-                </button>
-                <div class="dropdown-menu" aria-labelledby="sortDropdown">
-                    <a class="dropdown-item" href="#" data-sort="priority">Priority</a>
-                    <a class="dropdown-item" href="#" data-sort="status">Status</a>
-                    <a class="dropdown-item" href="#" data-sort="end-date">End Date</a>
-                    <a class="dropdown-item" href="#" data-sort="start-date">Start Date</a>
+            <!-- Sorting Option -->
+            <p>Sort by</p>
+            <div class="row" style="margin-bottom: 20px;">
+                <div class="col-md-3">
+                    @if(Str::contains(request()->url(), 'sort-tasks/priority/asc'))
+                        <a class="btn btn-secondary btn-block" href="{{ route('sort-tasks', ['sort' => 'priority', 'order'=> 'desc']) }}">Priority</a>
+                    @else
+                        <a class="btn btn-secondary btn-block" href="{{ route('sort-tasks', ['sort' => 'priority', 'order' => 'asc']) }}">Priority</a>
+                    @endif
                 </div>
-            </div>
-            
+                <div class="col-md-3">
+                    @if(Str::contains(request()->url(), 'sort-tasks/status/asc'))
+                        <a class="btn btn-secondary btn-block" href="{{ route('sort-tasks', ['sort' => 'status', 'order'=> 'desc']) }}">Status</a>
+                    @else
+                        <a class="btn btn-secondary btn-block" href="{{ route('sort-tasks', ['sort' => 'status', 'order'=> 'asc']) }}">Status</a>
+                    @endif
+                </div>
+                <div class="col-md-3">
+                    @if(Str::contains(request()->url(), 'sort-tasks/start-date/asc'))
+                        <a class="btn btn-secondary btn-block" href="{{ route('sort-tasks', ['sort' => 'start-date', 'order'=> 'desc']) }}">Start Date</a>
+                    @else
+                        <a class="btn btn-secondary btn-block" href="{{ route('sort-tasks', ['sort' => 'start-date', 'order'=> 'asc']) }}">Start Date</a>
+                    @endif
+                </div>
+                <div class="col-md-3">
+                    @if(Str::contains(request()->url(), 'sort-tasks/end-date/asc'))
+                        <a class="btn btn-secondary btn-block" href="{{ route('sort-tasks', ['sort' => 'end-date', 'order'=> 'desc']) }}">End Date</a>
+                    @else
+                        <a class="btn btn-secondary btn-block" href="{{ route('sort-tasks', ['sort' => 'end-date', 'order'=> 'asc']) }}">End Date</a>
+                    @endif
+                </div>
+            </div>     
+                       
+            <!-- List of Tasks -->
             @foreach ($tasks as $task)
             <a href="{{ route('trainee-task-detail', ['taskID' => $task->id]) }}" class="task-card-link {{ strtolower($task->task_priority) }}" style="text-decoration: none;">
                 <div class="card mb-3 task-card">
@@ -253,50 +279,6 @@
         });
     });
 
-        document.addEventListener('DOMContentLoaded', function () {
-            var sortDropdown = document.getElementById('sortDropdown');
-            var taskCards = document.querySelectorAll('.task-card-link');
-
-            sortDropdown.addEventListener('click', function (e) {
-                if (e.target.tagName === 'A') {
-                    var sortBy = e.target.getAttribute('data-sort');
-                    sortTasks(sortBy);
-                }
-            });
-
-            function sortTasks(sortBy) {
-                taskCards.forEach(function (taskCard) {
-                    taskCard.style.order = getOrderValue(taskCard, sortBy);
-                });
-            }
-
-            function getOrderValue(taskCard, sortBy) {
-                switch (sortBy) {
-                    case 'priority':
-                        return taskCard.classList.contains('high') ? 1 : 2;
-                    case 'status':
-                        return getStatusOrderValue(taskCard);
-                    case 'end-date':
-                        return new Date(taskCard.querySelector('.card-text strong[data-sort="end-date"]').textContent).getTime();
-                    case 'start-date':
-                        return new Date(taskCard.querySelector('.card-text strong[data-sort="start-date"]').textContent).getTime();
-                    default:
-                        return 0;
-                }
-            }
-
-            function getStatusOrderValue(taskCard) {
-                var status = taskCard.querySelector('.card-text strong[data-sort="status"]').textContent.toLowerCase();
-                switch (status) {
-                    case 'completed':
-                        return 1;
-                    case 'pending':
-                        return 2;
-                    default:
-                        return 3;
-                }
-            }
-        });
     </script>
 </body>
 @endsection

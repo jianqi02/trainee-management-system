@@ -34,6 +34,12 @@
             box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add a subtle shadow on focus */
         }
 
+        .btn-secondary {
+            background-color: #d3d3d3;
+            color: #000000;
+            width: 100%;
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -117,8 +123,40 @@
             @endif
             <hr>
 
-            <!-- List of Tasks -->
+            <!-- Sorting Option -->
+            <p>Sort by</p>
+            <div class="row" style="margin-bottom: 20px;">
+                <div class="col-md-3">
+                    @if(Str::contains(request()->url(), 'sort-tasks/priority/asc'))
+                        <a class="btn btn-secondary btn-block" href="{{ route('sort-tasks', ['sort' => 'priority', 'order'=> 'desc', 'traineeID' => $traineeID]) }}">Priority</a>
+                    @else
+                        <a class="btn btn-secondary btn-block" href="{{ route('sort-tasks', ['sort' => 'priority', 'order' => 'asc', 'traineeID' => $traineeID]) }}">Priority</a>
+                    @endif
+                </div>
+                <div class="col-md-3">
+                    @if(Str::contains(request()->url(), 'sort-tasks/status/asc'))
+                        <a class="btn btn-secondary btn-block" href="{{ route('sort-tasks', ['sort' => 'status', 'order'=> 'desc', 'traineeID' => $traineeID]) }}">Status</a>
+                    @else
+                        <a class="btn btn-secondary btn-block" href="{{ route('sort-tasks', ['sort' => 'status', 'order'=> 'asc', 'traineeID' => $traineeID]) }}">Status</a>
+                    @endif
+                </div>
+                <div class="col-md-3">
+                    @if(Str::contains(request()->url(), 'sort-tasks/start-date/asc'))
+                        <a class="btn btn-secondary btn-block" href="{{ route('sort-tasks', ['sort' => 'start-date', 'order'=> 'desc', 'traineeID' => $traineeID]) }}">Start Date</a>
+                    @else
+                        <a class="btn btn-secondary btn-block" href="{{ route('sort-tasks', ['sort' => 'start-date', 'order'=> 'asc', 'traineeID' => $traineeID]) }}">Start Date</a>
+                    @endif
+                </div>
+                <div class="col-md-3">
+                    @if(Str::contains(request()->url(), 'sort-tasks/end-date/asc'))
+                        <a class="btn btn-secondary btn-block" href="{{ route('sort-tasks', ['sort' => 'end-date', 'order'=> 'desc', 'traineeID' => $traineeID]) }}">End Date</a>
+                    @else
+                        <a class="btn btn-secondary btn-block" href="{{ route('sort-tasks', ['sort' => 'end-date', 'order'=> 'asc', 'traineeID' => $traineeID]) }}">End Date</a>
+                    @endif
+                </div>
+            </div>  
 
+            <!-- List of Tasks -->
             @foreach ($tasks as $task)
                 <a href="{{ route('trainee-task-detail', ['taskID' => $task->id]) }}" class="task-card-link">
                     <div class="card mb-3 task-card">

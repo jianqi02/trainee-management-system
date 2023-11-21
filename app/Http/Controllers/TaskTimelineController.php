@@ -16,6 +16,63 @@ use Illuminate\Support\Facades\Auth;
 
 class TaskTimelineController extends Controller
 {
+    public function index($sort = null, $order = null, $traineeID = null,){
+        $user = Auth::user();
+        $role = $user->role_id;
+
+        if($traineeID == null){
+            $traineeID = Trainee::where('sains_email', $user->email)->pluck('id')->first();
+        }
+
+        $tasks = TaskTimeline::where('trainee_id', $traineeID)->get();
+
+        if ($sort) {
+            // Perform sorting based on the $sort parameter
+            switch ($sort) {
+                case 'priority':
+                    $tasks = $tasks->sortBy(function ($task) {
+                        // Define the custom sorting order
+                        $priorityOrder = ['High' => 1, 'Medium' => 2, 'Low' => 3];
+                
+                        // Return the corresponding order for each task's status
+                        return $priorityOrder[$task->task_priority];
+                    });
+                    break;
+                case 'status':
+                    $tasks = $tasks->sortBy(function ($task) {
+                        // Define the custom sorting order
+                        $statusOrder = ['Not Started' => 1, 'Ongoing' => 2, 'Postponed' => 3, 'Completed' => 4];
+                
+                        // Return the corresponding order for each task's status
+                        return $statusOrder[$task->task_status];
+                    });
+                    break;
+                case 'end-date':
+                    $tasks = $tasks->sortBy('task_end_date');
+                    break;
+                case 'start-date':
+                    $tasks = $tasks->sortBy('task_start_date');
+                    break;
+            }
+
+            if ($order === 'desc') {
+                $tasks = $tasks->reverse();
+            }
+        }
+        //for trainee
+        if($role == 3){
+            return view('trainee-task-timeline', compact('tasks'));
+        }
+        //for supervisor 
+        elseif($role == 2){
+            return view('sv-view-trainee-task-timeline', compact('tasks', 'traineeID'));
+        }
+        // for admin
+        else{
+            return view('admin-view-trainee-task-timeline', compact('tasks', 'traineeID'));
+        }
+    }
+
     public function traineeTaskTimeline(){
         $user = Auth::user();
 
