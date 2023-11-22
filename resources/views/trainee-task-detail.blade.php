@@ -6,7 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Detail</title>
     <style> 
-
+        body{
+            overflow-x: hidden;
+        }
         
         .task-container{
             margin-left: 200px;
@@ -27,19 +29,19 @@
 
         /* Hover effect */
         .btn-primary:hover {
-            background-color: #d3d3d3; /* Change to your preferred color on hover */
+            background-color: #d3d3d3; 
         }
 
         /* Focus effect (when the button is selected) */
         .btn-primary:focus {
-            outline: none; /* Remove the default outline */
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add a subtle shadow on focus */
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
         }
 
         .modal {
             display: none;
             position: fixed;
-            z-index: 1000;
+            z-index: 1;
             left: 0;
             top: 0;
             width: 100%;
@@ -49,14 +51,12 @@
         }
 
         .modal-content {
-            background-color: #fff;
-            margin-left: 20%;
-            margin-top: 50px;
-            margin-bottom: 50px;
+            background-color: #f5f5f5; 
+            margin: 5% auto;
             padding: 20px;
-            border: 1px solid #888;
-            border-radius: 5px;
-            width: 60%;
+            border-radius: 8px;
+            width: 40%; 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
         }
 
         .close {
@@ -64,36 +64,54 @@
             float: right;
             font-size: 28px;
             font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
             cursor: pointer;
         }
 
-        .close:hover {
-            color: black;
+        h2 {
+            color: #333;
+            text-align: center;
         }
 
         .form-group {
-            margin: 10px 0;
+            margin-bottom: 20px;
         }
 
-        .form-control {
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        input,
+        textarea,
+        select {
             width: 100%;
             padding: 10px;
+            margin: 8px 0;
+            display: inline-block;
             border: 1px solid #ccc;
             border-radius: 4px;
+            box-sizing: border-box;
         }
 
-        .btn-add-task {
-            width: 100%;
-            background-color: #007bff;
-            color: #fff;
-            padding: 10px;
+        button {
+            background-color: #4caf50; /* Green */
+            color: white;
+            padding: 10px 15px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            font-size: 16px;
         }
 
-        .btn-add-task:hover {
-            background-color: #0056b3;
+        button:hover {
+            background-color: #45a049;
         }
 
         /* Remove underline from links */
@@ -103,8 +121,8 @@
 
         /* Add a hover animation to links */
         .task-card-link:hover {
-            color: #007bff; /* Change the link color on hover to your preferred color */
-            transition: color 0.2s ease; /* Add a smooth color transition effect */
+            color: #007bff; 
+            transition: color 0.2s ease; 
         }
 
         .timeline {
@@ -135,8 +153,8 @@
             }
 
             .timeline__component--bg:hover {
-                background-color: #f0f0f0; /* Change to your preferred background color on hover */
-                cursor: pointer; /* Change cursor to pointer on hover to indicate interactivity */
+                background-color: #f0f0f0; 
+                cursor: pointer; 
             }
 
             /* LEAVE TILL LAST */
@@ -217,7 +235,7 @@
                 <div id="taskModal" class="modal">
                     <div class="modal-content">
                         <span class="close" id="closeModal">&times;</span>
-                        <h2>Edit This Task</h2>
+                        <h2>Edit Task</h2>
                         <form id="taskForm" action="{{ route('trainee-edit-task', ['taskID' => $task->id]) }}" method="post">
                             @csrf
                             <div class="form-group">

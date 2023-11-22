@@ -6,7 +6,12 @@
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header">{{ __('Edit Record') }}</div>
-
+                @if(session('status'))
+                    <div class="alert alert-success">{{ session('status') }}</div>
+                @endif 
+                @if(session('error'))
+                    <div class="alert alert-warning">{{ session('error') }}</div>
+                @endif 
                 <div class="card-body">
                     <form method="POST" action="/edit-exist-trainee-record">
                         @csrf

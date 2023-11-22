@@ -134,10 +134,19 @@ class TaskTimelineController extends Controller
         $startDate = new DateTime($request->input('startDate'));
         $endDate = new DateTime($request->input('endDate'));
 
+        $user_role = Auth::user()->role_id;
+
         //terminate the function when the user chooses invalid date (end date < start date)
         if($endDate < $startDate){
-            return redirect()->route('sv-view-trainee-task-timeline', $traineeID)->with('warning', 'Failed to add new task! Invalid date chosen!');
+            if($user_role == 1){
+                return redirect()->route('admin-view-trainee-task-timeline', $traineeID)->with('warning', 'Failed to add new task! Invalid date chosen!');
+            }
+            elseif($user_role == 2){
+                return redirect()->route('sv-view-trainee-task-timeline', $traineeID)->with('warning', 'Failed to add new task! Invalid date chosen!');
+            }
+            
         }
+
         //add a new task to DB
         $task = new TaskTimeline();
         $task->trainee_id = $traineeID;
@@ -152,7 +161,6 @@ class TaskTimelineController extends Controller
         $task->task_detail = json_encode($taskDetail);
         $task->save();
 
-        $user_role = Auth::user()->role_id;
         if($user_role == 2){
             return redirect()->route('sv-view-trainee-task-timeline', $traineeID)->with('success', 'New task added.');
         }

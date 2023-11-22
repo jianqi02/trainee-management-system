@@ -23,7 +23,7 @@ class TraineeAssign extends Model
     {
         return $this->belongsTo(Supervisor::class, 'assigned_supervisor_id'); //foreign key
     }
-
+    
     public function trainee()
     {
         return $this->belongsTo(AllTrainee::class, 'trainee_id'); //foreign key

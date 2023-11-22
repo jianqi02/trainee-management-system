@@ -257,8 +257,8 @@
             @endphp
             <p class="text-center" style="margin-top: 20px; margin-bottom: -65px; margin-right: 20px;">{{ $start_date }} to {{ $end_date }}</p>
             <div class="table-wrapper-horizontal">
-                <div class="table-wrapper-vertical">
-                    <table class="map-level-1" id="map_level1">
+                <div class="table-wrapper-vertical" style="width: 400px; height: 400px;">
+                    <table class="map-level-1" id="map_level1" style="width: 350px; table-layout: fixed;">
                         <tbody>
                             <tr>
                                 <td colspan="2" style="background-color: #D3D3D3;"> </td>
@@ -419,8 +419,8 @@
                     </table>
                     <p class="text-center">Ground Floor Map (Level 1)</p>
                 </div>
-                <div class="table-wrapper-vertical">
-                    <table style="width: 80%;" class="map-level-3" id="map_level3">
+                <div class="table-wrapper-vertical" style="width: 850px;">
+                    <table style="width: 100%; table-layout: fixed;" class="map-level-3" id="map_level3">
                         <tbody>
                             <tr>
                                 <td style="width: 30.3944%; background-color: rgb(148, 148, 148);" colspan="3">Director Room</td>

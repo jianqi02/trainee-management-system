@@ -124,6 +124,9 @@
 
 </style>
 <body>
+    @error('name')
+        <span class="text-danger" style="margin-left: 150px;">{{ $message }}</span>
+    @enderror
     <div class="content">
         <h1>Trainee List</h1>
     <main>

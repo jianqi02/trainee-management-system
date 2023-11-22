@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
 
 class AdminController extends Controller
@@ -171,7 +172,8 @@ class AdminController extends Controller
     public function deleteTraineeRecord($id)
     {
         // Find the record
-        $record = AllTrainee::find($id);
+        $assignRecord = TraineeAssign::where('trainee_id', $id)->get();
+        $record = AllTrainee::where('id', $id)->first();
 
         // Check if the record exists
         if (!$record) {
@@ -180,6 +182,9 @@ class AdminController extends Controller
     
         try {
             // Delete the record
+            foreach($assignRecord as $assign){
+                $assign->delete();
+            }
             $record->delete();
     
             return redirect()->route('all-trainee-list')->with('status', 'Record successfully deleted.');
@@ -198,15 +203,35 @@ class AdminController extends Controller
     public function editRecordMethod(Request $request)
     {
         $trainee_id = $request->input('selected_trainee');
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|regex:/^[A-Za-z\s]+$/',
+            'internship_start' => 'required|date',
+            'internship_end' => 'required|date',
+        ]);
+        
+        if ($validator->fails()) {
+            return redirect()->route('all-trainee-list')
+                        ->withErrors($validator)
+                        ->withInput();
+        }
+
         $updated_trainee_name = $request->input('name');
         $updated_internship_start = $request->input('internship_start');
         $updated_internship_end = $request->input('internship_end');
+
+        // return an error messae when the admin choose invalid date (end date <= start date)
+        if($updated_internship_end <= $updated_internship_start){
+            return redirect()->route('all-trainee-list')->with('error', 'Invalid internship date!');
+        }
 
         $record = AllTrainee::find($trainee_id);
 
         $record->name = $updated_trainee_name;
         $record->internship_start = $updated_internship_start;
         $record->internship_end = $updated_internship_end;
+
+
         $record->save();
 
         return redirect()->route('all-trainee-list')->with('status', 'Record has updated successfully!');
@@ -383,16 +408,30 @@ class AdminController extends Controller
     }
 
     public function createRecord(Request $request){
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'internship_start' => 'required',
-            'internship_end' => 'required',
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|regex:/^[A-Za-z\s]+$/',
+            'internship_start' => 'required|date',
+            'internship_end' => 'required|date',
         ]);
+        
+        if ($validator->fails()) {
+            return redirect()->route('all-trainee-list')
+                        ->withErrors($validator)
+                        ->withInput();
+        }
+
+        $internship_start = $request->input('internship_start');
+        $internship_end = $request->input('internship_end');
+
+        // return an error messae when the admin choose invalid date (end date <= start date)
+        if($internship_end <= $internship_start){
+            return redirect()->route('all-trainee-list')->with('error', 'Invalid internship date!');
+        }
 
         AllTrainee::create([
             'name' => $request->input('name'),
-            'internship_start' => $request->input('internship_start'),
-            'internship_end' => $request->input('internship_end'),
+            'internship_start' => $internship_start,
+            'internship_end' => $internship_end,
         ]);
 
         // Redirect to a success page or any other desired action

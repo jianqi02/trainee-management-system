@@ -6,6 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Timeline</title>
     <style>
+        body{
+            overflow-x: hidden;
+        }
+        
         .task-container{
             margin-left: 200px;
             width: 100%;
@@ -52,12 +56,12 @@
         }
 
         .modal-content {
-            background-color: #fff;
-            margin: 10% auto;
+            background-color: #f5f5f5;
+            margin: 2% auto;
             padding: 20px;
-            border: 1px solid #888;
-            border-radius: 5px;
-            width: 60%;
+            border-radius: 8px;
+            width: 40%; 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
         }
 
         .close {
@@ -187,38 +191,38 @@
 
             <button type="button" id="addTaskButton" class="btn btn-primary">+ Add New Task</button>
 
-            <!-- The Modal -->
             <div id="taskModal" class="modal">
                 <div class="modal-content">
                     <span class="close" id="closeModal">&times;</span>
-                    <h2>Add New Task</h2>
+                    <h2 style="text-align: center;">Add New Task</h2>
                     <form id="taskForm" action="{{ route('trainee-add-new-task-sv', ['traineeID' => $traineeID]) }}" method="post">
                         @csrf
                         <div class="form-group">
-                            <label for="taskName">Task Name:</label>
-                            <input type="text" id="taskName" name="taskName" required>
+                            <label for="taskName" style="display: block; margin-bottom: 8px;">Task Name:</label>
+                            <input type="text" id="taskName" name="taskName" style="width: 100%; padding: 10px;" required>
                         </div>
                         <div class="form-group">
-                            <label for="startDate">Start Date:</label>
-                            <input type="date" id="startDate" name="startDate" required>
+                            <label for="startDate" style="display: block; margin-bottom: 8px;">Start Date:</label>
+                            <input type="date" id="startDate" name="startDate" style="width: 100%; padding: 10px;" required>
                         </div>
                         <div class="form-group">
-                            <label for="endDate">End Date:</label>
-                            <input type="date" id="endDate" name="endDate" required>
+                            <label for="endDate" style="display: block; margin-bottom: 8px;">End Date:</label>
+                            <input type="date" id="endDate" name="endDate" style="width: 100%; padding: 10px;" required>
                         </div>
                         <div class="form-group">
-                            <label for="priority">Priority:</label>
-                            <select id="priority" name="priority" required>
+                            <label for="priority" style="display: block; margin-bottom: 8px;">Priority:</label>
+                            <select id="priority" name="priority" style="width: 100%; padding: 10px;" required>
                                 <option value="High">High</option>
                                 <option value="Medium">Medium</option>
                                 <option value="Low">Low</option>
                             </select>
                         </div>
-                        <button type="submit" class="btn btn-primary btn-add-task">Add Task</button>
+                        <div style="text-align: center; margin-top: 16px;">
+                            <button type="submit" class="btn btn-primary btn-add-task" style="padding: 12px 24px;">Add Task</button>
+                        </div>
                     </form>
                 </div>
             </div>
-  
         </div>
     </div>
 </div>

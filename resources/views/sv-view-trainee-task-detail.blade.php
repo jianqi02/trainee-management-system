@@ -6,7 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trainee Task Detail</title>
     <style> 
-
+        body{
+            overflow-x: hidden;
+        }
         
         .task-container{
             margin-left: 200px;
@@ -39,7 +41,7 @@
         .modal {
             display: none;
             position: fixed;
-            z-index: 1000;
+            z-index: 1;
             left: 0;
             top: 0;
             width: 100%;
@@ -49,14 +51,12 @@
         }
 
         .modal-content {
-            background-color: #fff;
-            margin-left: 20%;
-            margin-top: 50px;
-            margin-bottom: 50px;
+            background-color: #f5f5f5; 
+            margin: 5% auto;
             padding: 20px;
-            border: 1px solid #888;
-            border-radius: 5px;
-            width: 60%;
+            border-radius: 8px;
+            width: 40%; 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
         }
 
         .close {
@@ -64,36 +64,54 @@
             float: right;
             font-size: 28px;
             font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
             cursor: pointer;
         }
 
-        .close:hover {
-            color: black;
+        h2 {
+            color: #333;
+            text-align: center;
         }
 
         .form-group {
-            margin: 10px 0;
+            margin-bottom: 20px;
         }
 
-        .form-control {
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        input,
+        textarea,
+        select {
             width: 100%;
             padding: 10px;
+            margin: 8px 0;
+            display: inline-block;
             border: 1px solid #ccc;
             border-radius: 4px;
+            box-sizing: border-box;
         }
 
-        .btn-add-task {
-            width: 100%;
-            background-color: #007bff;
-            color: #fff;
-            padding: 10px;
+        button {
+            background-color: #4caf50; /* Green */
+            color: white;
+            padding: 10px 15px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            font-size: 16px;
         }
 
-        .btn-add-task:hover {
-            background-color: #0056b3;
+        button:hover {
+            background-color: #45a049;
         }
 
         /* Remove underline from links */

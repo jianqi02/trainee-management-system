@@ -70,6 +70,9 @@
 </head>
 <body>
   <div class="container homepage-container">
+    @if(session('error'))
+      <div class="alert alert-warning">{{ session('error') }}</div>
+    @endif 
     <div class="row">
         <div class="col-md-6">
             <p class="tagline">Welcome to</p>
