@@ -99,6 +99,7 @@ Route::middleware(['role:1'])->group(function () {
     Route::get('/admin-go-profile/{traineeName}', [AdminController::class, 'adminGoTraineeProfile'])->name('admin-go-profile');
     Route::post('/admin-upload-resume/{traineeName}', [AdminController::class, 'adminUploadResume'])->name('admin-upload-resume');
     Route::post('/change-sv-comment/{commentID}', [AdminController::class, 'changeSVComment'])->name('change-sv-comment');
+    Route::get('/delete-exist-account/{traineeID}', [AdminController::class, 'deleteAccount'])->name('delete-exist-account');
 });
 
 
@@ -143,9 +144,11 @@ Route::middleware(['role:2'])->group(function () {
 
 Route::middleware(['role:1,2'])->group(function () {
     Route::post('/trainee-add-new-task-sv/{traineeID}', [TaskTimelineController::class, 'traineeAddNewTaskSV'])->name('trainee-add-new-task-sv');
-    Route::get('/sort-tasks/{sort?}/{order?}/{traineeID?}', [TaskTimelineController::class, 'index'])->name('sort-tasks');
 });
 
+Route::middleware(['role:1,2,3'])->group(function () {
+    Route::get('/sort-tasks/{sort?}/{order?}/{traineeID?}', [TaskTimelineController::class, 'index'])->name('sort-tasks');
+});
 // Task Timeline function for admin
 Route::middleware(['role:1'])->group(function () {
     Route::get('/admin-view-trainee-task-timeline/{traineeID}', [TaskTimelineController::class, 'adminViewTraineeTaskTimeline'])->name('admin-view-trainee-task-timeline');

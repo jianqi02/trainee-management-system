@@ -12,6 +12,7 @@ use App\Models\Trainee;
 use App\Models\AllTrainee;
 use App\Models\Supervisor;
 use App\Models\Notification;
+use App\Models\TaskTimeline;
 use Illuminate\Http\Request;
 use App\Models\TraineeAssign;
 use Illuminate\Support\Facades\DB;
@@ -399,7 +400,7 @@ class AdminController extends Controller
         }
 
         // Redirect to a success page or any other desired action
-        return redirect()->route('admin-create-account');
+        return redirect()->route('admin-create-account')->with('success', 'A new account successfully added.');
     }
 
     public function showCreateRecordForm()
@@ -668,5 +669,54 @@ class AdminController extends Controller
         $comment->save();
 
         return redirect()->back()->with('success', 'Comment edited successfully.');
+    }
+
+    public function deleteAccount($traineeID){
+        //find for the account need to be deleted.
+        $acc = Trainee::find($traineeID);
+
+        //delete all related information from DB.
+
+        $comment = Comment::where('trainee_id', $traineeID)->first();
+        if($comment){
+            $comment->delete();
+        }
+       
+        $tasks = TaskTimeline::where('trainee_id', $traineeID)->get();
+        if($tasks){
+            foreach($tasks as $task){
+                $task->delete();
+            }
+        }
+
+        $logbooks = Logbook::where('trainee_id', $traineeID)->get();
+        if($logbooks){
+            foreach($logbooks as $logbook){
+                $logbookPath = storage_path('app/public/logbooks/') . basename($logbook->logbook_path);
+                if (file_exists($logbookPath)) {
+                    unlink($logbookPath);
+                }
+                $logbook->delete();
+            }
+        }
+
+        $notifications = Notification::where('notifiable_id', $traineeID)
+        ->whereJsonContains('data->name', $acc->name)
+        ->whereNull('read_at')
+        ->get();
+        if($notifications){
+            foreach ($notifications as $notification) {
+                $notification->delete();
+            }
+        }
+
+        $user_record = User::where('email', $acc->sains_email)->first();
+        if($user_record){
+            $user_record->delete();
+        }
+
+        $acc->delete();
+        
+        return redirect()->back()->with('success', 'Account deleted successfully.');
     }
 }

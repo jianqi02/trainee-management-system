@@ -1,4 +1,5 @@
 @extends('layouts.admin')
+@section('pageTitle', 'Notifications')
 
 @section('content')
 <!DOCTYPE html>
@@ -6,7 +7,6 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=devide-width, initial-scale=1.0">
-        <title>Admin Notifications</title>
         <style>
             .notification-container {
                 margin-left: 150px;

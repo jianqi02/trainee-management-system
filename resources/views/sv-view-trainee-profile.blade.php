@@ -1,4 +1,5 @@
 @extends('layouts.sv')
+@section('pageTitle', 'Trainee Profile')
 
 @section('content') 
 <!DOCTYPE html>
@@ -6,9 +7,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seating Arrangement</title>
-    <!-- Include Bootstrap CSS from CDN -->
-    <title>My Profile</title>
     <style>
         body {
             font-family: Arial, sans-serif;

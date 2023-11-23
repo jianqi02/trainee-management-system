@@ -1,4 +1,5 @@
 @extends('layouts.admin')
+@section('pageTitle', 'Remove Assignment')
 
 @section('content')
 <div class="container">

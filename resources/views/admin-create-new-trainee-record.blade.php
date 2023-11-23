@@ -1,4 +1,5 @@
 @extends('layouts.admin')
+@section('pageTitle', 'Create New Record')
 
 @section('content')
 <div class="container">

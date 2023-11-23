@@ -1,4 +1,5 @@
 @extends('layouts.admin')
+@section('pageTitle', 'Trainee Profile')
 
 @section('content') 
 <!DOCTYPE html>
@@ -6,7 +7,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seating Arrangement</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha384-ySjggmTo4xMz5FFojZE/Cm2JfV6vKSDA8D84jfuze8Fo7EBt8Fck+nP3RS5ZxYU3" crossorigin="anonymous">
 
     <!-- Include Bootstrap CSS from CDN -->

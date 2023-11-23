@@ -1,4 +1,5 @@
 @extends('layouts.admin')
+@section('pageTitle', 'User Management')
 
 @section('content') 
 <!DOCTYPE html>
@@ -6,7 +7,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Management</title>
+    <!-- some icons are obtained from https://icons8.com/ -->
 </head>
 <style>
     body {
@@ -84,12 +85,20 @@
         margin-bottom: 15px;
     }
 
+    img{
+        width: 32px;
+        height: 32px;
+    }
+
 </style>
 <body>
     <div class="content">
         <h1>User Management</h1>
     <main>
         <div class="container">
+            @if(session('success'))
+                <div class="alert alert-success">{{ session('success') }}</div>
+            @endif
             <ul class="nav nav-tabs" id="myTabs" role="tablist">
                 <li class="nav-item" role="presentation">
                     <a class="nav-link active" id="trainee-list-tab" data-bs-toggle="tab" href="#trainee-list" role="tab" aria-controls="trainee-list" aria-selected="true">Trainee List</a>
@@ -153,15 +162,18 @@
                                         <td>{{ $trainee->personal_email }}</td>
                                         <td>{{ $trainee->sains_email }}</td>
                                         <td>{{ $trainee->acc_status }}</td>
-                                        <td>
-                                            <a href="{{ route('admin-go-profile', ['traineeName' => urlencode($trainee->name)]) }}" style="text-decoration: none; font-size: 24px; color: grey; margin-left: 20%;" title="View Profile">
+                                        <td style="width: 25%;">
+                                            <a href="{{ route('admin-go-profile', ['traineeName' => urlencode($trainee->name)]) }}" style="text-decoration: none; font-size: 24px; color: grey; margin-left: 20px;" title="View Profile">
                                                 <i class="fa fa-user" aria-hidden="true"></i>
                                             </a>
                                             <a href="{{ route('admin-view-trainee-task-timeline', ['traineeID' => $trainee->id]) }}" style="text-decoration: none; font-size: 24px; color: grey; margin-left: 20px;" title="View Task Timeline">
-                                                <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512"><path d="M128 72a24 24 0 1 1 0 48 24 24 0 1 1 0-48zm32 97.3c28.3-12.3 48-40.5 48-73.3c0-44.2-35.8-80-80-80S48 51.8 48 96c0 32.8 19.7 61 48 73.3V224H32c-17.7 0-32 14.3-32 32s14.3 32 32 32H288v54.7c-28.3 12.3-48 40.5-48 73.3c0 44.2 35.8 80 80 80s80-35.8 80-80c0-32.8-19.7-61-48-73.3V288H608c17.7 0 32-14.3 32-32s-14.3-32-32-32H544V169.3c28.3-12.3 48-40.5 48-73.3c0-44.2-35.8-80-80-80s-80 35.8-80 80c0 32.8 19.7 61 48 73.3V224H160V169.3zM488 96a24 24 0 1 1 48 0 24 24 0 1 1 -48 0zM320 392a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"/></svg>
+                                                <img src="https://img.icons8.com/sf-black/64/808080/timeline.png" alt="timeline"/>
                                             </a>
                                             <a href="#" style="text-decoration: none; font-size: 24px; color: grey; margin-left: 20px;" title="Change Account Status" data-toggle="modal" data-target="#confirmChangeStatusModal{{ $trainee->id }}">
                                                 <i class="fa fa-exchange" aria-hidden="true"></i>
+                                            </a>                                           
+                                             <a href="#" style="text-decoration: none; font-size: 24px; color: grey; margin-left: 20px;" title="Delete Account" data-toggle="modal" data-target="#deleteConfirmationModal{{ $trainee->id }}">
+                                                <img src="https://img.icons8.com/fluency-systems-filled/48/808080/delete-trash.png" alt="delete-trash"/>
                                             </a>
                                         </td>
                                         <div class="modal fade" id="confirmChangeStatusModal{{ $trainee->id }}" tabindex="-1" role="dialog" aria-labelledby="confirmChangeStatusModalLabel{{ $trainee->id }}" aria-hidden="true">
@@ -179,6 +191,25 @@
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                                                         <a id="confirmChangeStatusBtn{{ $trainee->id }}" class="btn btn-primary" href="{{ route('change-account-status', ['selected' => urlencode($trainee->name)]) }}">Confirm</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal fade" id="deleteConfirmationModal{{ $trainee->id }}" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmationModalLabel{{ $trainee->id }}" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirm Deletion</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        Are you sure you want to delete this account?
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                        <a href="{{ route('delete-exist-account', ['traineeID' => $trainee->id]) }}" class="btn btn-danger">Delete</a>
                                                     </div>
                                                 </div>
                                             </div>

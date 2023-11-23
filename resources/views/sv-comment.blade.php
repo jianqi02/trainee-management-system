@@ -1,4 +1,5 @@
 @extends('layouts.sv')
+@section('pageTitle', 'Comment')
 
 @section('content')
 <div class="container" style="margin-left: 120px;">

@@ -1,4 +1,5 @@
 @extends('layouts.basicpage')
+@section('pageTitle', 'Register')
 
 @section('content')
 <div class="container">

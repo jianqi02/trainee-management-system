@@ -1,11 +1,10 @@
 @extends('layouts.app')
+@section('pageTitle', 'Task Timeline')
 
 @section('content')
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task Timeline</title>
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
     <style>
         body{
             overflow-x: hidden;

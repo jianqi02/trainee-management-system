@@ -1,10 +1,10 @@
 @extends('layouts.sv')
+@section('pageTitle', 'Trainee Task Detail')
 
 @section('content')
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trainee Task Detail</title>
     <style> 
         body{
             overflow-x: hidden;

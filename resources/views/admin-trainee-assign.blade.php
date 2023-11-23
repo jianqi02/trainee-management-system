@@ -1,4 +1,5 @@
 @extends('layouts.admin')
+@section('pageTitle', 'Trainee Assignment')
 
 @section('content') 
 <!DOCTYPE html>

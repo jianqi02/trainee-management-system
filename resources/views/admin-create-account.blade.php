@@ -1,4 +1,5 @@
 @extends('layouts.admin')
+@section('pageTitle', 'Create Account')
 
 @section('content')
 <div class="container">
@@ -6,7 +7,9 @@
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header">{{ __('Create New User') }}</div>
-
+                @if(session('success'))
+                    <div class="alert alert-success">{{ session('success') }}</div>
+                @endif
                 <div class="card-body">
                     <form method="POST" action="{{ route('create-user') }}">
                         @csrf

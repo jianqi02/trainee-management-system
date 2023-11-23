@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('pageTitle', 'Seating Plan')
 
 @section('content') 
 <!DOCTYPE html>
@@ -6,7 +7,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>View Seat Plan</title>
     <style>
         body {
             font-family: Arial, sans-serif;

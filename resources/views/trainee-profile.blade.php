@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('pageTitle', 'Profile')
 
 @section('content') 
 <!DOCTYPE html>
@@ -6,9 +7,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seating Arrangement</title>
-    <!-- Include Bootstrap CSS from CDN -->
-    <title>My Profile</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -192,8 +190,8 @@
             <p>SAINS Email: {{ $trainee->sains_email }}</p>
             <p>Phone Number: {{ $trainee->phone_number }}</p>
             <p>Expertise: {{ $trainee->expertise }}</p>
-            <p>Internship Date (Start): {{ $internship_dates->internship_start }}
-            <p>Internship Date (End): {{ $internship_dates->internship_end }}
+            <p>Internship Date (Start): {{ $internship_dates->internship_start ?? '' }}
+            <p>Internship Date (End): {{ $internship_dates->internship_end ?? '' }}
             <p>Graduation Date:{{ $trainee->graduate_date }}</p>
         </div>
 
