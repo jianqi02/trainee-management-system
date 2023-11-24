@@ -702,11 +702,47 @@ class AdminController extends Controller
 
         $notifications = Notification::where('notifiable_id', $traineeID)
         ->whereJsonContains('data->name', $acc->name)
-        ->whereNull('read_at')
         ->get();
         if($notifications){
             foreach ($notifications as $notification) {
                 $notification->delete();
+            }
+        }
+
+        $user_record = User::where('email', $acc->sains_email)->first();
+        if($user_record){
+            $user_record->delete();
+        }
+
+        $acc->delete();
+        
+        return redirect()->back()->with('success', 'Account deleted successfully.');
+    }
+
+    public function deleteSVAccount($supervisorID){
+        //find for the account need to be deleted.
+        $acc = Supervisor::find($supervisorID);
+
+        //delete all related information from DB.
+
+        $comment = Comment::where('supervisor_id', $supervisorID)->first();
+        if($comment){
+            $comment->delete();
+        }
+
+        $notifications = Notification::where('notifiable_id', $supervisorID)
+        ->whereJsonContains('data->name', null)
+        ->get();
+        if($notifications){
+            foreach ($notifications as $notification) {
+                $notification->delete();
+            }
+        }
+
+        $assignments = TraineeAssign::where('assigned_supervisor_id', $supervisorID)->get();
+        if($assignments){
+            foreach($assignments as $assignment){
+                $assignment->delete();
             }
         }
 

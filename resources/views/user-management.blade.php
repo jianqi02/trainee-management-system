@@ -282,12 +282,33 @@
                                         <td>{{ $supervisor->department }}</td>
                                         <td>{{ $supervisor->personal_email }}</td>
                                         <td>{{ $supervisor->sains_email }}</td>
-                                        <td>
-                                            <!-- Add your buttons/actions here -->
+                                        <td style="width: 20%;">
                                             <a href="{{ route('admin-edit-profile', ['selected' => urlencode($supervisor->name)]) }}" style="text-decoration: none; color: grey; font-size: 24px; margin-left: 30%;" title="Edit Profile">
-                                            <i class="fa fa-pencil"></i>
-                                        </a>
+                                                <i class="fa fa-pencil"></i>
+                                            </a>
+                                            <a href="#" style="text-decoration: none; font-size: 24px; color: grey; margin-left: 20px;" title="Delete Account" data-toggle="modal" data-target="#deleteSVaccConfirmationModal{{ $supervisor->id }}">
+                                                <img src="https://img.icons8.com/fluency-systems-filled/48/808080/delete-trash.png" alt="delete-trash"/>
+                                            </a>
                                         </td>
+                                        <div class="modal fade" id="deleteSVaccConfirmationModal{{ $supervisor->id }}" tabindex="-1" role="dialog" aria-labelledby="deleteSVaccConfirmationModalLabel{{ $supervisor->id }}" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirm Deletion</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        Are you sure you want to delete this account?
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                        <a href="{{ route('delete-exist-sv-account', ['supervisorID' => $supervisor->id]) }}" class="btn btn-danger">Delete</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </tr>
                                 @endforeach
                             </tbody>

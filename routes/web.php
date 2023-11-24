@@ -100,6 +100,7 @@ Route::middleware(['role:1'])->group(function () {
     Route::post('/admin-upload-resume/{traineeName}', [AdminController::class, 'adminUploadResume'])->name('admin-upload-resume');
     Route::post('/change-sv-comment/{commentID}', [AdminController::class, 'changeSVComment'])->name('change-sv-comment');
     Route::get('/delete-exist-account/{traineeID}', [AdminController::class, 'deleteAccount'])->name('delete-exist-account');
+    Route::get('/delete-exist-sv-account/{supervisorID}', [AdminController::class, 'deleteSVAccount'])->name('delete-exist-sv-account');
 });
 
 
