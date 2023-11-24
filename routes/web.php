@@ -47,6 +47,11 @@ Route::get('/', function () {
     return view('home');
 });
 
+// Fallback route
+Route::fallback(function () {
+    return redirect('/');
+});
+
 #log out
 Route::middleware(['auth'])->group(function () {
     // Logout route
