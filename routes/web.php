@@ -34,10 +34,10 @@ Route::get('/', function () {
             return redirect()->route('admin-dashboard');
         }
         elseif($role_id == 2){
-            return redirect()->route('sv-homepae');
+            return view('sv-homepage');
         }
         elseif($role_id == 3){
-            return redirect()->route('hompage');
+            return view('homepage');
         }
         else{
             return view('home');
