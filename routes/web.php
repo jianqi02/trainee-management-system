@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AdminController;
@@ -22,8 +23,27 @@ use App\Http\Controllers\Auth\RegisterController;
 |
 */
 
-#redirect user to first landing page
+#when users enter the landing page, redirect the user to other page according to their role id.
 Route::get('/', function () {
+    if (Auth::check()) {
+        // Get the user's role ID
+        $role_id = Auth::user()->role_id;
+
+        //admin = 1, supevisor = 2 , trainee = 3
+        if($role_id == 1){
+            return redirect()->route('admin-dashboard');
+        }
+        elseif($role_id == 2){
+            return redirect()->route('sv-homepae');
+        }
+        elseif($role_id == 3){
+            return redirect()->route('hompage');
+        }
+        else{
+            return view('home');
+        }
+    }
+
     return view('home');
 });
 
