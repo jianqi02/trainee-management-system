@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use Ramsey\Uuid\Uuid;
 use App\Models\Trainee;
 use App\Models\Supervisor;
 use App\Models\Notification;
@@ -164,5 +166,51 @@ class NotificationController extends Controller
             return redirect()->back()->with('success', 'All notifications have been marked as read.');
         }
     
+    }
+
+    public function forgotPasswordNotification(Request $request){
+        $email = $request->input('email');
+        $userRecord = User::where('email', $email)->first();
+        if($userRecord){
+            //to check whether this is supervisor or trainee record. 
+            $userRole = $userRecord->role_id;
+
+            //2 = supervisor , 3 = trainee
+            if($userRole == 2){
+                $supervisorName = Supervisor::where('sains_email', $email)->pluck('name')->first();
+
+                //generate a notification to admin.
+                $notification = new Notification();
+                $notification->id = Uuid::uuid4(); // Generate a UUID for the id
+                $notification->type = 'password reset';
+                $notification->notifiable_type = 'App\Models\Supervisor';
+                $notification->notifiable_id = 0;
+                $notification->data = json_encode([
+                    'data' => 'Supervisor ' . $supervisorName . ' has requested to change the password.',
+                ]);
+                $notification->save(); // Save the notification to the database
+            }
+            elseif($userRole == 3){
+                $traineeName = Trainee::where('sains_email', $email)->pluck('name')->first();
+
+                //generate a notification to admin.
+                $notification = new Notification();
+                $notification->id = Uuid::uuid4(); // Generate a UUID for the id
+                $notification->type = 'password reset';
+                $notification->notifiable_type = 'App\Models\Trainee';
+                $notification->notifiable_id = 0;
+                $notification->data = json_encode([
+                    'data' => 'Trainee ' . $traineeName . ' has requested to change the password.',
+                ]);
+                $notification->save(); // Save the notification to the database
+            }
+            else{
+                return redirect()->back()->with('status', 'Please try with other Email.');
+            }
+        }else{
+            return redirect()->back()->with('status', 'Please try again.');
+        }
+
+        return redirect()->back()->with('success', 'Notification sent. Please wait for admin to change your password.');
     }
 }

@@ -1,4 +1,5 @@
 @extends('layouts.basicpage')
+@section('pageTitle', 'Reset Password')
 
 @section('content')
 <div class="container">
@@ -13,8 +14,13 @@
                             {{ session('status') }}
                         </div>
                     @endif
+                    @if (session('success'))
+                        <div class="alert alert-success" role="alert">
+                            {{ session('success') }}
+                        </div>
+                    @endif
 
-                    <form method="POST" action="{{ route('password.email') }}">
+                    <form method="POST" action="{{ route('forgot-password') }}">
                         @csrf
 
                         <div class="row mb-3">
@@ -34,7 +40,7 @@
                         <div class="row mb-0">
                             <div class="col-md-6 offset-md-4">
                                 <button type="submit" class="btn btn-primary">
-                                    {{ __('Send Password Reset Link') }}
+                                    {{ __('Send Notification To Admin') }}
                                 </button>
                             </div>
                         </div>

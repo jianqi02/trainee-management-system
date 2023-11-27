@@ -12,6 +12,9 @@
                             {{ session('status') }}
                         </div>
                     @endif
+                    @if(session('success'))
+                    <div class="alert alert-success">{{ session('success') }}</div>
+                    @endif
                 <div class="card-header">{{ __('Login') }}</div>
 
                 <div class="card-body">

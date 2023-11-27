@@ -46,7 +46,7 @@
             <h1>Notifications</h1>
             <form action="{{ route('mark-all-notifications-as-read') }}" method="POST">
                 @csrf
-                <button type="submit" class="btn btn-primary">Mark All as Read</button>
+                <button type="submit" class="btn btn-primary" style="margin-bottom: 10px;">Mark All as Read</button>
             </form>
             <ul class="list-group">
                 @forelse($notifications as $notification)

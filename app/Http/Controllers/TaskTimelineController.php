@@ -13,6 +13,7 @@ use App\Models\TaskTimeline;
 use Illuminate\Http\Request;
 use App\Models\TraineeAssign;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class TaskTimelineController extends Controller
 {
@@ -113,6 +114,16 @@ class TaskTimelineController extends Controller
             return redirect()->route('trainee-task-timeline')->with('warning', 'Failed to add new task! Invalid date chosen!');
         }
 
+        //input validation
+        $validator = Validator::make($request->all(), [
+            'taskName' => ['required', 'string', 'regex:/^[A-Za-z0-9?!,.&\'"\s()]+$/'],
+        ]);
+
+        // Check if the validation fails
+        if ($validator->fails()) {
+            return redirect()->back()->with('warning', 'Some special characters are not allowed in Task Name. Please try again.');
+        }
+
         //add a new task to DB
         $task = new TaskTimeline();
         $task->trainee_id = $trainee_id;
@@ -145,6 +156,16 @@ class TaskTimelineController extends Controller
                 return redirect()->route('sv-view-trainee-task-timeline', $traineeID)->with('warning', 'Failed to add new task! Invalid date chosen!');
             }
             
+        }
+
+        //input validation
+        $validator = Validator::make($request->all(), [
+            'taskName' => ['required', 'string', 'regex:/^[A-Za-z0-9?!,.&\'"\s()]+$/'],
+        ]);
+
+        // Check if the validation fails
+        if ($validator->fails()) {
+            return redirect()->back()->with('warning', 'Some special characters are not allowed in Task Name. Please try again.');
         }
 
         //add a new task to DB
@@ -189,6 +210,17 @@ class TaskTimelineController extends Controller
 
         //get the status 
         $status = $request->input('status');
+
+        //input validation
+        $validator = Validator::make($request->all(), [
+            'taskName' => ['required', 'string', 'regex:/^[A-Za-z0-9?!,.&\'"\s()]+$/'],
+            'taskDescription' => ['required', 'string', 'regex:/^[A-Za-z0-9?!,.&\'"\s()]+$/'],
+        ]);
+
+        // Check if the validation fails
+        if ($validator->fails()) {
+            return redirect()->back()->with('warning', 'Some special characters are not allowed in Task Name and Task Description. Please try again.');
+        }
 
         //add a new task to DB
         $task = TaskTimeline::where('id', $taskID)->first();
@@ -304,6 +336,18 @@ class TaskTimelineController extends Controller
         // find the daily task to be edited.
         $task = TaskTimeline::where('id', $taskID)->first();
         $timeline = json_decode($task->timeline, true);
+
+        //input validation
+        $validator = Validator::make($request->all(), [
+            'taskName' => ['required', 'string', 'regex:/^[A-Za-z0-9?!,.&\'"\s()]+$/'],
+            'taskDescription' => ['required', 'string', 'regex:/^[A-Za-z0-9?!,.&\'"\s()]+$/'],
+        ]);
+
+        // Check if the validation fails
+        if ($validator->fails()) {
+            return redirect()->back()->with('warning', 'Some special characters are not allowed in Task Name and Task Description. Please try again.');
+        }
+
         if(isset($timeline[$date])){
             $timeline[$date]['Name'] = $request->input('taskName');
             $timeline[$date]['Description'] = $request->input('taskDescription');
@@ -336,12 +380,40 @@ class TaskTimelineController extends Controller
         $user_role = Auth::user()->role_id;
 
         if($user_role == 3){
+            //input validation
+            $validator = Validator::make($request->all(), [
+                'comment' => ['required', 'string', 'regex:/^[A-Za-z0-9?!,.&\'"\s()]+$/'],
+            ]);
+
+            // Check if the validation fails
+            if ($validator->fails()) {
+                return redirect()->back()->with('warning', 'Some special characters are not allowed in comment. Please try again.');
+            }
             $comment['Trainee'] = $request->input('comment');
         }
         elseif($user_role == 2){
+            //input validation
+            $validator = Validator::make($request->all(), [
+                'comment' => ['required', 'string', 'regex:/^[A-Za-z0-9?!,.&\'"\s()]+$/'],
+            ]);
+
+            // Check if the validation fails
+            if ($validator->fails()) {
+                return redirect()->back()->with('warning', 'Some special characters are not allowed in comment. Please try again.');
+            }
             $comment['Supervisor'] = $request->input('comment');
         }
         elseif($user_role == 1){
+            //input validation
+            $validator = Validator::make($request->all(), [
+                'commentSV' => ['required', 'string', 'regex:/^[A-Za-z0-9?!,.&\'"\s()]+$/'],
+                'commentTR' => ['required', 'string', 'regex:/^[A-Za-z0-9?!,.&\'"\s()]+$/'],
+            ]);
+
+            // Check if the validation fails
+            if ($validator->fails()) {
+                return redirect()->back()->with('warning', 'Some special characters are not allowed in comment. Please try again.');
+            }
             $comment['Supervisor'] = $request->input('commentSV');
             $comment['Trainee'] = $request->input('commentTR');
         }
@@ -358,12 +430,40 @@ class TaskTimelineController extends Controller
         $user_role = Auth::user()->role_id;
         if(isset($timeline[$date])){
             if($user_role == 2){
+                //input validation
+                $validator = Validator::make($request->all(), [
+                    'comment' => ['required', 'string', 'regex:/^[A-Za-z0-9?!,.&\'"\s()]+$/'],
+                ]);
+
+                // Check if the validation fails
+                if ($validator->fails()) {
+                    return redirect()->back()->with('warning', 'Some special characters are not allowed in comment. Please try again.');
+                }
                 $timeline[$date]['Supervisor'] = $request->input('comment');
             }
             elseif($user_role == 3){
+                //input validation
+                $validator = Validator::make($request->all(), [
+                    'comment' => ['required', 'string', 'regex:/^[A-Za-z0-9?!,.&\'"\s()]+$/'],
+                ]);
+
+                // Check if the validation fails
+                if ($validator->fails()) {
+                    return redirect()->back()->with('warning', 'Some special characters are not allowed in comment. Please try again.');
+                }
                 $timeline[$date]['Trainee'] = $request->input('comment');
             }
             elseif($user_role == 1){
+                //input validation
+                $validator = Validator::make($request->all(), [
+                    'commentSV' => ['required', 'string', 'regex:/^[A-Za-z0-9?!,.&\'"\s()]+$/'],
+                    'commentTR' => ['required', 'string', 'regex:/^[A-Za-z0-9?!,.&\'"\s()]+$/'],
+                ]);
+
+                // Check if the validation fails
+                if ($validator->fails()) {
+                    return redirect()->back()->with('warning', 'Some special characters are not allowed in comment. Please try again.');
+                }
                 $timeline[$date]['Supervisor'] = $request->input('commentSV');
                 $timeline[$date]['Trainee'] = $request->input('commentTR');
             }

@@ -99,6 +99,9 @@
             @if(session('success'))
                 <div class="alert alert-success">{{ session('success') }}</div>
             @endif
+            @if(session('warning'))
+                <div class="alert alert-warning">{{ session('warning') }}</div>
+            @endif
             <ul class="nav nav-tabs" id="myTabs" role="tablist">
                 <li class="nav-item" role="presentation">
                     <a class="nav-link active" id="trainee-list-tab" data-bs-toggle="tab" href="#trainee-list" role="tab" aria-controls="trainee-list" aria-selected="true">Trainee List</a>
@@ -162,7 +165,7 @@
                                         <td>{{ $trainee->personal_email }}</td>
                                         <td>{{ $trainee->sains_email }}</td>
                                         <td>{{ $trainee->acc_status }}</td>
-                                        <td style="width: 25%;">
+                                        <td style="width: 30%;">
                                             <a href="{{ route('admin-go-profile', ['traineeName' => urlencode($trainee->name)]) }}" style="text-decoration: none; font-size: 24px; color: grey; margin-left: 20px;" title="View Profile">
                                                 <i class="fa fa-user" aria-hidden="true"></i>
                                             </a>
@@ -172,8 +175,11 @@
                                             <a href="#" style="text-decoration: none; font-size: 24px; color: grey; margin-left: 20px;" title="Change Account Status" data-toggle="modal" data-target="#confirmChangeStatusModal{{ $trainee->id }}">
                                                 <i class="fa fa-exchange" aria-hidden="true"></i>
                                             </a>                                           
-                                             <a href="#" style="text-decoration: none; font-size: 24px; color: grey; margin-left: 20px;" title="Delete Account" data-toggle="modal" data-target="#deleteConfirmationModal{{ $trainee->id }}">
+                                            <a href="#" style="text-decoration: none; font-size: 24px; color: grey; margin-left: 20px;" title="Delete Account" data-toggle="modal" data-target="#deleteConfirmationModal{{ $trainee->id }}">
                                                 <img src="https://img.icons8.com/fluency-systems-filled/48/808080/delete-trash.png" alt="delete-trash"/>
+                                            </a>
+                                            <a href="#" style="text-decoration: none; font-size: 24px; color: grey; margin-left: 20px;" title="Change Password" data-toggle="modal" data-target="#changePasswordModal{{ $trainee->id }}">
+                                                <img src="https://img.icons8.com/external-sbts2018-outline-sbts2018/58/808080/external-change-password-basic-ui-elements-2.3-sbts2018-outline-sbts2018.png" alt="change-password"/>
                                             </a>
                                         </td>
                                         <div class="modal fade" id="confirmChangeStatusModal{{ $trainee->id }}" tabindex="-1" role="dialog" aria-labelledby="confirmChangeStatusModalLabel{{ $trainee->id }}" aria-hidden="true">
@@ -214,6 +220,44 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="modal fade" id="changePasswordModal{{ $trainee->id }}" tabindex="-1" role="dialog" aria-labelledby="changePasswordModal{{ $trainee->id }}" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Change Password</h4>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form id="changePasswordForm" action="{{ route('admin-change-password', ['id' => $trainee->id, 'type' => 'Trainee']) }}" method="post">
+                                                            @csrf
+                                                            <div class="form-group">
+                                                                <label for="newPassword">New Password:</label>
+                                                                <input type="password" class="form-control" id="newPassword" name="newPassword" required>
+                                                                <small id="newPasswordHelp" class="form-text text-muted">
+                                                                    The password should contain at least 8 characters, 1 uppercase letter and 1 special character.
+                                                                </small>
+                                                                @error('newPassword')
+                                                                    <span class="text-danger">{{ $message }}</span>
+                                                                @enderror
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="confirmPassword">Confirm Password:</label>
+                                                                <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+                                                                @error('confirmPassword')
+                                                                    <span class="text-danger">{{ $message }}</span>
+                                                                @enderror
+                                                            </div>
+                                                            <button type="submit" class="btn btn-primary">Submit</button>
+                                                        </form>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>                                       
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -283,11 +327,14 @@
                                         <td>{{ $supervisor->personal_email }}</td>
                                         <td>{{ $supervisor->sains_email }}</td>
                                         <td style="width: 20%;">
-                                            <a href="{{ route('admin-edit-profile', ['selected' => urlencode($supervisor->name)]) }}" style="text-decoration: none; color: grey; font-size: 24px; margin-left: 30%;" title="Edit Profile">
+                                            <a href="{{ route('admin-edit-profile', ['selected' => urlencode($supervisor->name)]) }}" style="text-decoration: none; color: grey; font-size: 24px; margin-left: 20px;" title="Edit Profile">
                                                 <i class="fa fa-pencil"></i>
                                             </a>
                                             <a href="#" style="text-decoration: none; font-size: 24px; color: grey; margin-left: 20px;" title="Delete Account" data-toggle="modal" data-target="#deleteSVaccConfirmationModal{{ $supervisor->id }}">
                                                 <img src="https://img.icons8.com/fluency-systems-filled/48/808080/delete-trash.png" alt="delete-trash"/>
+                                            </a>
+                                            <a href="#" style="text-decoration: none; font-size: 24px; color: grey; margin-left: 20px;" title="Change Password" data-toggle="modal" data-target="#changeSVPasswordModal{{ $supervisor->id }}">
+                                                <img src="https://img.icons8.com/external-sbts2018-outline-sbts2018/58/808080/external-change-password-basic-ui-elements-2.3-sbts2018-outline-sbts2018.png" alt="change-password"/>
                                             </a>
                                         </td>
                                         <div class="modal fade" id="deleteSVaccConfirmationModal{{ $supervisor->id }}" tabindex="-1" role="dialog" aria-labelledby="deleteSVaccConfirmationModalLabel{{ $supervisor->id }}" aria-hidden="true">
@@ -305,6 +352,42 @@
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                                                         <a href="{{ route('delete-exist-sv-account', ['supervisorID' => $supervisor->id]) }}" class="btn btn-danger">Delete</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal fade" id="changeSVPasswordModal{{ $supervisor->id }}" tabindex="-1" role="dialog" aria-labelledby="changeSVPasswordModal{{ $supervisor->id }}" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Change Password</h4>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form id="changeSVPasswordForm" action="{{ route('admin-change-password', ['id' => $supervisor->id, 'type' => 'Supervisor']) }}" method="post">
+                                                            @csrf
+                                                            <div class="form-group">
+                                                                <label for="newPassword">New Password:</label>
+                                                                <input type="password" class="form-control" id="newPassword" name="newPassword" required>
+                                                                <small id="newPasswordHelp" class="form-text text-muted">
+                                                                    The password should contain at least 8 characters, 1 uppercase letter and 1 special character.
+                                                                </small>
+                                                                @error('newPassword')
+                                                                    <span class="text-danger">{{ $message }}</span>
+                                                                @enderror
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="confirmPassword">Confirm Password:</label>
+                                                                <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+
+                                                            </div>
+                                                            <button type="submit" class="btn btn-primary">Submit</button>
+                                                        </form>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                                                     </div>
                                                 </div>
                                             </div>

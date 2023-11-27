@@ -206,6 +206,9 @@
     <div class="task-container">
         <div class="row">
             <h3>Detail</h3>
+            @if(session('warning'))
+                <div class="alert alert-warning" style="width: 64.3%; margin-left: 15px;">{{ session('warning') }}</div>
+            @endif
             <div class="col-md-8">
                 <div class="card mb-3">
                     <div class="card-body">
@@ -214,6 +217,7 @@
                         <br>
                         <h5 class="card-title">{{ $taskDetail['Name'] }}</h5>
                         <p class="card-text">
+                            <strong>Description: </strong><br>
                             {!! nl2br(e($taskDetail['Description'])) !!}
                             <br>
                             <br>

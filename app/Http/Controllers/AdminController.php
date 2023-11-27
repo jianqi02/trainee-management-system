@@ -755,4 +755,70 @@ class AdminController extends Controller
         
         return redirect()->back()->with('success', 'Account deleted successfully.');
     }
+
+    public function adminChangePassword(Request $request, $id, $type){
+        if($type == 'Trainee'){
+            $traineeRecord = Trainee::find($id);
+            $userRecord = User::where('email', $traineeRecord->sains_email)->first();
+            
+            $validator = Validator::make($request->all(), [
+                'newPassword' => ['required','string','min:8','regex:/^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).*$/'],
+                'confirmPassword' => ['required','string','min:8','same:newPassword'],
+            ]);
+        
+            // Check if the validation fails
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
+
+            $password = $request->input('newPassword');
+            $confirmedPassword = $request->input('confirmPassword');
+
+            // check the password and confirmed password is matched or not.
+            if($password != $confirmedPassword){
+                return redirect()->back()->with('warning', 'Password and confirmed password do not match.');
+
+            }
+
+            $newPassword = Hash::make($password);
+            $traineeRecord->password = $newPassword;
+            $traineeRecord->save();
+
+            $userRecord->password= $newPassword;
+            $userRecord->save();
+
+            return redirect()->back()->with('success', 'Password for this trainee has changed successfully.');
+        }
+        else{
+            $supervisorRecord = Supervisor::find($id);
+            $userRecord = User::where('email', $supervisorRecord->sains_email)->first();
+            
+            $validator = Validator::make($request->all(), [
+                'newPassword' => ['required','string','min:8','regex:/^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).*$/'],
+                'confirmPassword' => ['required','string','min:8','same:newPassword'],
+            ]);
+        
+            // Check if the validation fails
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
+
+            $password = $request->input('newPassword');
+            $confirmedPassword = $request->input('confirmPassword');
+
+            // check the password and confirmed password is matched or not.
+            if($password != $confirmedPassword){
+                return redirect()->back()->with('warning', 'Password and confirmed password do not match.');
+            }
+
+            $newPassword = Hash::make($password);
+            $supervisorRecord->password = $newPassword;
+            $supervisorRecord->save();
+
+            $userRecord->password= $newPassword;
+            $userRecord->save();
+
+            return redirect()->back()->with('success', 'Password for this supervisor has changed successfully.');
+        }
+    }
 }

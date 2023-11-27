@@ -126,6 +126,7 @@ Route::middleware(['role:1'])->group(function () {
     Route::post('/change-sv-comment/{commentID}', [AdminController::class, 'changeSVComment'])->name('change-sv-comment');
     Route::get('/delete-exist-account/{traineeID}', [AdminController::class, 'deleteAccount'])->name('delete-exist-account');
     Route::get('/delete-exist-sv-account/{supervisorID}', [AdminController::class, 'deleteSVAccount'])->name('delete-exist-sv-account');
+    Route::post('/admin-change-password/{id}/{type}', [AdminController::class, 'adminChangePassword'])->name('admin-change-password');
 });
 
 
@@ -197,5 +198,8 @@ Route::middleware(['role:2'])->group(function () {
         return view('sv-homepage');
     });
 });
+
+//forgot password : this will send a notification to the admin
+Route::post('/forgot-password', [NotificationController::class, 'forgotPasswordNotification'])->name('forgot-password');
 
 Auth::routes();
