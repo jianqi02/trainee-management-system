@@ -8,29 +8,27 @@
             <div class="card">
                 <div class="card-header">{{ __('Assign Supervisor For') }} {{ $trainee->name }}</div>
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6 border-end">
-                            <form action="{{ route('supervisor-assign-method') }}" method="POST">
-                                @csrf
-                                <input type="hidden" name="selected_trainee" value="{{ $trainee->name }}">
+                    <form action="{{ route('supervisor-assign-method') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="selected_trainee" value="{{ $trainee->name }}">
 
-                                @foreach ($filteredSupervisors as $supervisor)
-                                    <div class="form-check mb-3">
+                        <div class="row">
+                            @foreach ($filteredSupervisors as $supervisor)
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-check">
                                         <input type="checkbox" class="form-check-input" name="selected_supervisors[]" value="{{ $supervisor->name }}" id="trainee_{{ $supervisor->name }}">
                                         <label class="form-check-label" for="trainee_{{ $supervisor->name }}">
                                             {{ $supervisor->name }}
                                         </label>
                                     </div>
-                                @endforeach
+                                </div>
+                            @endforeach
+                        </div>
 
-                                <button type="submit" class="btn btn-primary">Assign Selected Supervisor</button>
-                            </form>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">Assign Selected Supervisor</button>
                         </div>
-                        <div class="col-md-6">
-                            <p>Selected Supervisor(s):</p>
-                            <pre id="selected-trainees-display"></pre>
-                        </div>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>

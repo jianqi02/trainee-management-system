@@ -598,25 +598,35 @@
                 </button>
               </div>
             <div class="assign-bar-wrapper">
-                <div class="card" id="popoverContent" style="width: 18rem;">
+                <div class="card" id="popoverContent" style="max-width: 22rem;">
                     <div class="card-body">
-                      <h5 class="card-title"></h5>
-                      <p class="card-text"></p>
-                      <div class="col-md-8">
-                    </div>
+                        <div class="d-flex justify-content-end">
+                            <a href="#" id="close-popover" style="border: none; text-decoration: none;">
+                                <img width="24" height="24" src="https://img.icons8.com/metro/26/808080/delete-sign.png" alt="cancel"/>
+                            </a>
+                        </div>
+                
+                        <h5 class="card-title mt-3"></h5>
+                        <p class="card-text"></p>
+                
                         <div class="seat-assign-trainee-list">
+                            <h6 class="mt-3 mb-2">Available Trainees:</h6>
                             <ul class="manual-assign-ul" id="selectable-list">
                                 @foreach ($trainees as $trainee)
                                     <li class="manual-assign-li">{{ $trainee->name }}</li>
                                 @endforeach
                             </ul>
                         </div>
-                        <p class="btn btn-primary-ex1" id="close-popover">Cancel</p>
-                        <a href="" class="btn btn-primary-ex1" id="change-ownership-btn">Change Seat Ownership</a>
-                        <a href="" class="btn btn-primary-ex1" id="remove-trainee-btn">Remove Assigned Trainee</a>
-                        <a href="" class="btn btn-primary-ex1" id="assign-seat-btn">Assign Selected Trainee</a>
+                
+                        <div class="mt-4 justify-content-between" style="display: flex; flex-direction: column;">
+                            <a href="" class="btn btn-primary" id="change-ownership-btn" style="margin-bottom: 10px;">Change Seat Status</a>
+                            <a href="" class="btn btn-danger" id="remove-trainee-btn" style="margin-bottom: 10px;">Remove Assigned Trainee</a>
+                            <a href="" class="btn btn-success" id="assign-seat-btn">Assign Selected Trainee</a>
+                        </div>
                     </div>
                 </div>
+                
+                
                 <div class="trainee-assign-button-group">
                     <form action="{{ route('seating-arrange') }}">
                         <label for="week">Select a week:</label>
@@ -725,7 +735,7 @@
         }
     });
 
-    // Add a click event listener to the "Change Ownership" button
+    // Add a click event listener to the "Change Seat Status" button
     changeOwnershipButton.addEventListener("click", function () {
         if (lastClickedButtonId) {
             // Send the selectedCellId to your controller using an HTTP request (e.g., AJAX)

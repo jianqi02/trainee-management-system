@@ -267,9 +267,15 @@ class AdminController extends Controller
             ->value('id');
 
         $selectedSupervisors = $request->input('selected_supervisors');
-        $selectedSupervisorIDs = Supervisor::whereIn('name', $selectedSupervisors)
+        if($selectedSupervisors){
+            $selectedSupervisorIDs = Supervisor::whereIn('name', $selectedSupervisors)
             ->pluck('id')
             ->all();
+        }
+        else{
+            return redirect()->route('admin-trainee-assign');
+        }
+
 
         if(!empty($selectedSupervisorIDs)){
             // Loop through the selected supervisors and create records only if they are not already assigned
@@ -296,9 +302,14 @@ class AdminController extends Controller
     
     public function removeSupervisorMethod(Request $request){
         $selectedSupervisors = $request->input('selected_supervisors');
-        $selectedSupervisorIDs = Supervisor::whereIn('name', $selectedSupervisors)
+        if($selectedSupervisors){
+            $selectedSupervisorIDs = Supervisor::whereIn('name', $selectedSupervisors)
             ->pluck('id')
             ->all();
+        }
+        else{
+            return redirect()->route('admin-trainee-assign');
+        }
         $selectedTrainee = $request->input('selected_trainee');
         $selectedTraineeID = AllTrainee::where('name', $selectedTrainee)
             ->value('id');

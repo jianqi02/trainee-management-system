@@ -21,7 +21,7 @@
                                 <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
 
                                 <small id="nameHelp" class="form-text text-muted">
-                                    Enter your full name as per official records.
+                                    Enter the full name.
                                 </small>
                                 
                                 @error('name')

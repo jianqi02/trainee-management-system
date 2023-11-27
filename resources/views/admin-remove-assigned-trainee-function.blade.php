@@ -8,25 +8,27 @@
             <div class="card">
                 <div class="card-header">{{ __('Remove Assigned Supervisor For') }} {{ $traineeName }}</div>
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6 border-end">
-                            <form action="{{ route('remove-supervisor-method') }}" method="POST">
-                                @csrf
-                                <input type="hidden" name="selected_trainee" value="{{ $traineeName }}">
+                    <form action="{{ route('remove-supervisor-method') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="selected_trainee" value="{{ $traineeName }}">
 
-                                @foreach ($currentSupervisors as $supervisor)
-                                    <div class="form-check mb-3">
+                        <div class="row">
+                            @foreach ($currentSupervisors as $supervisor)
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-check">
                                         <input type="checkbox" class="form-check-input" name="selected_supervisors[]" value="{{ $supervisor->supervisor->name }}" id="trainee_{{ $supervisor->supervisor->name }}">
                                         <label class="form-check-label" for="trainee_{{ $supervisor->supervisor->name }}">
                                             {{ $supervisor->supervisor->name }}
                                         </label>
                                     </div>
-                                @endforeach
-
-                                <button type="submit" class="btn btn-primary">Remove Selected Supervisors</button>
-                            </form>
+                                </div>
+                            @endforeach
                         </div>
-                    </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-danger">Remove Selected Supervisors</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
