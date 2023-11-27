@@ -171,8 +171,8 @@
             <div class="row">
                 <div class="col-md-4">
                     <!-- Search Bar -->
-                    <div class="input-group mb-3">
-                        <input type="text" class="form-control" placeholder="Search trainees" id="search-input">
+                    <div class="input-group mb-3" style="width: 1075px;">
+                        <input type="text" class="form-control" placeholder="Search trainees..." id="search-input">
                         <button class="btn btn-outline-secondary" type="button" id="search-button">Search</button>
                     </div>
                 </div>
