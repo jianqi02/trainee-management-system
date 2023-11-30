@@ -45,9 +45,9 @@
         }
 
         .trainee-list-table{
-            max-height: 250px; /* Set the maximum height for the container */
-            overflow-y: auto; /* Enable vertical scrolling when the content overflows */
-            border: 1px solid #ccc; /* Optional: Add a border for clarity */
+            max-height: 250px; 
+            overflow-y: auto; 
+            border: 1px solid #ccc; 
         }
 
         .map-level-1,

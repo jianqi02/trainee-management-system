@@ -1,0 +1,263 @@
+/* admin-dashboard */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    font-family: 'Roboto', sans-serif;
+}
+
+.card {
+    margin-top: 20px;
+    width: 100%;
+    height: 100%;
+}
+
+.card-title {
+    color:#555;
+    font-size: 1rem;
+}
+
+.card-text {
+    font-size: 2.1rem;
+    color:#555;
+}
+
+.trainee-list-container{
+    margin-top: 60px;
+}
+
+.content {
+    margin-left: 120px;
+    padding: 20px;
+}
+
+.trainee-list-table{
+    max-height: 250px; 
+    overflow-y: auto;
+    border: 1px solid #ccc; 
+}
+
+.map-level-1,
+.map-level-3 {
+    border-collapse: collapse;
+    width: 70%;
+    height: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 70px;
+}
+
+.map-level-1 table, 
+.map-level-1 th, 
+.map-level-1 td,
+.map-level-3 table,
+.map-level-3 th,
+.map-level-3 td {
+    border: 3px solid #000000;
+    padding: 8px;
+}
+
+
+.map-level-1 td, 
+.map-level-3 td {
+    min-width: 90px;
+    max-width: 90px;
+    min-height: 50px;
+    max-height: 70px;
+}
+
+.seating-card {
+    margin-top: 40px;
+}
+
+.table-wrapper-horizontal{
+    display: flex;
+    flex-direction: row;
+    width: auto;
+}
+
+.table-wrapper-vertical{
+    display: flex;
+    flex-direction: column;
+    margin-left: 20px;
+    margin-right: 40px;
+}
+/* admin-dashboard ends */
+
+/* admin-edit-profile */
+.content-edit-profile {
+    margin-left: 250px;
+    padding: 20px;
+}
+
+.card-edit-profile{
+    width: 80%;
+}
+
+/* admin-edit-profile ends */
+
+/* admin-notifications */
+.notification-container {
+    margin-left: 150px;
+}
+
+.list-group-item{
+    max-width: 1000px;
+}
+
+.badge-pill{
+    margin-right: 10px;
+}
+
+.horizontal-wrapper{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.notification-btn{
+    margin-right: 100px;
+}
+
+.unread-notification {
+    background-color: #f0f0f0; 
+}
+
+.read-notification {
+    background-color: #ffffff; 
+}
+/* admin notification ends */
+
+/* admin-trainee-assign */
+.assign-supervisor-to-trainee-list {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: Arial, sans-serif;
+    margin-top: 20px;
+}
+
+.trainee-assign-container{
+    height: 45px;  
+}
+
+.trainee-assign-th {
+    background-color: #f2f2f2;
+    color: #333;
+    font-weight: bold;
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+.trainee-assign-tr {
+    background-color: #fff;
+}
+
+.trainee-assign-tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.trainee-assign-td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+.trainee-assign-td a {
+    text-decoration: none;
+    color: #007bff;
+}
+
+.trainee-assign-td a:hover {
+    text-decoration: underline;
+}
+
+.trainee-assign-input-group {
+    margin-top: 20px;
+}
+/* admin-trainee-assign ends */
+
+/* all-trainee-list */
+.all-trainee-list-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: Arial, sans-serif;
+    margin-top: 20px;
+}
+
+.trainee-list-container{
+    height: 45px;
+}
+
+.trainee-list-th {
+    background-color: #f2f2f2;
+    color: #333;
+    font-weight: bold;
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+.trainee-list-tr {
+    background-color: #fff;
+}
+
+.trainee-list-tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.trainee-list-td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+.trainee-list-td a {
+    text-decoration: none;
+    color: #007bff;
+}
+
+.trainee-list-td a:hover {
+    text-decoration: underline;
+}
+
+.input-group {
+    margin-top: 20px;
+}
+
+.icon-link {
+    position: relative;
+    display: inline-block;
+}
+
+.action-btn{
+    color: grey;
+    margin-right: 10px;
+}
+
+.tooltip {
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    background-color: grey;
+    color: #fff;
+    padding: 5px;
+    width: 110px;
+    border-radius: 5px;
+    font-size: 12px;
+    text-align: center;
+    bottom: -30px; 
+    left: 50%;
+    transform: translateX(-50%);
+    transition: opacity 0.2s;
+}
+
+.icon-link:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+/* all-trainee-list ends */

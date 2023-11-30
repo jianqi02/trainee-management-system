@@ -9,7 +9,10 @@ use App\Models\Notification;
 use App\Models\TaskTimeline;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
 use App\Providers\RouteServiceProvider;
+use Illuminate\Notifications\Notifiable;
+use App\Notifications\TelegramNotification;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 class LoginController extends Controller
@@ -26,6 +29,9 @@ class LoginController extends Controller
     */
 
     use AuthenticatesUsers;
+
+    protected $maxAttempts = 5; 
+    protected $decayMinutes = 30;
 
     /**
      * Redirect user to homepage after login.
@@ -112,7 +118,6 @@ class LoginController extends Controller
                     }
                 }
             }
-
             return '/homepage'; // Redirect trainees to trainee homepage
 
         } else{

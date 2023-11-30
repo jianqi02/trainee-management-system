@@ -112,6 +112,12 @@
             color: #007bff; /* Change the link color on hover to your preferred color */
             transition: color 0.2s ease; /* Add a smooth color transition effect */
         }
+
+        img{
+            margin-left: 10px;
+            width: 20px;
+            height: 20px;
+        }
     </style>
 </head>
 <body>
@@ -132,30 +138,30 @@
             <div class="row" style="margin-bottom: 20px;">
                 <div class="col-md-3">
                     @if(Str::contains(request()->url(), 'sort-tasks/priority/asc'))
-                        <a class="btn btn-secondary btn-block" href="{{ route('sort-tasks', ['sort' => 'priority', 'order'=> 'desc', 'traineeID' => $traineeID]) }}">Priority</a>
+                        <a class="btn btn-secondary btn-block" href="{{ route('sort-tasks', ['sort' => 'priority', 'order'=> 'desc', 'traineeID' => $traineeID]) }}">Priority<img src="https://img.icons8.com/pastel-glyph/64/000000/sorting-arrows--v1.png" alt="sorting-arrows--v1"/></a>
                     @else
-                        <a class="btn btn-secondary btn-block" href="{{ route('sort-tasks', ['sort' => 'priority', 'order' => 'asc', 'traineeID' => $traineeID]) }}">Priority</a>
+                        <a class="btn btn-secondary btn-block" href="{{ route('sort-tasks', ['sort' => 'priority', 'order' => 'asc', 'traineeID' => $traineeID]) }}">Priority<img src="https://img.icons8.com/pastel-glyph/64/000000/sorting-arrows--v1.png" alt="sorting-arrows--v1"/></a>
                     @endif
                 </div>
                 <div class="col-md-3">
                     @if(Str::contains(request()->url(), 'sort-tasks/status/asc'))
-                        <a class="btn btn-secondary btn-block" href="{{ route('sort-tasks', ['sort' => 'status', 'order'=> 'desc', 'traineeID' => $traineeID]) }}">Status</a>
+                        <a class="btn btn-secondary btn-block" href="{{ route('sort-tasks', ['sort' => 'status', 'order'=> 'desc', 'traineeID' => $traineeID]) }}">Status<img src="https://img.icons8.com/pastel-glyph/64/000000/sorting-arrows--v1.png" alt="sorting-arrows--v1"/></a>
                     @else
-                        <a class="btn btn-secondary btn-block" href="{{ route('sort-tasks', ['sort' => 'status', 'order'=> 'asc', 'traineeID' => $traineeID]) }}">Status</a>
+                        <a class="btn btn-secondary btn-block" href="{{ route('sort-tasks', ['sort' => 'status', 'order'=> 'asc', 'traineeID' => $traineeID]) }}">Status<img src="https://img.icons8.com/pastel-glyph/64/000000/sorting-arrows--v1.png" alt="sorting-arrows--v1"/></a>
                     @endif
                 </div>
                 <div class="col-md-3">
                     @if(Str::contains(request()->url(), 'sort-tasks/start-date/asc'))
-                        <a class="btn btn-secondary btn-block" href="{{ route('sort-tasks', ['sort' => 'start-date', 'order'=> 'desc', 'traineeID' => $traineeID]) }}">Start Date</a>
+                        <a class="btn btn-secondary btn-block" href="{{ route('sort-tasks', ['sort' => 'start-date', 'order'=> 'desc', 'traineeID' => $traineeID]) }}">Start Date<img src="https://img.icons8.com/pastel-glyph/64/000000/sorting-arrows--v1.png" alt="sorting-arrows--v1"/></a>
                     @else
-                        <a class="btn btn-secondary btn-block" href="{{ route('sort-tasks', ['sort' => 'start-date', 'order'=> 'asc', 'traineeID' => $traineeID]) }}">Start Date</a>
+                        <a class="btn btn-secondary btn-block" href="{{ route('sort-tasks', ['sort' => 'start-date', 'order'=> 'asc', 'traineeID' => $traineeID]) }}">Start Date<img src="https://img.icons8.com/pastel-glyph/64/000000/sorting-arrows--v1.png" alt="sorting-arrows--v1"/></a>
                     @endif
                 </div>
                 <div class="col-md-3">
                     @if(Str::contains(request()->url(), 'sort-tasks/end-date/asc'))
-                        <a class="btn btn-secondary btn-block" href="{{ route('sort-tasks', ['sort' => 'end-date', 'order'=> 'desc', 'traineeID' => $traineeID]) }}">End Date</a>
+                        <a class="btn btn-secondary btn-block" href="{{ route('sort-tasks', ['sort' => 'end-date', 'order'=> 'desc', 'traineeID' => $traineeID]) }}">End Date<img src="https://img.icons8.com/pastel-glyph/64/000000/sorting-arrows--v1.png" alt="sorting-arrows--v1"/></a>
                     @else
-                        <a class="btn btn-secondary btn-block" href="{{ route('sort-tasks', ['sort' => 'end-date', 'order'=> 'asc', 'traineeID' => $traineeID]) }}">End Date</a>
+                        <a class="btn btn-secondary btn-block" href="{{ route('sort-tasks', ['sort' => 'end-date', 'order'=> 'asc', 'traineeID' => $traineeID]) }}">End Date<img src="https://img.icons8.com/pastel-glyph/64/000000/sorting-arrows--v1.png" alt="sorting-arrows--v1"/></a>
                     @endif
                 </div>
             </div>  

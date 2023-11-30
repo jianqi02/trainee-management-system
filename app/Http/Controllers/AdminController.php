@@ -595,15 +595,23 @@ class AdminController extends Controller
         // Get the original filename
         $originalFileName = $file->getClientOriginalName();
 
-        // Store the file in the "public" disk
-        $file->storeAs('public/logbooks', $originalFileName);
+        $logbook_path = 'storage/logbooks/' . $originalFileName;
 
-        // Save the file path in the database for the user
-        Logbook::create([
-            'trainee_id' => $trainee_id,
-            'logbook_path' => 'storage/logbooks/' . $originalFileName,
-            'status' => 'Signed',
-        ]);
+        if(Logbook::where('logbook_path', $logbook_path)->exists()){
+            // If the user upload a pdf with same name
+            return redirect()->route('view-and-upload-logbook', $name)->with('error', 'Cannot upload a file with an already existing name.');
+        }
+        else{
+            // Save the file path in the database for the user
+            Logbook::create([
+                'trainee_id' => $trainee_id,
+                'logbook_path' => 'storage/logbooks/' . $originalFileName,
+                'status' => 'Signed',
+            ]);
+            // Store the file in the "public" disk
+            $file->storeAs('public/logbooks/', $originalFileName);
+        }
+
 
         // Redirect the user to a success page
         return redirect()->route('view-and-upload-logbook', $name)->with('success', 'Logbook uploaded successfully');
@@ -663,7 +671,7 @@ class AdminController extends Controller
         $originalFileName = $file->getClientOriginalName();
 
         // Store the file in the "public" disk (you may configure other disks as needed)
-        $file->storeAs('public/resumes', $originalFileName);
+        $file->storeAs('public/resumes/', $originalFileName);
 
         // Save the file path in the database for the user
         $trainee->resume_path = 'storage/resumes/' . $originalFileName;

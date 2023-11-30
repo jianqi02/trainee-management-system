@@ -9,14 +9,18 @@ use App\Models\Seating;
 use App\Models\Trainee;
 use Illuminate\View\View;
 use App\Models\AllTrainee;
+use App\Models\Supervisor;
 use App\Models\Notification;
 use Illuminate\Http\Request;
 use App\Models\TraineeAssign;
 use Illuminate\Support\Facades\DB;
+use Spatie\Browsershot\Browsershot;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\TraineeController;
+use App\Notifications\TelegramNotification;
 
 class TraineeController extends Controller
 {
@@ -138,7 +142,7 @@ class TraineeController extends Controller
         $originalFileName = $file->getClientOriginalName();
 
         // Store the file in the "public" disk (you may configure other disks as needed)
-        $file->storeAs('public/resumes', $originalFileName);
+        $file->storeAs('public/resumes/', $originalFileName);
 
         // Save the file path in the database for the user
         $trainee = Trainee::where('name', $user->name)->first();
@@ -182,15 +186,23 @@ class TraineeController extends Controller
         // Get the original filename
         $originalFileName = $file->getClientOriginalName();
 
-        // Store the file in the "public" disk
-        $file->storeAs('public/logbooks', $originalFileName);
+        $logbook_path = 'storage/logbooks/' . $originalFileName;
 
-        // Save the file path in the database for the user
-        Logbook::create([
-            'trainee_id' => $id,
-            'logbook_path' => 'storage/logbooks/' . $originalFileName,
-            'status' => 'Unsigned',
-        ]);
+        if(Logbook::where('logbook_path', $logbook_path)->exists()){
+            // If the user upload a pdf with same name
+            return redirect()->route('trainee-upload-logbook')->with('error', 'Cannot upload a file with an already existing name.');
+        }
+        else{
+            // Save the file path in the database for the user
+            Logbook::create([
+                'trainee_id' => $id,
+                'logbook_path' => 'storage/logbooks/' . $originalFileName,
+                'status' => 'Unsigned',
+            ]);
+
+            // Store the file in the "public" disk
+            $file->storeAs('public/logbooks/', $originalFileName);
+        }
 
         //get the id of the trainee in the list (all trainee list)
         $id_in_list = AllTrainee::where('name', 'LIKE', $trainee)->pluck('id');
@@ -210,6 +222,9 @@ class TraineeController extends Controller
                 'data' => 'Your trainee ' . $trainee . ' has uploaded a logbook.',
             ]);
             $notification->save(); // Save the notification to the database
+
+            $supervisor_name = Supervisor::where('id', $assigned_supervisor_id)->pluck('name')->first();
+            $notification->notify(new TelegramNotification('Logbook Uploaded', $supervisor_name, $trainee, 'Your trainee has uploaded a logbook.'));
         }
 
         // Redirect the user to a success page

@@ -5,29 +5,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <style>
-        .content {
-            margin-left: 250px;
-            padding: 20px;
-        }
-
-        h1 {
-            font-family: 'Roboto', sans-serif;
-        }
-
-        .card{
-            width: 80%;
-        }
-
-
-    </style>
+    <link rel="stylesheet" href="css/admin.css">
 </head>
 <body>
-    <div class='content'>
+    <div class="content-edit-profile">
         <!-- Display trainee-specific fields if applicable -->
         @if($user->role_id === 3)
-        <div class="card">
+        <div class="card-edit-profile">
             <div class="card-header">{{ __('Edit profile for') }} {{ $user->name }}</div>
             <div class="card-body">
             <div class="container mt-5">
@@ -58,11 +42,11 @@
                     </div>
                     <div class="mb-3">
                         <label for="startDate" class="form-label">Internship Date (Start)</label>
-                        <input type="date" class="form-control" id="startDate" name="startDate" value="{{ $internship_date->internship_start }}">
+                        <input type="date" class="form-control" id="startDate" name="startDate" value="{{ $internship_date->internship_start ?? null }}">
                     </div>
                     <div class="mb-3">
                         <label for="endDate" class="form-label">Internship Date (End)</label>
-                        <input type="date" class="form-control" id="endDate" name="endDate" value="{{ $internship_date->internship_end }}">
+                        <input type="date" class="form-control" id="endDate" name="endDate" value="{{ $internship_date->internship_end ?? null }}">
                     </div>
                     <div class="mb-3">
                         <label for="graduateDate" class="form-label">Graduation Date</label>

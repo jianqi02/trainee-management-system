@@ -7,132 +7,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Supervisor Assignment</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+    <link rel="stylesheet" href="css/admin.css">
 </head>
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f4f4f4;
-        margin: 0;
-        padding: 0;
-    }
-
-    h1 {
-        font-family: 'Roboto', sans-serif;
-    }
-
-    .content {
-        margin-left: 150px;
-        padding: 20px;
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        font-family: Arial, sans-serif;
-        margin-top: 20px;
-    }
-
-    .container{
-        height: 45px;
-        
-    }
-
-    th {
-        background-color: #f2f2f2;
-        color: #333;
-        font-weight: bold;
-        padding: 10px;
-        text-align: left;
-        border: 1px solid #ddd;
-    }
-
-    tr {
-        background-color: #fff;
-    }
-
-    tr:nth-child(even) {
-        background-color: #f2f2f2;
-    }
-
-    td {
-        padding: 10px;
-        text-align: left;
-        border: 1px solid #ddd;
-    }
-
-    td a {
-        text-decoration: none;
-        color: #007bff;
-    }
-
-    td a:hover {
-        text-decoration: underline;
-    }
-
-    .input-group {
-        margin-top: 20px;
-    }
-
-    .dropdown {
-        margin-top: 20px;
-    }
-
-    .navbar {
-        height: 50px;
-    }
-
-    .notification {
-        margin-top: 25px;
-    }
-    
-    #navbarDropdown {
-        margin-bottom: 15px;
-    }
-
-</style>
 <body>
     <div class="content">
         <h1>Supervisor Assignment For Trainee</h1>
     <main>
-        <div class="container">
+        <div class="trainee-assign-container">
             @if (session('status'))
                 <div class="alert alert-success">
                     {{ session('status') }}
                 </div>
             @endif
             <div class="tab-content" id="myTabContent">
-                <div class="input-group mb-3">
+                <div class="input-group trainee-assign-input-group mb-3">
                     <input type="text" class="form-control" placeholder="Search trainee or supervisor..." id="assign-trainee-for-sv-search">
                     <button class="btn btn-outline-secondary" type="button" id="search-button">Search</button>
                 </div>
                     <div style="max-height: 350px; overflow-y: scroll;">
                         <table class="assign-supervisor-to-trainee-list" id="assign-supervisor-to-trainee-list">
                             <thead>
-                                <tr>
-                                    <th>Trainee Name
+                                <tr class="trainee-assign-tr">
+                                    <th class="trainee-assign-th">Trainee Name
                                         <button class="sort-button" data-column="0" style="border: none;">
                                             <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 320 512">
                                                 <path d="M137.4 41.4c12.5-12.5 32.8-12.5 45.3 0l128 128c9.2 9.2 11.9 22.9 6.9 34.9s-16.6 19.8-29.6 19.8H32c-12.9 0-24.6-7.8-29.6-19.8s-2.2-25.7 6.9-34.9l128-128zm0 429.3l-128-128c-9.2-9.2-11.9-22.9-6.9-34.9s16.6-19.8 29.6-19.8H288c12.9 0 24.6 7.8 29.6 19.8s2.2 25.7-6.9 34.9l-128 128c-12.5 12.5-32.8 12.5-45.3 0z"/>
                                             </svg>
                                         </button>
                                     </th>
-                                    <th>Current Assigned Supervisor
+                                    <th class="trainee-assign-th">Current Assigned Supervisor
                                         <button class="sort-button" data-column="1" style="border: none;">
                                             <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 320 512">
                                                 <path d="M137.4 41.4c12.5-12.5 32.8-12.5 45.3 0l128 128c9.2 9.2 11.9 22.9 6.9 34.9s-16.6 19.8-29.6 19.8H32c-12.9 0-24.6-7.8-29.6-19.8s-2.2-25.7 6.9-34.9l128-128zm0 429.3l-128-128c-9.2-9.2-11.9-22.9-6.9-34.9s16.6-19.8 29.6-19.8H288c12.9 0 24.6 7.8 29.6 19.8s2.2 25.7-6.9 34.9l-128 128c-12.5 12.5-32.8 12.5-45.3 0z"/>
                                             </svg>
                                         </button>
                                     </th>
-                                    <th>Actions</th>
+                                    <th class="trainee-assign-th">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($trainees as $trainee)
-                                    <tr id="supervisor-{{ $trainee->name }}">
-                                        <td style="width: 30%;">{{ $trainee->name}}</td>
-                                        <td>
+                                    <tr id="supervisor-{{ $trainee->name }}" class="trainee-assign-tr">
+                                        <td style="width: 30%;" class="trainee-assign-td">{{ $trainee->name}}</td>
+                                        <td class="trainee-assign-td">
                                             @foreach ($assignedSupervisorList as $assignment)
                                             <!-- Check if the current trainee is assigned to the current supervisor -->
                                                 @if (strcasecmp($assignment->trainee->name, $trainee->name) === 0)
@@ -140,9 +58,7 @@
                                                 @endif
                                             @endforeach
                                         </td>
-                                        <td>
-                                            <!-- Add your buttons/actions here -->
-                                            
+                                        <td class="trainee-assign-td">
                                             <a href="{{ route('admin-assign-supervisor-function', ['selected_trainee' => urlencode($trainee->name)]) }}" style="text-decoration: none;" title="Assign Supervisor">
                                                 <i class="fas fa-user-plus action-btn" style="color: grey; font-size: 24px;"></i>
                                             </a>

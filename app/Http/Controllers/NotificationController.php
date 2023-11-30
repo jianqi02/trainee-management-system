@@ -10,6 +10,7 @@ use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use App\Notifications\TelegramNotification;
 use App\Http\Controllers\NotificationController;
 
 class NotificationController extends Controller
@@ -186,9 +187,11 @@ class NotificationController extends Controller
                 $notification->notifiable_type = 'App\Models\Supervisor';
                 $notification->notifiable_id = 0;
                 $notification->data = json_encode([
-                    'data' => 'Supervisor ' . $supervisorName . ' has requested to change the password.',
+                    'data' => 'Supervisor ' . $supervisorName . ' has requested to reset the password.',
                 ]);
                 $notification->save(); // Save the notification to the database
+
+                $notification->notify(new TelegramNotification('Password Reset Request', $supervisorName, '', 'Supervisor ' . $supervisorName . ' has requested to reset the password.'));
             }
             elseif($userRole == 3){
                 $traineeName = Trainee::where('sains_email', $email)->pluck('name')->first();
@@ -200,17 +203,19 @@ class NotificationController extends Controller
                 $notification->notifiable_type = 'App\Models\Trainee';
                 $notification->notifiable_id = 0;
                 $notification->data = json_encode([
-                    'data' => 'Trainee ' . $traineeName . ' has requested to change the password.',
+                    'data' => 'Trainee ' . $traineeName . ' has requested to reset the password.',
                 ]);
                 $notification->save(); // Save the notification to the database
+
+                $notification->notify(new TelegramNotification('Password Reset Request', '', $traineeName, 'Trainee ' . $traineeName . ' has requested to reset the password.'));
             }
             else{
-                return redirect()->back()->with('status', 'Please try with other Email.');
+                return redirect()->back()->with('status', 'If the email address submitted is valid, a notification will be sent to the admin to reset your password.');
             }
         }else{
-            return redirect()->back()->with('status', 'Please try again.');
+            return redirect()->back()->with('status', 'If the email address submitted is valid, a notification will be sent to the admin to reset your password.');
         }
 
-        return redirect()->back()->with('success', 'Notification sent. Please wait for admin to change your password.');
+        return redirect()->back()->with('success', 'If the email address submitted is valid, a notification will be sent to the admin to reset your password.');
     }
 }

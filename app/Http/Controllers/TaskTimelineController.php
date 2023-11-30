@@ -8,12 +8,14 @@ use DateInterval;
 use Ramsey\Uuid\Uuid;
 use App\Models\Trainee;
 use App\Models\AllTrainee;
+use App\Models\Supervisor;
 use App\Models\Notification;
 use App\Models\TaskTimeline;
 use Illuminate\Http\Request;
 use App\Models\TraineeAssign;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use App\Notifications\TelegramNotification;
 
 class TaskTimelineController extends Controller
 {
@@ -133,7 +135,7 @@ class TaskTimelineController extends Controller
         $task->task_status = 'Not Started';
         $task->task_priority = $request->input('priority');
         $taskDetail = [
-            "Description" => "",
+            "Description" => "Put your description here.",
         ];
         $task->task_detail = json_encode($taskDetail);
         $task->save();
@@ -177,7 +179,7 @@ class TaskTimelineController extends Controller
         $task->task_status = 'Not Started';
         $task->task_priority = $request->input('priority');
         $taskDetail = [
-            "Description" => "",
+            "Description" => "Put your description here.",
         ];
         $task->task_detail = json_encode($taskDetail);
         $task->save();
@@ -200,8 +202,7 @@ class TaskTimelineController extends Controller
         $traineeName = Trainee::where('sains_email', $user->email)->pluck('name')->first();
         $traineeID = AllTrainee::where('name', 'LIKE', $traineeName)->pluck('id')->first();
         
-        $taskName = TaskTimeline::find($taskID)->pluck('task_name')->first();
-
+        $taskName = TaskTimeline::where('id', $taskID)->pluck('task_name')->first();
 
         //terminate the function when the user chooses invalid date (end date < start date)
         if($endDate < $startDate){
@@ -263,6 +264,9 @@ class TaskTimelineController extends Controller
                         'data' => 'You trainee ' . $traineeName . ' has completed task ' . $taskName,
                     ]);
                     $notification->save(); // Save the notification to the database
+
+                    $supervisor_name = Supervisor::where('id', $assigned_supervisor_id)->pluck('name')->first();
+                    $notification->notify(new TelegramNotification('Task Completion', $supervisor_name , $traineeName , 'Your trainee has completed ' . $taskName . '.'));
                 }
             }
         }

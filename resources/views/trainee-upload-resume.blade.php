@@ -151,13 +151,34 @@
                                         {{ pathinfo($trainee->resume_path, PATHINFO_BASENAME) }}
                                     </a>
                                 </h5>
-                                <form action="{{ route('resumes.destroyResume', $trainee) }}" method="POST">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="delete-resume-button">
+                                    <button type="submit" class="delete-resume-button" data-toggle="modal" data-target="#confirmationModal">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
-                                </form>
+
+                                <div class="modal" tabindex="-1" role="dialog" id="confirmationModal">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Confirmation</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Are you sure you want to delete this resume?
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                <form action="{{ route('resumes.destroyResume', $trainee) }}" method="POST">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-danger">Confirm Delete</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
                     </li>

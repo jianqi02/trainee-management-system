@@ -164,15 +164,23 @@ class SupervisorController extends Controller
         // Get the original filename
         $originalFileName = $file->getClientOriginalName();
 
-        // Store the file in the "public" disk
-        $file->storeAs('public/logbooks', $originalFileName);
+        $logbook_path = 'storage/logbooks/' . $originalFileName;
 
-        // Save the file path in the database for the user
-        Logbook::create([
-            'trainee_id' => $trainee_id,
-            'logbook_path' => 'storage/logbooks/' . $originalFileName,
-            'status' => 'Signed',
-        ]);
+        if(Logbook::where('logbook_path', $logbook_path)->exists()){
+            // If the user upload a pdf with same name
+            return redirect()->route('view-and-upload-logbook-sv', $name)->with('error', 'Cannot upload a file with an already existing name.');
+        }
+        else{
+            // Save the file path in the database for the user
+            Logbook::create([
+                'trainee_id' => $trainee_id,
+                'logbook_path' => 'storage/logbooks/' . $originalFileName,
+                'status' => 'Signed',
+            ]);
+
+            // Store the file in the "public" disk
+            $file->storeAs('public/logbooks/', $originalFileName);
+        }
         
         //send the notification about the signed logbook to the trainee.
         $notification = new Notification();

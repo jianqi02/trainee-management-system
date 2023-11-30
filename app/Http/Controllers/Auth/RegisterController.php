@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Notifications\tmsNotification;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Support\Facades\Validator;
+use App\Notifications\TelegramNotification;
 use Illuminate\Foundation\Auth\RegistersUsers;
 
 class RegisterController extends Controller
@@ -159,6 +160,8 @@ class RegisterController extends Controller
                 'style' => 'color: red; font-weight: bold;',
             ]);
             $notification->save(); // Save the notification to the database
+
+            $notification->notify(new TelegramNotification('Unknown Account Registered', '', $data['name'], 'A new trainee ' . $data['name'] . ' which is not in the list has registered.'));
         }
         else{
             $notification = new Notification();
@@ -170,6 +173,8 @@ class RegisterController extends Controller
                 'data' => 'Trainee ' . $data['name'] . ' has registered.',
             ]);
             $notification->save(); // Save the notification to the database
+
+            $notification->notify(new TelegramNotification('Account Registered', '', $data['name'], 'A new trainee ' . $data['name'] . ' has registered.'));
         }
     
         return $user;
