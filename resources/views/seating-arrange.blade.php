@@ -170,6 +170,38 @@
     #navbarDropdown {
         margin-bottom: -30px;
     }
+
+    label {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+
+    input[type="week"] {
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-bottom: 15px;
+    }
+
+    input[type="submit"] {
+        background: #275968;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+        color: #FFFFFF;
+        width: 200px;
+        height: 45px;
+        border-radius: 14px;
+        border: none;
+        text-align: center;
+        margin-bottom: 40px;
+        margin-top: -10px;
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+    input[type="submit"]:hover {
+        background-color: #45a049;
+    }
+
 </style>
     @if (session('warning'))
         <div class="alert alert-warning">
