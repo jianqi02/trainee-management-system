@@ -11,6 +11,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use App\Providers\RouteServiceProvider;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Notifications\Notifiable;
 use App\Notifications\TelegramNotification;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
@@ -56,6 +57,10 @@ class LoginController extends Controller
             // Check the trainee's account status
             if ($trainee->acc_status === 'Active') {
                 if($trainee->personal_email == null || $trainee->phone_number == null){
+
+                    //save the session in the db
+                    $user->session_id = session_id();
+                    $user->save();
                     return redirect('/trainee-edit-profile')->with('alert', 'Please complete your profile first!'); // Redirect trainees to trainee edit profile page
                 }
                 else{
@@ -63,6 +68,8 @@ class LoginController extends Controller
                 }
             } else {
                 // If the account is inactive, log the user out and show a message
+                $user->session_id = null;
+                $user->save();
                 Auth::logout();
                 return redirect('/login')->with('status', 'Your account is inactive. Please contact admin.');
             }
@@ -77,6 +84,22 @@ class LoginController extends Controller
         // Check the role of the authenticated user
         $user = Auth::user();
         $trainee = Trainee::where('name', $user->name)->first();
+
+         // Retrieve the session_id from the current session
+        $currentSessionId = Session::getId();
+
+        // Check if the user has a stored session_id and if it's different from the current session
+        if ($user->session_id && $user->session_id !== $currentSessionId) {
+            // Log out the user
+            Auth::logout();
+
+            // Redirect to the login page with a message
+            return '/login?error=session_expired';
+        }
+
+        $user->session_id = $currentSessionId;
+        $user->save();
+
         if ($user->role_id === 1) {
             return '/admin-dashboard'; // Redirect trainees to admin dashboard
         } elseif ($user->role_id === 2) {

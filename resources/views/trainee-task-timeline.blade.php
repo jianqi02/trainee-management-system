@@ -31,6 +31,10 @@
             color: #000000;
         }
 
+        .btn-secondary:hover img {
+            filter: brightness(0) invert(1);
+        }
+
         /* Hover effect */
         .btn-primary:hover {
             background-color: #d3d3d3; /* Change to your preferred color on hover */

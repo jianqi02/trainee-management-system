@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\SeatingController;
 use App\Http\Controllers\TraineeController;
 use App\Http\Controllers\Auth\LoginController;
@@ -52,17 +53,10 @@ Route::fallback(function () {
     return redirect('/');
 });
 
-#log out
-Route::middleware(['auth'])->group(function () {
-    // Logout route
-    Route::post('/logout', 'AuthController@logout')->name('logout');
-});
-
-
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
-Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+Route::get('/logout', [LogoutController::class, 'logout'])->name('logout');
+Route::post('/logout', [LogoutController::class, 'logout'])->name('logout');
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register']);
 Route::get('/home', [HomeController::class, 'index'])->name('home');

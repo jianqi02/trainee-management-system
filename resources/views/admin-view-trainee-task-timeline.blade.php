@@ -117,6 +117,10 @@
             width: 20px;
             height: 20px;
         }
+
+        .btn-secondary:hover img {
+            filter: brightness(0) invert(1);
+        }
     </style>
 </head>
 <body>

@@ -185,14 +185,14 @@
         </div>
 
         <div class="profile-info" style="text-align: left;">  
-            <p>Full Name: {{ $trainee->name }} </p>
-            <p>Personal Email: {{ $trainee->personal_email }}</p>
-            <p>SAINS Email: {{ $trainee->sains_email }}</p>
-            <p>Phone Number: {{ $trainee->phone_number }}</p>
-            <p>Expertise: {{ $trainee->expertise }}</p>
-            <p>Internship Date (Start): {{ $internship_dates->internship_start ?? '' }}
-            <p>Internship Date (End): {{ $internship_dates->internship_end ?? '' }}
-            <p>Graduation Date:{{ $trainee->graduate_date }}</p>
+            <p><strong>Full Name</strong>: {{ $trainee->name }} </p>
+            <p><strong>Personal Email</strong>: {{ $trainee->personal_email }}</p>
+            <p><strong>SAINS Email</strong>: {{ $trainee->sains_email }}</p>
+            <p><strong>Phone Number</strong>: {{ $trainee->phone_number }}</p>
+            <p><strong>Expertise</strong>: {{ $trainee->expertise }}</p>
+            <p><strong>Internship Date (Start)</strong>: {{ $internship_dates->internship_start ?? '' }}
+            <p><strong>Internship Date (End)</strong>: {{ $internship_dates->internship_end ?? '' }}
+            <p><strong>Graduation Date</strong>: {{ $trainee->graduate_date }}</p>
         </div>
 
         <div class="profile-buttons">
@@ -204,7 +204,7 @@
         </div>
 
         @if ($trainee->resume_path == null)
-            <p class="no-resume-message">This trainee has not upload any resume yet.</p>
+            <p class="no-resume-message">You have not upload any resume yet.</p>
         @else
         <ul class="resume-cards">
             <li class="resume-card">
