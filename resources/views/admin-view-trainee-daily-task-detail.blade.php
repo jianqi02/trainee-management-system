@@ -205,7 +205,7 @@
     @endphp
     <div class="task-container">
         <div class="row">
-            <h3>Detail</h3>
+            <h3>Daily Task Detail</h3>
             @if(session('warning'))
                 <div class="alert alert-warning" style="width: 64.3%; margin-left: 15px;">{{ session('warning') }}</div>
             @endif
@@ -263,36 +263,36 @@
                     </div>
                 </div>
 
-                <h3>Comment</h3>
+                <h3>Note</h3>
 
                 <div class="card mb-3">
                     <div class="card-body">
-                        <strong>Comment from supervisor</strong>
+                        <strong>Note from supervisor</strong>
                         <br>
                         {!! nl2br(e($taskDetail['Supervisor'] ?? 'No comment from supervisor.')) !!}
                         <br>
                         <br>
                         <br>
-                        <strong>Comment from trainee</strong>
+                        <strong>Note from trainee</strong>
                         <br>
                         {!! nl2br(e($taskDetail['Trainee'] ?? 'No comment from trainee.')) !!}
                     </div>
                 </div>
 
-                <button type="button" id="commentButton" class="btn btn-primary" style="padding: 7px; height: 40px;">Comment</button>
+                <button type="button" id="commentButton" class="btn btn-primary" style="padding: 7px; height: 40px;">Add or Edit Note</button>
 
                 <div id="commentModal" class="modal">
                     <div class="modal-content">
                         <span class="close" id="closeCommentModal">&times;</span>
-                        <h2>Add or Edit Comment</h2>
+                        <h2>Add or Edit Note</h2>
                         <form id="commentForm" action="{{ route('task-timeline-daily-comment', ['date' => $date, 'taskID' => $taskID]) }}" method="post">
                             @csrf
                             <div class="form-group">
-                                <label for="commentSV">Comment from supervisor:</label>
+                                <label for="commentSV">Note from supervisor:</label>
                                 <textarea id="commentSV" name="commentSV">{!! nl2br(e($taskDetail['Supervisor'] ?? '')) !!}</textarea>
                             </div>
                             <div class="form-group">
-                                <label for="commentTR">Comment from trainee:</label>
+                                <label for="commentTR">Note from trainee:</label>
                                 <textarea id="commentTR" name="commentTR">{!! nl2br(e($taskDetail['Trainee'] ?? '')) !!}</textarea>
                             </div>
                             <button type="submit" class="btn btn-primary btn-add-task">Submit</button>

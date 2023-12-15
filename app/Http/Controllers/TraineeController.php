@@ -80,23 +80,19 @@ class TraineeController extends Controller
 
     public function updateProfile(Request $request){
         $validatedData = $request->validate([
-            'fullName' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z\s]+$/'],
-            'phoneNum' => ['required', 'string', 'max:255', 'regex:/^[0-9\+]+$/'],
+            'phoneNum' => ['required', 'string', 'regex:/^(\+?6?01)[02-46-9][0-9]{7}$|^(\+?6?01)[1][0-9]{8}$/'],
             'expertise' => 'nullable|string',
             'personalEmail' => ['required', 'email', 'regex:/^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$/'],
             'graduateDate' => 'nullable|date',
             'profilePicture' => 'image|mimes:jpeg,png,jpg|max:2048',
         ]);
+
         // Get the currently logged-in user
         $user = Auth::user();
-    
-        $user->name = $request->input('fullName');
-        $user->save();
 
         $trainee = Trainee::where('sains_email', $user->email)->first();
 
         if ($trainee) {
-            $trainee->name = $request->input('fullName');
             $trainee->phone_number = $request->input('phoneNum');
             $trainee->expertise = $request->input('expertise');
             $trainee->personal_email = $request->input('personalEmail');
@@ -109,11 +105,9 @@ class TraineeController extends Controller
                 }
             
                 // Store the new profile image
-
                 $imagePath = $request->file('profilePicture')->store('public/profile_pictures');
                 $trainee->profile_image = $imagePath;
-            }
-            
+            }    
     
             $trainee->save();
         }

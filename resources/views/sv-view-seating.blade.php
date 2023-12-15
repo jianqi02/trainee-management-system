@@ -102,7 +102,7 @@
     <div class="content">
         <h1>Monthly Seat Plan</h1>
         @foreach ($seatingData as $seat)
-        <p class="text-center" style="margin-top: 20px; margin-bottom: -65px; margin-right: 20px;">{{ $seat['start_date']}} - {{ $seat['end_date']}}</p>
+        <p class="text-center" style="margin-top: 20px; margin-bottom: -65px; margin-right: 20px; font-size: 21px;"><strong>Date</strong>: {{ $seat['start_date']}} - {{ $seat['end_date']}}</p>
         <div class="table-wrapper-horizontal">
             <div class="table-wrapper-vertical">
                 <table class="map-level-1" id="map_level1">

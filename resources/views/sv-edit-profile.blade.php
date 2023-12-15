@@ -42,24 +42,8 @@
                 <form method="POST" action="{{ route('update-profile-sv') }}" enctype="multipart/form-data">
                     @csrf
                     <div class="mb-3">
-                        <label for="fullName" class="form-label">Full Name</label>
-                        <input type="text" class="form-control" id="fullName" name="fullName" value="{{ $supervisor->name }}" required>
-                    </div>
-                    <div class="mb-3">
                         <label for="phoneNum" class="form-label">Phone Number</label>
-                        <input type="text" class="form-control" id="phoneNum" name="phoneNum" value="{{ $supervisor->phone_number }}" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="personalEmail" class="form-label">Personal Email</label>
-                        <input type="email" class="form-control" id="personalEmail" name="personalEmail" value="{{ $supervisor->personal_email }}" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="expertise" class="form-label">Section</label>
-                        <select class="form-select" id="section" name="section">
-                            <option value="PSS" {{ $supervisor->section === 'PSS' ? 'selected' : '' }}>Professional Security Services (PSS)</option>
-                            <option value="MSS" {{ $supervisor->section === 'MSS' ? 'selected' : '' }}>Managed Security Services (MSS)</option>
-                            <option value="SPD" {{ $supervisor->section === 'SPD' ? 'selected' : '' }}>Security Product Development (SPD)</option>
-                        </select>
+                        <input type="text" class="form-control" id="phoneNum" name="phoneNum" placeholder="Example: 0171234567 / 60171234567 / +60171234567" value="{{ $supervisor->phone_number }}" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Save Changes</button>
                 </form>

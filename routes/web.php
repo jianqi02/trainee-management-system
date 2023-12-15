@@ -82,6 +82,7 @@ Route::middleware(['role:2'])->group(function () {
     Route::get('/sv-trainee-assign', [SupervisorController::class, 'showAllTraineeProfileForSV'])->name('sv-trainee-assign');
     Route::get('/view-and-upload-logbook-sv/{traineeName}', [SupervisorController::class, 'svViewTraineeLogbook'])->name('view-and-upload-logbook-sv');
     Route::get('/go-profile/{traineeName}', [SupervisorController::class, 'goToTraineeProfile'])->name('go-profile');
+    Route::get('/go-task-timeline/{traineeName}', [SupervisorController::class, 'goToTraineeTaskTimeline'])->name('go-task-timeline');
     Route::get('/sv-view-and-upload-logbook/{traineeName}', [SupervisorController::class, 'svViewTraineeLogbook'])->name('sv-view-and-upload-logbook');
     Route::post('/sv-upload-logbook/{name}', [SupervisorController::class, 'svUploadLogbook'])->name('sv-upload-logbook');
     Route::delete('/remove-logbooks-sv/{logbook}/{name}', [SupervisorController::class, 'destroy'])->name('remove-logbooks-sv.destroy');
@@ -171,6 +172,7 @@ Route::middleware(['role:1,2'])->group(function () {
 Route::middleware(['role:1,2,3'])->group(function () {
     Route::get('/sort-tasks/{sort?}/{order?}/{traineeID?}', [TaskTimelineController::class, 'index'])->name('sort-tasks');
 });
+
 // Task Timeline function for admin
 Route::middleware(['role:1'])->group(function () {
     Route::get('/admin-view-trainee-task-timeline/{traineeID}', [TaskTimelineController::class, 'adminViewTraineeTaskTimeline'])->name('admin-view-trainee-task-timeline');

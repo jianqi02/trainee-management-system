@@ -24,7 +24,26 @@ class TaskTimelineController extends Controller
         $role = $user->role_id;
 
         if($traineeID == null){
+            //error handling
+            if($role == 2){
+                return redirect()->back();
+            }
             $traineeID = Trainee::where('sains_email', $user->email)->pluck('id')->first();
+        }
+        else{
+            //broken access handling
+            if($role == 3){
+                return redirect()->back();
+            }
+
+            $trainee_name = Trainee::where('id', $traineeID)->pluck('name')->first();
+            $trainee_ref_id = AllTrainee::where('name', $trainee_name)->pluck('id')->first();
+
+            //prevent other supervisor to access the task for the trainee that is not assigned to them.
+            $supervisorID = Supervisor::where('sains_email', Auth::user()->email)->pluck('id')->first();
+            if(TraineeAssign::where('trainee_id', $trainee_ref_id)->where('assigned_supervisor_id', $supervisorID)->first() == null){
+                return redirect()->back()->with('error', 'You do not have access to view this page.');
+            }
         }
 
         $tasks = TaskTimeline::where('trainee_id', $traineeID)->get();
@@ -92,6 +111,15 @@ class TaskTimelineController extends Controller
         //get all the task for this trainee
         $tasks = TaskTimeline::where('trainee_id', $traineeID)->get();
 
+        $trainee_name = Trainee::where('id', $traineeID)->pluck('name')->first();
+        $trainee_ref_id = AllTrainee::where('name', $trainee_name)->pluck('id')->first();
+
+        //prevent other supervisor to access the task for the trainee that is not assigned to them.
+        $supervisorID = Supervisor::where('sains_email', Auth::user()->email)->pluck('id')->first();
+        if(TraineeAssign::where('trainee_id', $trainee_ref_id)->where('assigned_supervisor_id', $supervisorID)->first() == null){
+            return redirect()->back()->with('error', 'You do not have access to view this page.');
+        }
+
         return view('sv-view-trainee-task-timeline', compact('tasks', 'traineeID'));
     }
 
@@ -118,12 +146,12 @@ class TaskTimelineController extends Controller
 
         //input validation
         $validator = Validator::make($request->all(), [
-            'taskName' => ['required', 'string','regex:/^[A-Za-z0-9?!,.&\'"\s()-]+$/'],
+            'taskName' => ['required', 'string', 'max:100'],
         ]);
 
         // Check if the validation fails
         if ($validator->fails()) {
-            return redirect()->back()->with('warning', 'Some special characters are not allowed in Task Name. Please try again.');
+            return redirect()->back()->with('warning', 'The task name is too long. Please try again.');
         }
 
         //add a new task to DB
@@ -162,12 +190,12 @@ class TaskTimelineController extends Controller
 
         //input validation
         $validator = Validator::make($request->all(), [
-            'taskName' => ['required', 'string','regex:/^[A-Za-z0-9?!,.&\'"\s()-]+$/'],
+            'taskName' => ['required', 'string', 'max:100'],
         ]);
 
         // Check if the validation fails
         if ($validator->fails()) {
-            return redirect()->back()->with('warning', 'Some special characters are not allowed in Task Name. Please try again.');
+            return redirect()->back()->with('warning', 'The task name is too long. Please try again.');
         }
 
         //add a new task to DB
@@ -214,13 +242,13 @@ class TaskTimelineController extends Controller
 
         //input validation
         $validator = Validator::make($request->all(), [
-            'taskName' => ['required', 'string','regex:/^[A-Za-z0-9?!,.&\'"\s()-]+$/'],
-            'taskDescription' => ['required', 'string','regex:/^[A-Za-z0-9?!,.&\'"\s()-]+$/'],
+            'taskName' => ['required', 'string', 'max: 100'],
+            'taskDescription' => ['required', 'string', 'max: 1000'],
         ]);
 
         // Check if the validation fails
         if ($validator->fails()) {
-            return redirect()->back()->with('warning', 'Some special characters are not allowed in Task Name and Task Description. Please try again.');
+            return redirect()->back()->with('warning', 'The task name or task description is too long. Please try again.');
         }
 
         //add a new task to DB
@@ -241,42 +269,47 @@ class TaskTimelineController extends Controller
         $assigned_supervisor_ids = TraineeAssign::where('trainee_id', $traineeID)
             ->pluck('assigned_supervisor_id');
 
-        //send a notification to this trainee's supervisor when the trainee mark his or her task as Completed. 
-        if ($status == 'Completed') {
-            foreach ($assigned_supervisor_ids as $assigned_supervisor_id) {
-                // Check if a similar notification already exists
-                $existingNotification = Notification::where('type', 'task completed')
-                    ->where('notifiable_type', 'App\Models\Trainee')
-                    ->where('notifiable_id', $assigned_supervisor_id)
-                    ->where('data', json_encode([
-                        'data' => 'You trainee ' . $traineeName . ' has completed task ' . $taskName,
-                    ]))
-                    ->first();
+        $user_role = $user->role_id;
 
-                // If the notification doesn't exist, create and save a new one
-                if (!$existingNotification) {
-                    $notification = new Notification();
-                    $notification->id = Uuid::uuid4(); // Generate a UUID for the id
-                    $notification->type = 'task completed';
-                    $notification->notifiable_type = 'App\Models\Trainee';
-                    $notification->notifiable_id = $assigned_supervisor_id;
-                    $notification->data = json_encode([
-                        'data' => 'You trainee ' . $traineeName . ' has completed task ' . $taskName,
-                    ]);
-                    $notification->save(); // Save the notification to the database
+        if($user_role == 3){
+            //send a notification to this trainee's supervisor when the trainee mark his or her task as Completed. 
+            if ($status == 'Completed') {
+                foreach ($assigned_supervisor_ids as $assigned_supervisor_id) {
+                    // Check if a similar notification already exists
+                    $existingNotification = Notification::where('type', 'task completed')
+                        ->where('notifiable_type', 'App\Models\Trainee')
+                        ->where('notifiable_id', $assigned_supervisor_id)
+                        ->where('data', json_encode([
+                            'data' => 'Your trainee ' . $traineeName . ' has completed task ' . $taskName,
+                        ]))
+                        ->first();
 
-                    $supervisor_name = Supervisor::where('id', $assigned_supervisor_id)->pluck('name')->first();
-                    $notification->notify(new TelegramNotification('Task Completion', $supervisor_name , $traineeName , 'Your trainee has completed ' . $taskName . '.'));
+                    // If the notification doesn't exist, create and save a new one
+                    if (!$existingNotification) {
+                        $notification = new Notification();
+                        $notification->id = Uuid::uuid4(); // Generate a UUID for the id
+                        $notification->type = 'task completed';
+                        $notification->notifiable_type = 'App\Models\Trainee';
+                        $notification->notifiable_id = $assigned_supervisor_id;
+                        $notification->data = json_encode([
+                            'data' => 'Your trainee ' . $traineeName . ' has completed task ' . $taskName,
+                        ]);
+                        $notification->save(); // Save the notification to the database
+
+                        $supervisor_name = Supervisor::where('id', $assigned_supervisor_id)->pluck('name')->first();
+                        $notification->notify(new TelegramNotification('Task Completion', $supervisor_name , $traineeName , 'Your trainee has completed ' . $taskName . '.'));
+                    }
                 }
             }
         }
-
-
         return redirect()->route('trainee-task-detail', $taskID)->with('success', 'New task added.');
     }
 
     public function showTaskDetailForTrainee($taskID){
-        $task = TaskTimeline::find($taskID);
+        $task = TaskTimeline::where('id', $taskID)->first();
+        if($task == null){
+            return redirect()->back();
+        }
         $startDate = new DateTime($task->task_start_date);
         $endDate = new DateTime($task->task_end_date);
     
@@ -300,8 +333,22 @@ class TaskTimelineController extends Controller
         $user_role = Auth::user()->role_id;
     
         if ($user_role == 3) {
+            $trainee_id = Trainee::where('sains_email', Auth::user()->email)->pluck('id')->first();
+
+            //prevent trainee to access other trainee's task.
+            if(TaskTimeline::where('id', $taskID)->pluck('trainee_id')->first() != $trainee_id){
+                return redirect()->back()->with('error', 'You do not have access to view this page.');
+            }
             return view('trainee-task-detail', compact('task', 'dateRange', 'timelineData', 'comments'));
         } elseif ($user_role == 2) {
+            $trainee_id = TaskTimeline::where('id', $taskID)->pluck('trainee_id')->first();
+            $trainee_ref_id = AllTrainee::where('name', Trainee::where('id', $trainee_id)->pluck('name')->first())->pluck('id')->first();
+
+            //prevent other supervisor to access the task for the trainee that is not assigned to them.
+            $supervisorID = Supervisor::where('sains_email', Auth::user()->email)->pluck('id')->first();
+            if(TraineeAssign::where('trainee_id', $trainee_ref_id)->where('assigned_supervisor_id', $supervisorID)->first() == null){
+                return redirect()->back()->with('error', 'You do not have access to view this page.');
+            }
             return view('sv-view-trainee-task-detail', compact('task', 'dateRange', 'timelineData', 'comments'));
         } elseif ($user_role == 1 ){
             return view('admin-view-trainee-task-detail', compact('task', 'dateRange', 'timelineData', 'comments'));
@@ -310,9 +357,27 @@ class TaskTimelineController extends Controller
     
 
     public function showDailyTaskDetailForTrainee($date, $taskID){
-        $dailyTask = TaskTimeline::find($taskID);
+        $dailyTask = TaskTimeline::where('id', $taskID)->first();
+
+        if($dailyTask == null){
+            return redirect()->back();
+        }
     
         $timelineData = json_decode($dailyTask->timeline, true);
+
+        //the date must valid
+        $rules = [
+            'date' => 'required|date|date_format:Y-m-d',
+        ];
+
+        //check the date
+        $data = ['date' => $date];
+        $validator = Validator::make($data, $rules);
+
+        // Check if validation fails
+        if ($validator->fails()) {
+            return redirect()->back();
+        }
 
         // Convert the date string to a DateTime object
         $dateTime = new DateTime($date);
@@ -320,14 +385,38 @@ class TaskTimelineController extends Controller
         // Get the day of the week (e.g., Monday, Tuesday, etc.)
         $dayOfWeek = $dateTime->format('l');
     
-        // Get the specific date's task detail
-        $taskDetail = isset($timelineData[$date]) ? $timelineData[$date] : null;
+        if(isset($timelineData[$date])){
+            // Get the specific date's task detail
+            $taskDetail = $timelineData[$date];
+        }
+        else{
+            if($date < $dailyTask->task_start_date || $date > $dailyTask->task_end_date){
+                return redirect()->back();
+            }
+            else{
+                $taskDetail = null;
+            }
+        }
     
         $user_role = Auth::user()->role_id;
         if($user_role == 3){
+            $trainee_id = Trainee::where('sains_email', Auth::user()->email)->pluck('id')->first();
+
+            //prevent trainee to access other trainee's task.
+            if(TaskTimeline::where('id', $taskID)->pluck('trainee_id')->first() != $trainee_id){
+                return redirect()->back()->with('error', 'You do not have access to view this page.');
+            }
             return view('trainee-daily-task-detail', compact('date', 'taskDetail', 'taskID', 'dayOfWeek'));
         }
         elseif($user_role == 2){
+            $trainee_id = TaskTimeline::where('id', $taskID)->pluck('trainee_id')->first();
+            $trainee_ref_id = AllTrainee::where('name', Trainee::where('id', $trainee_id)->pluck('name')->first())->pluck('id')->first();
+
+            //prevent other supervisor to access the task for the trainee that is not assigned to them.
+            $supervisorID = Supervisor::where('sains_email', Auth::user()->email)->pluck('id')->first();
+            if(TraineeAssign::where('trainee_id', $trainee_ref_id)->where('assigned_supervisor_id', $supervisorID)->first() == null){
+                return redirect()->back()->with('error', 'You do not have access to view this page.');
+            }
             return view('sv-view-trainee-daily-task-detail', compact('date', 'taskDetail', 'taskID', 'dayOfWeek'));
         }
         elseif($user_role == 1){
@@ -343,13 +432,13 @@ class TaskTimelineController extends Controller
 
         //input validation
         $validator = Validator::make($request->all(), [
-            'taskName' => ['required', 'string', 'regex:/^[A-Za-z0-9?!,.&\'"\s()-]+$/'],
-            'taskDescription' => ['required', 'string', 'regex:/^[A-Za-z0-9?!,.&\'"\s()-]+$/'],
+            'taskName' => ['required', 'string', 'max:100'],
+            'taskDescription' => ['required', 'string', 'max:1000'],
         ]);
 
         // Check if the validation fails
         if ($validator->fails()) {
-            return redirect()->back()->with('warning', 'Some special characters are not allowed in Task Name and Task Description. Please try again.');
+            return redirect()->back()->with('warning', 'The task name or task description is too long. Please try again.');
         }
 
         if(isset($timeline[$date])){
@@ -386,12 +475,12 @@ class TaskTimelineController extends Controller
         if($user_role == 3){
             //input validation
             $validator = Validator::make($request->all(), [
-                'comment' => ['required', 'string','regex:/^[A-Za-z0-9?!,.&\'"\s()-]+$/'],
+                'comment' => ['required', 'string', 'max:500'],
             ]);
 
             // Check if the validation fails
             if ($validator->fails()) {
-                return redirect()->back()->with('warning', 'Some special characters are not allowed in comment. Please try again.');
+                return redirect()->back()->with('warning', 'Invalid note. Please Try Again.');
             }
             $comment['Trainee'] = $request->input('comment');
         }
@@ -401,12 +490,12 @@ class TaskTimelineController extends Controller
             $trainee_name = Trainee::where('id', $trainee_id)->pluck('name')->first();
             //input validation
             $validator = Validator::make($request->all(), [
-                'comment' => ['required', 'string','regex:/^[A-Za-z0-9?!,.&\'"\s()-]+$/'],
+                'comment' => ['required', 'string', 'max:500'],
             ]);
 
             // Check if the validation fails
             if ($validator->fails()) {
-                return redirect()->back()->with('warning', 'Some special characters are not allowed in comment. Please try again.');
+                return redirect()->back()->with('warning', 'Invalid note. Please try again!');
             }
             $comment['Supervisor'] = $request->input('comment');
 
@@ -418,7 +507,7 @@ class TaskTimelineController extends Controller
             $notification->notifiable_type = 'App\Models\Supervisor';
             $notification->notifiable_id = $trainee_id;
             $notification->data = json_encode([
-                'data' => 'Your supervisor ' . $sv_name . ' has added a comment to the task ' . $task_name . '.',
+                'data' => 'Your supervisor ' . $sv_name . ' has added a note to the task ' . $task_name . '.',
                 'name' => $trainee_name,
             ]);
             $notification->save(); // Save the notification to the database
@@ -426,13 +515,13 @@ class TaskTimelineController extends Controller
         elseif($user_role == 1){
             //input validation
             $validator = Validator::make($request->all(), [
-                'commentSV' => ['required', 'string','regex:/^[A-Za-z0-9?!,.&\'"\s()-]+$/'],
-                'commentTR' => ['required', 'string','regex:/^[A-Za-z0-9?!,.&\'"\s()-]+$/'],
+                'commentSV' => ['required', 'string', 'max:500'],
+                'commentTR' => ['required', 'string', 'max:500'],
             ]);
 
             // Check if the validation fails
             if ($validator->fails()) {
-                return redirect()->back()->with('warning', 'Some special characters are not allowed in comment. Please try again.');
+                return redirect()->back()->with('warning', 'Invalid note. Please try again!');
             }
             $comment['Supervisor'] = $request->input('commentSV');
             $comment['Trainee'] = $request->input('commentTR');
@@ -452,37 +541,37 @@ class TaskTimelineController extends Controller
             if($user_role == 2){
                 //input validation
                 $validator = Validator::make($request->all(), [
-                    'comment' => ['required', 'string','regex:/^[A-Za-z0-9?!,.&\'"\s()-]+$/'],
+                    'comment' => ['required', 'string', 'max:500'],
                 ]);
 
                 // Check if the validation fails
                 if ($validator->fails()) {
-                    return redirect()->back()->with('warning', 'Some special characters are not allowed in comment. Please try again.');
+                    return redirect()->back()->with('warning', 'Invalid note. Please try again.');
                 }
                 $timeline[$date]['Supervisor'] = $request->input('comment');
             }
             elseif($user_role == 3){
                 //input validation
                 $validator = Validator::make($request->all(), [
-                    'comment' => ['required', 'string','regex:/^[A-Za-z0-9?!,.&\'"\s()-]+$/'],
+                    'comment' => ['required', 'string', 'max:500'],
                 ]);
 
                 // Check if the validation fails
                 if ($validator->fails()) {
-                    return redirect()->back()->with('warning', 'Some special characters are not allowed in comment. Please try again.');
+                    return redirect()->back()->with('warning', 'Invalid note. Please try again!');
                 }
                 $timeline[$date]['Trainee'] = $request->input('comment');
             }
             elseif($user_role == 1){
                 //input validation
                 $validator = Validator::make($request->all(), [
-                    'commentSV' => ['required', 'string','regex:/^[A-Za-z0-9?!,.&\'"\s()-]+$/'],
-                    'commentTR' => ['required', 'string','regex:/^[A-Za-z0-9?!,.&\'"\s()-]+$/'],
+                    'commentSV' => ['required', 'string', 'max:500'],
+                    'commentTR' => ['required', 'string', 'max:500'],
                 ]);
 
                 // Check if the validation fails
                 if ($validator->fails()) {
-                    return redirect()->back()->with('warning', 'Some special characters are not allowed in comment. Please try again.');
+                    return redirect()->back()->with('warning', 'Invalid note. Please try again!');
                 }
                 $timeline[$date]['Supervisor'] = $request->input('commentSV');
                 $timeline[$date]['Trainee'] = $request->input('commentTR');

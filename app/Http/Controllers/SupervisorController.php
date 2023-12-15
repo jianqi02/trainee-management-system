@@ -11,9 +11,10 @@ use App\Models\Trainee;
 use App\Models\AllTrainee;
 use App\Models\Supervisor;
 use App\Models\Notification;
-use Illuminate\Support\Facades\DB;
+use App\Models\TaskTimeline;
 use Illuminate\Http\Request;
 use App\Models\TraineeAssign;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
 class SupervisorController extends Controller
@@ -93,23 +94,14 @@ class SupervisorController extends Controller
 
     public function updateProfileSV(Request $request){
         $validatedData = $request->validate([
-            'fullName' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z\s]+$/'],
-            'phoneNum' => ['required', 'string', 'max:255', 'regex:/^[0-9\+]+$/'],
-            'section' => 'nullable|string',
-            'personalEmail' => ['required', 'email', 'regex:/^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$/'],
+            'phoneNum' => ['required', 'string', 'regex:/^(\+?6?01)[02-46-9][0-9]{7}$|^(\+?6?01)[1][0-9]{8}$/'],
         ]);
         // Get the currently logged-in user
         $user = Auth::user();
-    
-        $user->name = $request->input('fullName');
-        $user->save();
 
         Supervisor::where('sains_email', $user->email)
         ->update([
-            'name' => $request->input('fullName'),
             'phone_number' => $request->input('phoneNum'),
-            'personal_email' => $request->input('personalEmail'),
-            'section' => $request->input('section'),
         ]);
     
         return redirect()->route('sv-profile');
@@ -137,6 +129,23 @@ class SupervisorController extends Controller
             ->first();
 
         return view('sv-view-trainee-profile', compact('trainee','internship_dates', 'comment', 'logbooks'));
+    } 
+
+    public function goToTraineeTaskTimeline($traineeName){
+        //get the trainee id
+        $traineeRef = AllTrainee::where('name' , $traineeName)->pluck('id')->first();
+        $traineeID = Trainee::where('name' , $traineeName)->pluck('id')->first();
+
+        //prevent other supervisor to access the task for the trainee that is not assigned to them.
+        $supervisorID = Supervisor::where('sains_email', Auth::user()->email)->pluck('id')->first();
+        if(TraineeAssign::where('trainee_id', $traineeRef)->where('assigned_supervisor_id', $supervisorID)->first() == null){
+            return redirect()->back()->with('error', 'You do not have access to view this page.');
+        }
+
+        //get all the task for this trainee
+        $tasks = TaskTimeline::where('trainee_id', $traineeID)->get();
+
+        return view('sv-view-trainee-task-timeline', compact('tasks', 'traineeID'));
     }
 
     public function svViewTraineeLogbook($traineeName)

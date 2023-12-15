@@ -47,12 +47,8 @@
                 <form method="POST" action="{{ route('update-profile') }}" enctype="multipart/form-data">
                     @csrf
                     <div class="mb-3">
-                        <label for="fullName" class="form-label">Full Name*</label>
-                        <input type="text" class="form-control" id="fullName" name="fullName" value="{{ $trainee->name }} " required>
-                    </div>
-                    <div class="mb-3">
                         <label for="phoneNum" class="form-label">Phone Number*</label>
-                        <input type="text" class="form-control" id="phoneNum" name="phoneNum" value="{{ $trainee->phone_number }} " required>
+                        <input type="text" class="form-control" id="phoneNum" name="phoneNum" placeholder="Example: 0171234567 / 60171234567 / +60171234567" value="{{ $trainee->phone_number }} " required>
                     </div>
                     <div class="mb-3">
                         <label for="expertise" class="form-label">Expertise</label>

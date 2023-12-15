@@ -294,6 +294,7 @@
                                 <h2 class="timeline__title">
                                     @if(!empty($timeline[$strDate]))
                                         {{ $timeline[$strDate]->Name ?? 'Nothing' }}
+                                        <p style="font-size: 15px; margin-bottom: -10px; font-weight: normal;">Status: {{ $timeline[$strDate]->Status ?? '-'}}</p>
                                     @else
                                         Nothing
                                     @endif
@@ -304,6 +305,7 @@
                                 <h2 class="timeline__title">
                                     @if(!empty($timeline[$strDate]))
                                         {{ $timeline[$strDate]->Name ?? 'Nothing' }}
+                                        <p style="font-size: 15px; margin-bottom: -10px; font-weight: normal;">Status: {{ $timeline[$strDate]->Status ?? '-'}}</p>
                                     @else
                                         Nothing
                                     @endif
@@ -319,36 +321,36 @@
                     @endforeach
                 </div>
 
-                <h3>Overall Comment</h3>
+                <h3>Overall Note</h3>
 
                 <div class="card mb-3">
                     <div class="card-body">
-                        <strong>Comment from supervisor</strong>
+                        <strong>Note from supervisor</strong>
                         <br>
                         {!! nl2br(e($comments['Supervisor'] ?? 'No comment from supervisor.')) !!}
                         <br>
                         <br>
                         <br>
-                        <strong>Comment from trainee</strong>
+                        <strong>Note from trainee</strong>
                         <br>
                         {!! nl2br(e($comments['Trainee'] ?? 'No comment from trainee.')) !!}
                     </div>
                 </div>
 
-                <button type="button" id="commentButton" class="btn btn-primary" style="padding: 7px; height: 40px;">Edit Comment</button>
+                <button type="button" id="commentButton" class="btn btn-primary" style="padding: 7px; height: 40px;">Add or Edit Note</button>
 
                 <div id="commentModal" class="modal">
                     <div class="modal-content">
                         <span class="close" id="closeCommentModal">&times;</span>
-                        <h2>Add or Edit Comment</h2>
+                        <h2>Add or Edit Note</h2>
                         <form id="commentForm" action="{{ route('task-timeline-overall-comment', ['taskID' => $task->id]) }}" method="post">
                             @csrf
                             <div class="form-group">
-                                <label for="commentSV">Comment from supervisor:</label>
+                                <label for="commentSV">Note from supervisor:</label>
                                 <textarea id="commentSV" name="commentSV">{{ $comments['Supervisor'] ?? '' }}</textarea>
                             </div>
                             <div class="form-group">
-                                <label for="comment">Comment from trainee:</label>
+                                <label for="comment">Note from trainee:</label>
                                 <textarea id="commentTR" name="commentTR">{{ $comments['Trainee'] ?? '' }}</textarea>
                             </div>
                             <button type="submit" class="btn btn-primary btn-add-task">Submit</button>
