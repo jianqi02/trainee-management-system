@@ -118,7 +118,7 @@ class TaskTimelineController extends Controller
 
         //input validation
         $validator = Validator::make($request->all(), [
-            'taskName' => ['required', 'string', 'regex:/^[A-Za-z0-9?!,.&\'"\s()]+$/'],
+            'taskName' => ['required', 'string','regex:/^[A-Za-z0-9?!,.&\'"\s()-]+$/'],
         ]);
 
         // Check if the validation fails
@@ -162,7 +162,7 @@ class TaskTimelineController extends Controller
 
         //input validation
         $validator = Validator::make($request->all(), [
-            'taskName' => ['required', 'string', 'regex:/^[A-Za-z0-9?!,.&\'"\s()]+$/'],
+            'taskName' => ['required', 'string','regex:/^[A-Za-z0-9?!,.&\'"\s()-]+$/'],
         ]);
 
         // Check if the validation fails
@@ -214,8 +214,8 @@ class TaskTimelineController extends Controller
 
         //input validation
         $validator = Validator::make($request->all(), [
-            'taskName' => ['required', 'string', 'regex:/^[A-Za-z0-9?!,.&\'"\s()]+$/'],
-            'taskDescription' => ['required', 'string', 'regex:/^[A-Za-z0-9?!,.&\'"\s()]+$/'],
+            'taskName' => ['required', 'string','regex:/^[A-Za-z0-9?!,.&\'"\s()-]+$/'],
+            'taskDescription' => ['required', 'string','regex:/^[A-Za-z0-9?!,.&\'"\s()-]+$/'],
         ]);
 
         // Check if the validation fails
@@ -343,8 +343,8 @@ class TaskTimelineController extends Controller
 
         //input validation
         $validator = Validator::make($request->all(), [
-            'taskName' => ['required', 'string', 'regex:/^[A-Za-z0-9?!,.&\'"\s()]+$/'],
-            'taskDescription' => ['required', 'string', 'regex:/^[A-Za-z0-9?!,.&\'"\s()]+$/'],
+            'taskName' => ['required', 'string', 'regex:/^[A-Za-z0-9?!,.&\'"\s()-]+$/'],
+            'taskDescription' => ['required', 'string', 'regex:/^[A-Za-z0-9?!,.&\'"\s()-]+$/'],
         ]);
 
         // Check if the validation fails
@@ -386,7 +386,7 @@ class TaskTimelineController extends Controller
         if($user_role == 3){
             //input validation
             $validator = Validator::make($request->all(), [
-                'comment' => ['required', 'string', 'regex:/^[A-Za-z0-9?!,.&\'"\s()]+$/'],
+                'comment' => ['required', 'string','regex:/^[A-Za-z0-9?!,.&\'"\s()-]+$/'],
             ]);
 
             // Check if the validation fails
@@ -396,9 +396,12 @@ class TaskTimelineController extends Controller
             $comment['Trainee'] = $request->input('comment');
         }
         elseif($user_role == 2){
+            $sv_name = Auth::user()->name;
+            $trainee_id = TaskTimeline::where('id', $taskID)->pluck('trainee_id')->first();
+            $trainee_name = Trainee::where('id', $trainee_id)->pluck('name')->first();
             //input validation
             $validator = Validator::make($request->all(), [
-                'comment' => ['required', 'string', 'regex:/^[A-Za-z0-9?!,.&\'"\s()]+$/'],
+                'comment' => ['required', 'string','regex:/^[A-Za-z0-9?!,.&\'"\s()-]+$/'],
             ]);
 
             // Check if the validation fails
@@ -406,12 +409,25 @@ class TaskTimelineController extends Controller
                 return redirect()->back()->with('warning', 'Some special characters are not allowed in comment. Please try again.');
             }
             $comment['Supervisor'] = $request->input('comment');
+
+            $task_name = TaskTimeline::where('id', $taskID)->pluck('task_name')->first();
+
+            $notification = new Notification();
+            $notification->id = Uuid::uuid4(); // Generate a UUID for the id
+            $notification->type = 'signed_logbook';
+            $notification->notifiable_type = 'App\Models\Supervisor';
+            $notification->notifiable_id = $trainee_id;
+            $notification->data = json_encode([
+                'data' => 'Your supervisor ' . $sv_name . ' has added a comment to the task ' . $task_name . '.',
+                'name' => $trainee_name,
+            ]);
+            $notification->save(); // Save the notification to the database
         }
         elseif($user_role == 1){
             //input validation
             $validator = Validator::make($request->all(), [
-                'commentSV' => ['required', 'string', 'regex:/^[A-Za-z0-9?!,.&\'"\s()]+$/'],
-                'commentTR' => ['required', 'string', 'regex:/^[A-Za-z0-9?!,.&\'"\s()]+$/'],
+                'commentSV' => ['required', 'string','regex:/^[A-Za-z0-9?!,.&\'"\s()-]+$/'],
+                'commentTR' => ['required', 'string','regex:/^[A-Za-z0-9?!,.&\'"\s()-]+$/'],
             ]);
 
             // Check if the validation fails
@@ -436,7 +452,7 @@ class TaskTimelineController extends Controller
             if($user_role == 2){
                 //input validation
                 $validator = Validator::make($request->all(), [
-                    'comment' => ['required', 'string', 'regex:/^[A-Za-z0-9?!,.&\'"\s()]+$/'],
+                    'comment' => ['required', 'string','regex:/^[A-Za-z0-9?!,.&\'"\s()-]+$/'],
                 ]);
 
                 // Check if the validation fails
@@ -448,7 +464,7 @@ class TaskTimelineController extends Controller
             elseif($user_role == 3){
                 //input validation
                 $validator = Validator::make($request->all(), [
-                    'comment' => ['required', 'string', 'regex:/^[A-Za-z0-9?!,.&\'"\s()]+$/'],
+                    'comment' => ['required', 'string','regex:/^[A-Za-z0-9?!,.&\'"\s()-]+$/'],
                 ]);
 
                 // Check if the validation fails
@@ -460,8 +476,8 @@ class TaskTimelineController extends Controller
             elseif($user_role == 1){
                 //input validation
                 $validator = Validator::make($request->all(), [
-                    'commentSV' => ['required', 'string', 'regex:/^[A-Za-z0-9?!,.&\'"\s()]+$/'],
-                    'commentTR' => ['required', 'string', 'regex:/^[A-Za-z0-9?!,.&\'"\s()]+$/'],
+                    'commentSV' => ['required', 'string','regex:/^[A-Za-z0-9?!,.&\'"\s()-]+$/'],
+                    'commentTR' => ['required', 'string','regex:/^[A-Za-z0-9?!,.&\'"\s()-]+$/'],
                 ]);
 
                 // Check if the validation fails

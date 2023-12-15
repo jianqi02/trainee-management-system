@@ -88,6 +88,7 @@ Route::middleware(['role:2'])->group(function () {
     Route::get('/sv-view-resume/{traineeName}', [SupervisorController::class, 'svViewTraineeResume'])->name('sv-view-resume');
     Route::get('/sv-comment/{traineeName}', [SupervisorController::class, 'svCommentPage'])->name('sv-comment');
     Route::post('/sv-submit-comment', [SupervisorController::class, 'svSubmitComment'])->name('sv-submit-comment');
+    Route::get('/sv-view-seat-plan', [SupervisorController::class, 'viewSeatPlan'])->name('sv-view-seat-plan');
 });
 
 //admin-related function

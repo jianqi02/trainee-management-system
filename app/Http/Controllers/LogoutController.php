@@ -12,6 +12,7 @@ class LogoutController extends Controller
         // Clear the session_id from the database
         $user = Auth::user();
         $user->session_id = null;
+        $user->last_login = null;
         $user->save();
 
         // Log out the user

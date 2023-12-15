@@ -143,16 +143,16 @@
               
                       <a href="/admin-trainee-assign">
                           <div class="icon">
-                            <img src="https://img.icons8.com/external-outline-wichaiwi/64/external-assignment-business-process-outsourcing-outline-wichaiwi.png" alt="Trainee Assignment Icon" class="w-6 h-6"/>
+                            <img src="https://img.icons8.com/external-outline-wichaiwi/64/external-assignment-business-process-outsourcing-outline-wichaiwi.png" alt="Supervisor Assignment Icon" class="w-6 h-6"/>
                           </div>
-                          <div class="label">Trainee Assignment</div>
+                          <div class="label">Supervisor Assignment</div>
                       </a>
               
                       <a href="/seating-arrange">
                           <div class="icon">
                             <img src="https://img.icons8.com/ios/50/aircraft-seat-middle.png" alt="Seating Arrangement Icon" class="w-6 h-6"/>
                           </div>
-                          <div class="label">Seating Arrangemeent</div>
+                          <div class="label">Seating Arrangement</div>
                       </a>
               
                       <a href="/user-management">

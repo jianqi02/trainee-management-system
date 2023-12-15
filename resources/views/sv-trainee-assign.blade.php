@@ -101,7 +101,7 @@
                   <p><strong>Personal Email: </strong>{{ $traineeData->personal_email }}</p>
                   <p><strong>SAINS Email:</strong> {{ $traineeData->sains_email }}</p>
                   @if($traineeData->sains_email != "")
-                    <a href="{{ route('go-profile', ['traineeName' => $traineeData->name]) }}" class="btn btn-primary">Go Profile</a>
+                    <a href="{{ route('go-profile', ['traineeName' => $traineeData->name]) }}" class="btn btn-primary">Go To Profile</a>
                   @endif
               </div>
           </div>

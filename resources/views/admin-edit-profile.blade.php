@@ -6,14 +6,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/admin.css">
+    <style>
+        .card {
+            margin-left: 150px;
+            margin-right: 150px;
+        }
+    </style>
 </head>
 <body>
     <div class="content-edit-profile">
         <!-- Display trainee-specific fields if applicable -->
         @if($user->role_id === 3)
-        <div class="card-edit-profile">
+        <div class="card card-edit-profile">
             <div class="card-header">{{ __('Edit profile for') }} {{ $user->name }}</div>
             <div class="card-body">
+            @if (session('error'))
+                    <div class="alert alert-warning">
+                        {{ session('error') }}
+                    </div>
+             @endif
+             @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
             <div class="container mt-5">
                 <form method="POST" action="{{ route('admin-update-profile', ['selected' => $user->name]) }}" enctype="multipart/form-data">
                     @csrf

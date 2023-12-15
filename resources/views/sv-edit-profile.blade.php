@@ -58,11 +58,8 @@
                         <select class="form-select" id="section" name="section">
                             <option value="PSS" {{ $supervisor->section === 'PSS' ? 'selected' : '' }}>Professional Security Services (PSS)</option>
                             <option value="MSS" {{ $supervisor->section === 'MSS' ? 'selected' : '' }}>Managed Security Services (MSS)</option>
+                            <option value="SPD" {{ $supervisor->section === 'SPD' ? 'selected' : '' }}>Security Product Development (SPD)</option>
                         </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="profilePicture" class="form-label">Profile Picture</label>
-                        <input type="file" class="form-control" id="profilePicture" name="profilePicture">
                     </div>
                     <button type="submit" class="btn btn-primary">Save Changes</button>
                 </form>

@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use DateTime;
 use Ramsey\Uuid\Uuid;
 use App\Models\Comment;
 use App\Models\Logbook;
+use App\Models\Seating;
 use App\Models\Trainee;
 use App\Models\AllTrainee;
 use App\Models\Supervisor;
 use App\Models\Notification;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\TraineeAssign;
 use Illuminate\Support\Facades\Auth;
@@ -94,7 +97,6 @@ class SupervisorController extends Controller
             'phoneNum' => ['required', 'string', 'max:255', 'regex:/^[0-9\+]+$/'],
             'section' => 'nullable|string',
             'personalEmail' => ['required', 'email', 'regex:/^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$/'],
-            'profilePicture' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
         // Get the currently logged-in user
         $user = Auth::user();
@@ -264,6 +266,60 @@ class SupervisorController extends Controller
         $traineeName = Trainee::where('id', $trainee_id)->first()->name;
 
         return redirect()->route('go-profile', $traineeName)->with('success', 'Comment submitted successfully');
+    }
+
+    public function viewSeatPlan()
+    {
+        //get the current year and month.
+        $year = date('Y');
+        $month = date('m');
+
+        // use current year and month to retrieve the seating plan related to this month.
+        $weeksInMonth = Seating::where(function($query) use ($year, $month) {
+            $query->whereYear(DB::raw("STR_TO_DATE(start_date, '%d/%m/%Y')"), $year)
+                ->whereMonth(DB::raw("STR_TO_DATE(start_date, '%d/%m/%Y')"), $month);
+        })
+        ->orWhere(function($query) use ($year, $month) {
+            $query->whereYear(DB::raw("STR_TO_DATE(end_date, '%d/%m/%Y')"), $year)
+                ->whereMonth(DB::raw("STR_TO_DATE(end_date, '%d/%m/%Y')"), $month);
+        })
+        ->select('week')
+        ->distinct()
+        ->orderBy('week', 'asc')
+        ->get()
+        ->pluck('week')
+        ->toArray();
+
+        $seatingArray = []; // Initialize the main array to hold weeks
+
+        foreach ($weeksInMonth as $week) {
+            $dateTime = new DateTime($week);
+            $dateTime->setISODate($dateTime->format('o'), $dateTime->format('W'), 1);
+            $startDate = $dateTime->format('d/m/Y');  // Start of the week
+            $dateTime->setISODate($dateTime->format('o'), $dateTime->format('W'), 7);
+            $endDate = $dateTime->format('d/m/Y');  // End of the week 
+
+            // Fetch the seat detail from DB
+            $seatingDetailForAWeek = Seating::where('week', $week)->first();
+
+            $seatDetail = json_decode($seatingDetailForAWeek->seat_detail, true);
+
+
+            //replace the trainee id with trainee name
+            foreach ($seatDetail as &$seatInfo) {
+                $trainee_name = AllTrainee::where('id',$seatInfo['trainee_id'])->pluck('name')->first();
+                $seatInfo['trainee_id'] = $trainee_name ?? 'Not Assigned';
+            }
+
+            $seatingData[$week] = [
+                'seating_plan' => $seatDetail,
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+            ];
+            
+
+        }
+        return view('sv-view-seating', compact('weeksInMonth', 'seatingData'));
     }
 
 }

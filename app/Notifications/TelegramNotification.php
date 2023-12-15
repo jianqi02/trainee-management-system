@@ -40,14 +40,50 @@ class TelegramNotification extends Notification
 
     public function toTelegram($notifiable)
     {
-        $telegram_chat_id = env('CHANNEL_CHAT_ID');
         $message = $this->formatMessage();
 
-        return TelegramMessage::create()
-            ->to($telegram_chat_id)
-            ->content($message)
-            ->options(['parse_mode' => 'HTML']);
+        // The URL you want to send the request to
+        $url = "http://10.17.98.251:6080/tms/";
 
+        // Data you want to send in the request (if any)
+        $data = array(
+            'msg' => $message,
+        );
+
+        // Convert the data array to JSON
+        $jsonData = json_encode($data);
+
+        // Set up cURL
+        $ch = curl_init($url);
+
+        // Set cURL options
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Content-Type: application/json',
+        'Content-Length: ' . strlen($jsonData),
+        ]);
+
+        // Execute cURL session and get the response
+        $response = curl_exec($ch);
+
+        
+        // Check for cURL errors
+        if (curl_errno($ch)) {      
+            echo 'cURL error: ' . curl_error($ch);      
+        }
+
+        // Close cURL session
+        curl_close($ch);
+        // Display the response
+        //echo $response;
+
+        //return TelegramMessage::create()
+        //    ->to($telegram_chat_id)
+        //    ->content($message)
+        //    ->options(['parse_mode' => 'HTML']);
+        return TelegramMessage::create();
     }
 
     /**

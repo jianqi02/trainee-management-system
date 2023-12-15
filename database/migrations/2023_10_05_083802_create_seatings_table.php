@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('seat_status')->default('Not Available');
             $table->string('week')->nullable();
             $table->string('start_date')->nullable();
+            $table->string('end_date')->nullable();
         });        
     }
 

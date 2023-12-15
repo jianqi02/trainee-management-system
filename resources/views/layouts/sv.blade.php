@@ -141,6 +141,14 @@
                           </div>
                           <div class="label">Profile</div>
                       </a>
+
+                      <a href="/sv-view-seat-plan">
+                          <div class="icon">
+                              <img src="https://img.icons8.com/ios/50/aircraft-seat-middle.png" alt="View Seat Plan" class="w-6 h-6"/>
+                          </div>
+                          <div class="label">View Seat Plan</div>
+                      </a>
+
                   </div>
               </div>
             </div>

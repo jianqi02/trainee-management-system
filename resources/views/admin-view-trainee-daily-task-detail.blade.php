@@ -215,14 +215,14 @@
                         @if ($taskDetail)
                         <h5 class="card-title">Date: {{ $date }} ({{ $dayOfWeek }})</h5>
                         <br>
-                        <h5 class="card-title">{{ $taskDetail['Name'] }}</h5>
+                        <h5 class="card-title">{{ $taskDetail['Name'] ?? 'Task Name' }}</h5>
                         <p class="card-text">
                             <strong>Description: </strong><br>
-                            {!! nl2br(e($taskDetail['Description'])) !!}
+                            {!! nl2br(e($taskDetail['Description'] ?? 'Description')) !!}
                             <br>
                             <br>
                             <br>
-                            <strong>Status: </strong>{{ $taskDetail['Status'] }}
+                            <strong>Status: </strong>{{ $taskDetail['Status'] ??' Not Started' }}
                             <br>
                         </p>
                         @else

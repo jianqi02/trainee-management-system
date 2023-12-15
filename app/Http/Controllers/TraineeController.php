@@ -270,6 +270,9 @@ class TraineeController extends Controller
 
     public function viewSeatPlan()
     {
+        $user = Auth::user();
+        $name = Trainee::where('sains_email', $user->email)->pluck('name')->first();
+
         //get the current year and month.
         $year = date('Y');
         $month = date('m');
@@ -319,7 +322,7 @@ class TraineeController extends Controller
             
 
         }
-        return view('trainee-view-seating', compact('weeksInMonth', 'seatingData'));
+        return view('trainee-view-seating', compact('weeksInMonth', 'seatingData', 'name'));
     }
 }
 

@@ -52,59 +52,34 @@ class LoginController extends Controller
 
     protected function authenticated($request, $user)
     {
-        $trainee = Trainee::where('name', $user->name)->first();
-        if($trainee != null){
-            // Check the trainee's account status
-            if ($trainee->acc_status === 'Active') {
-                if($trainee->personal_email == null || $trainee->phone_number == null){
-
-                    //save the session in the db
-                    $user->session_id = session_id();
-                    $user->save();
-                    return redirect('/trainee-edit-profile')->with('alert', 'Please complete your profile first!'); // Redirect trainees to trainee edit profile page
-                }
-                else{
-                    return redirect()->intended($this->redirectPath());
-                }
-            } else {
-                // If the account is inactive, log the user out and show a message
-                $user->session_id = null;
-                $user->save();
-                Auth::logout();
-                return redirect('/login')->with('status', 'Your account is inactive. Please contact admin.');
-            }
-            
-        } else {
-            return redirect()->intended($this->redirectPath());
-        }
-    }
-
-    protected function redirectTo()
-    {
-        // Check the role of the authenticated user
-        $user = Auth::user();
-        $trainee = Trainee::where('name', $user->name)->first();
-
          // Retrieve the session_id from the current session
         $currentSessionId = Session::getId();
 
         // Check if the user has a stored session_id and if it's different from the current session
         if ($user->session_id && $user->session_id !== $currentSessionId) {
-            // Log out the user
-            Auth::logout();
+            $lastLoginTime = $user->last_login;
 
-            // Redirect to the login page with a message
-            return '/login?error=session_expired';
+            if ($lastLoginTime) {
+                $lastLoginTime = Carbon::parse($lastLoginTime);
+                $timeDifference = $lastLoginTime->diffInSeconds(Carbon::now());
+                $sessionLifetime = env('CUSTOMIZED_LIFETIME'); // the lifetime in seconds
+
+                if ( $timeDifference > $sessionLifetime) {
+                    // Session has expired
+                    $user->session_id = null;
+                    $user->last_login = null;
+                    $user->save();
+
+                    // Log out the user
+                    Auth::logout();
+                    
+                    return redirect('/login')->with('status', 'Your session has expired. Please log in again.');
+                }
+            } 
         }
 
-        $user->session_id = $currentSessionId;
-        $user->save();
-
-        if ($user->role_id === 1) {
-            return '/admin-dashboard'; // Redirect trainees to admin dashboard
-        } elseif ($user->role_id === 2) {
-            return '/sv-homepage'; // Redirect supervisors to supervisor homepage
-        } elseif ($user->role_id === 3 ) {
+        $trainee = Trainee::where('name', $user->name)->first();
+        if($trainee != null && $user->role_id == 3){
             // check the task information
             // when today is 1 day before the due date, send a notification to the trainee.
             $traineeID = $trainee->id;
@@ -141,10 +116,43 @@ class LoginController extends Controller
                     }
                 }
             }
-            return '/homepage'; // Redirect trainees to trainee homepage
+            // Check the trainee's account status
+            if ($trainee->acc_status === 'Active') {
+                if($trainee->personal_email == null || $trainee->phone_number == null){
 
-        } else{
-            return redirect('/login')->with('status', 'Invalid Account.');
+                    //save the session in the db
+                    $user->session_id = session_id();
+                    $user->last_login = now();
+                    $user->save();
+                    return redirect('/trainee-edit-profile')->with('alert', 'Please complete your profile first!'); // Redirect trainees to trainee edit profile page
+                }
+                else{
+                    return redirect('/homepage');
+                }
+            } else {
+                // If the account is inactive, log the user out and show a message
+                $user->session_id = null;
+                $user->save();
+                Auth::logout();
+                return redirect('/login')->with('status', 'Your account is inactive. Please contact admin.');
+            }
+            
+        } else {
+            if($user->role_id == 2){
+                $user->session_id = session_id();
+                $user->last_login = now();
+                $user->save();
+                return redirect('/sv-homepage');
+            }
+            elseif($user->role_id == 1){
+                $user->session_id = session_id();
+                $user->last_login = now();
+                $user->save();
+                return redirect('/admin-dashboard');
+            }
+            else{
+                return redirect('/login')->with('status', 'Please try again.');
+            }
         }
     }
 }

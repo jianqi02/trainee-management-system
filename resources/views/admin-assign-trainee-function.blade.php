@@ -26,7 +26,7 @@
                         </div>
 
                         <div class="text-center">
-                            <button type="submit" class="btn btn-primary">Assign Selected Supervisor</button>
+                            <button type="submit" class="btn btn-primary">Assign Selected Supervisors</button>
                         </div>
                     </form>
                 </div>

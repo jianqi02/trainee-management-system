@@ -482,8 +482,8 @@ class AdminController extends Controller
         if ($target->role_id === 2) { //supervisor
 
             $validatedData = $request->validate([
-                'fullName' => 'required|string|max:255',
-                'phoneNum' => 'nullable|string|max:255',
+                'fullName' => 'required|regex:/^[A-Za-z\s]+$/',
+                'phoneNum' => 'nullable|string|regex:/^\d+$/',
                 'section' => 'nullable|string',
                 'personalEmail' => 'nullable|email',
                 'profilePicture' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -507,8 +507,8 @@ class AdminController extends Controller
             $target_trainee = Trainee::where('sains_email', $target->email)->first();
 
             $validatedData = $request->validate([
-                'fullName' => 'required|string|max:255',
-                'phoneNum' => 'nullable|string|max:255',
+                'fullName' => 'required|regex:/^[A-Za-z\s]+$/',
+                'phoneNum' => 'nullable|string|regex:/^\d+$/',
                 'expertise' => 'nullable|string',
                 'personalEmail' => 'nullable|email',
                 'startDate' => 'nullable|date',
@@ -519,6 +519,13 @@ class AdminController extends Controller
         
             $target->name = $request->input('fullName');
             $target->save();
+
+            $startDate = $request->input('startDate');
+            $endDate = $request->input('endDate');
+
+            if($endDate <= $startDate){
+                return redirect()->back()->with('error', 'Invalid internship date!');
+            }
     
             //Update the trainee basic information to table 'trainees'.
             Trainee::where('sains_email', $target->email)
@@ -533,8 +540,8 @@ class AdminController extends Controller
             //Update the trainee internship start date and end date to table 'alltrainees'.
             AllTrainee::where('name', 'LIKE', $targetName)
             ->update([
-                'internship_start' => $request->input('startDate'),
-                'internship_end' => $request->input('endDate'),
+                'internship_start' => $startDate,
+                'internship_end' => $endDate,
             ]);  
         
             if ($request->hasFile('profilePicture')) {

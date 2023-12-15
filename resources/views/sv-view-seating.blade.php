@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.sv')
 @section('pageTitle', 'Seating Plan')
 
 @section('content') 
@@ -114,9 +114,7 @@
                         </tr>
                         <tr>
                             <td id="CSM11" class="assign-popover" style="background-color: {{
-                                $seat['seating_plan']['CSM11']['trainee_id'] != 'Not Assigned'
-                                    ? ($seat['seating_plan']['CSM11']['trainee_id'] == $name ? 'rgb(255,255,153)' : 'rgb(173, 216, 230)')
-                                    : 'rgb(144, 238, 144)'
+                                $seat['seating_plan']['CSM11']['trainee_id'] != 'Not Assigned' ? 'rgb(173, 216, 230)' : 'rgb(144, 238, 144)'
                             }};">
                                 @if( $seat['seating_plan']['CSM11']['seat_status'] != 'Not Available')
                                     CSM11 <div style="font-size: 12px;">({{ $seat['seating_plan']['CSM11']['trainee_id']}})</div>
@@ -125,9 +123,7 @@
                                 @endif
                             </td>
                             <td id="CSM12" class="assign-popover" style="background-color: {{
-                                $seat['seating_plan']['CSM12']['trainee_id'] != 'Not Assigned'
-                                    ? ($seat['seating_plan']['CSM12']['trainee_id'] == $name ? 'rgb(255,255,153)' : 'rgb(173, 216, 230)')
-                                    : 'rgb(144, 238, 144)'
+                                $seat['seating_plan']['CSM12']['trainee_id'] != 'Not Assigned' ? 'rgb(173, 216, 230)' : 'rgb(144, 238, 144)'
                             }};">
                                 @if($seat['seating_plan']['CSM12']['seat_status'] != 'Not Available')
                                     CSM12 <div style="font-size: 12px;">({{$seat['seating_plan']['CSM12']['trainee_id']}})</div>
@@ -136,9 +132,7 @@
                                 @endif
                             </td>
                             <td id="CSM01" class="assign-popover" style="background-color: {{
-                                $seat['seating_plan']['CSM01']['trainee_id'] != 'Not Assigned'
-                                    ? ($seat['seating_plan']['CSM01']['trainee_id'] == $name ? 'rgb(255,255,153)' : 'rgb(173, 216, 230)')
-                                    : 'rgb(144, 238, 144)'
+                                 $seat['seating_plan']['CSM01']['trainee_id'] != 'Not Assigned' ? 'rgb(173, 216, 230)' : 'rgb(144, 238, 144)'
                             }};">
                                 @if($seat['seating_plan']['CSM01']['seat_status'] != 'Not Available')
                                     CSM01 <div style="font-size: 12px;">({{$seat['seating_plan']['CSM01']['trainee_id']}})</div>
@@ -147,9 +141,7 @@
                                 @endif
                             </td>
                             <td id="CSM02" class="assign-popover" style="background-color: {{
-                                $seat['seating_plan']['CSM02']['trainee_id'] != 'Not Assigned'
-                                    ? ($seat['seating_plan']['CSM02']['trainee_id'] == $name ? 'rgb(255,255,153)' : 'rgb(173, 216, 230)')
-                                    : 'rgb(144, 238, 144)'
+                                $seat['seating_plan']['CSM02']['trainee_id'] != 'Not Assigned' ? 'rgb(173, 216, 230)' : 'rgb(144, 238, 144)'
                             }};">
                                 @if($seat['seating_plan']['CSM02']['seat_status'] != 'Not Available')
                                     CSM02 <div style="font-size: 12px;">({{$seat['seating_plan']['CSM02']['trainee_id']}})</div>
@@ -161,9 +153,7 @@
                         <!-- Row 2 -->
                         <tr>
                             <td id="CSM13" class="assign-popover" style="background-color: {{
-                                $seat['seating_plan']['CSM13']['trainee_id'] != 'Not Assigned'
-                                    ? ($seat['seating_plan']['CSM13']['trainee_id'] == $name ? 'rgb(255,255,153)' : 'rgb(173, 216, 230)')
-                                    : 'rgb(144, 238, 144)'
+                                $seat['seating_plan']['CSM13']['trainee_id'] != 'Not Assigned' ? 'rgb(173, 216, 230)' : 'rgb(144, 238, 144)'
                             }};">
                                 @if($seat['seating_plan']['CSM13']['seat_status'] != 'Not Available')
                                     CSM13 <div style="font-size: 12px;">({{$seat['seating_plan']['CSM13']['trainee_id']}})</div>
@@ -172,9 +162,7 @@
                                 @endif
                             </td>
                             <td id="CSM14" class="assign-popover" style="background-color: {{
-                                $seat['seating_plan']['CSM14']['trainee_id'] != 'Not Assigned'
-                                    ? ($seat['seating_plan']['CSM14']['trainee_id'] == $name ? 'rgb(255,255,153)' : 'rgb(173, 216, 230)')
-                                    : 'rgb(144, 238, 144)'
+                                $seat['seating_plan']['CSM14']['trainee_id'] != 'Not Assigned' ? 'rgb(173, 216, 230)' : 'rgb(144, 238, 144)'
                             }};">
                                 @if($seat['seating_plan']['CSM14']['seat_status'] != 'Not Available')
                                     CSM14 <div style="font-size: 12px;">({{$seat['seating_plan']['CSM14']['trainee_id']}})</div>
@@ -183,9 +171,7 @@
                                 @endif
                             </td>
                             <td id="CSM03" class="assign-popover" style="background-color: {{
-                                $seat['seating_plan']['CSM03']['trainee_id'] != 'Not Assigned'
-                                    ? ($seat['seating_plan']['CSM03']['trainee_id'] == $name ? 'rgb(255,255,153)' : 'rgb(173, 216, 230)')
-                                    : 'rgb(144, 238, 144)'
+                                $seat['seating_plan']['CSM03']['trainee_id'] != 'Not Assigned' ? 'rgb(173, 216, 230)' : 'rgb(144, 238, 144)'
                             }};">
                                 @if($seat['seating_plan']['CSM03']['seat_status'] != 'Not Available')
                                     CSM03 <div style="font-size: 12px;">({{$seat['seating_plan']['CSM03']['trainee_id']}})</div>
@@ -194,9 +180,7 @@
                                 @endif 
                             </td>
                             <td id="CSM04" class="assign-popover" style="background-color: {{
-                                $seat['seating_plan']['CSM04']['trainee_id'] != 'Not Assigned'
-                                    ? ($seat['seating_plan']['CSM04']['trainee_id'] == $name ? 'rgb(255,255,153)' : 'rgb(173, 216, 230)')
-                                    : 'rgb(144, 238, 144)'
+                                $seat['seating_plan']['CSM04']['trainee_id'] != 'Not Assigned' ? 'rgb(173, 216, 230)' : 'rgb(144, 238, 144)'
                             }};">
                                 @if($seat['seating_plan']['CSM04']['seat_status'] != 'Not Available')
                                     CSM04 <div style="font-size: 12px;">({{$seat['seating_plan']['CSM04']['trainee_id']}})</div>
@@ -208,9 +192,7 @@
                         <!-- Row 3 -->
                         <tr>
                             <td id="CSM15" class="assign-popover" style="background-color: {{
-                                $seat['seating_plan']['CSM15']['trainee_id'] != 'Not Assigned'
-                                    ? ($seat['seating_plan']['CSM15']['trainee_id'] == $name ? 'rgb(255,255,153)' : 'rgb(173, 216, 230)')
-                                    : 'rgb(144, 238, 144)'
+                                 $seat['seating_plan']['CSM15']['trainee_id'] != 'Not Assigned' ? 'rgb(173, 216, 230)' : 'rgb(144, 238, 144)'
                             }};">
                                 @if($seat['seating_plan']['CSM15']['seat_status'] != 'Not Available')
                                     CSM15 <div style="font-size: 12px;">({{$seat['seating_plan']['CSM15']['trainee_id']}})</div>
@@ -219,9 +201,7 @@
                                 @endif
                             </td>
                             <td id="CSM16" class="assign-popover" style="background-color: {{
-                                $seat['seating_plan']['CSM16']['trainee_id'] != 'Not Assigned'
-                                    ? ($seat['seating_plan']['CSM16']['trainee_id'] == $name ? 'rgb(255,255,153)' : 'rgb(173, 216, 230)')
-                                    : 'rgb(144, 238, 144)'
+                                 $seat['seating_plan']['CSM16']['trainee_id'] != 'Not Assigned' ? 'rgb(173, 216, 230)' : 'rgb(144, 238, 144)'
                             }};">
                                 @if($seat['seating_plan']['CSM16']['seat_status'] != 'Not Available')
                                     CSM16 <div style="font-size: 12px;">({{$seat['seating_plan']['CSM16']['trainee_id']}})</div>
@@ -230,9 +210,7 @@
                                 @endif
                             </td>
                             <td id="CSM05" class="assign-popover" style="background-color: {{
-                                $seat['seating_plan']['CSM05']['trainee_id'] != 'Not Assigned'
-                                    ? ($seat['seating_plan']['CSM05']['trainee_id'] == $name ? 'rgb(255,255,153)' : 'rgb(173, 216, 230)')
-                                    : 'rgb(144, 238, 144)'
+                                $seat['seating_plan']['CSM05']['trainee_id'] != 'Not Assigned' ? 'rgb(173, 216, 230)' : 'rgb(144, 238, 144)'
                             }};">
                                 @if($seat['seating_plan']['CSM05']['seat_status'] != 'Not Available')
                                     CSM05 <div style="font-size: 12px;">({{$seat['seating_plan']['CSM05']['trainee_id']}})</div>
@@ -241,9 +219,7 @@
                                 @endif
                             </td>
                             <td id="CSM06" class="assign-popover" style="background-color: {{
-                                $seat['seating_plan']['CSM06']['trainee_id'] != 'Not Assigned'
-                                    ? ($seat['seating_plan']['CSM06']['trainee_id'] == $name ? 'rgb(255,255,153)' : 'rgb(173, 216, 230)')
-                                    : 'rgb(144, 238, 144)'
+                                $seat['seating_plan']['CSM06']['trainee_id'] != 'Not Assigned' ? 'rgb(173, 216, 230)' : 'rgb(144, 238, 144)'
                             }};">
                                 @if($seat['seating_plan']['CSM06']['seat_status'] != 'Not Available')
                                     CSM06 <div style="font-size: 12px;">({{$seat['seating_plan']['CSM06']['trainee_id']}})</div>
@@ -255,9 +231,7 @@
                         <!-- Row 4 -->
                         <tr>
                             <td id="CSM17" class="assign-popover" style="background-color: {{
-                                $seat['seating_plan']['CSM17']['trainee_id'] != 'Not Assigned'
-                                    ? ($seat['seating_plan']['CSM17']['trainee_id'] == $name ? 'rgb(255,255,153)' : 'rgb(173, 216, 230)')
-                                    : 'rgb(144, 238, 144)'
+                                $seat['seating_plan']['CSM17']['trainee_id'] != 'Not Assigned' ? 'rgb(173, 216, 230)' : 'rgb(144, 238, 144)'
                             }};">
                                 @if($seat['seating_plan']['CSM17']['seat_status'] != 'Not Available')
                                     CSM17 <div style="font-size: 12px;">({{$seat['seating_plan']['CSM17']['trainee_id']}})</div>
@@ -266,9 +240,7 @@
                                 @endif
                             </td>
                             <td id="CSM18" class="assign-popover" style="background-color: {{
-                                $seat['seating_plan']['CSM18']['trainee_id'] != 'Not Assigned'
-                                    ? ($seat['seating_plan']['CSM18']['trainee_id'] == $name ? 'rgb(255,255,153)' : 'rgb(173, 216, 230)')
-                                    : 'rgb(144, 238, 144)'
+                                 $seat['seating_plan']['CSM18']['trainee_id'] != 'Not Assigned' ? 'rgb(173, 216, 230)' : 'rgb(144, 238, 144)'
                             }};">
                                 @if($seat['seating_plan']['CSM18']['seat_status'] != 'Not Available')
                                     CSM18 <div style="font-size: 12px;">({{$seat['seating_plan']['CSM18']['trainee_id']}})</div>
@@ -277,9 +249,7 @@
                                 @endif
                             </td>
                             <td id="CSM07" class="assign-popover" style="background-color: {{
-                                $seat['seating_plan']['CSM07']['trainee_id'] != 'Not Assigned'
-                                    ? ($seat['seating_plan']['CSM07']['trainee_id'] == $name ? 'rgb(255,255,153)' : 'rgb(173, 216, 230)')
-                                    : 'rgb(144, 238, 144)'
+                                $seat['seating_plan']['CSM07']['trainee_id'] != 'Not Assigned' ? 'rgb(173, 216, 230)' : 'rgb(144, 238, 144)'
                             }};">
                                 @if($seat['seating_plan']['CSM07']['seat_status'] != 'Not Available')
                                     CSM07 <div style="font-size: 12px;">({{$seat['seating_plan']['CSM07']['trainee_id']}})</div>
@@ -288,9 +258,7 @@
                                 @endif
                             </td>
                             <td id="CSM08" class="assign-popover" style="background-color: {{
-                                $seat['seating_plan']['CSM08']['trainee_id'] != 'Not Assigned'
-                                    ? ($seat['seating_plan']['CSM08']['trainee_id'] == $name ? 'rgb(255,255,153)' : 'rgb(173, 216, 230)')
-                                    : 'rgb(144, 238, 144)'
+                                 $seat['seating_plan']['CSM08']['trainee_id'] != 'Not Assigned' ? 'rgb(173, 216, 230)' : 'rgb(144, 238, 144)'
                             }};">
                                 @if($seat['seating_plan']['CSM08']['seat_status'] != 'Not Available')
                                     CSM08 <div style="font-size: 12px;">({{$seat['seating_plan']['CSM08']['trainee_id']}})</div>
@@ -302,9 +270,7 @@
                         <!-- Row 5 -->
                         <tr>
                             <td id="CSM19" class="assign-popover" style="background-color: {{
-                                $seat['seating_plan']['CSM19']['trainee_id'] != 'Not Assigned'
-                                    ? ($seat['seating_plan']['CSM19']['trainee_id'] == $name ? 'rgb(255,255,153)' : 'rgb(173, 216, 230)')
-                                    : 'rgb(144, 238, 144)'
+                                 $seat['seating_plan']['CSM19']['trainee_id'] != 'Not Assigned' ? 'rgb(173, 216, 230)' : 'rgb(144, 238, 144)'
                             }};">
                                 @if($seat['seating_plan']['CSM19']['seat_status'] != 'Not Available')
                                     CSM19 <div style="font-size: 12px;">({{$seat['seating_plan']['CSM19']['trainee_id']}})</div>
@@ -313,9 +279,7 @@
                                 @endif
                             </td>
                             <td id="CSM20" class="assign-popover" style="background-color: {{
-                                $seat['seating_plan']['CSM20']['trainee_id'] != 'Not Assigned'
-                                    ? ($seat['seating_plan']['CSM20']['trainee_id'] == $name ? 'rgb(255,255,153)' : 'rgb(173, 216, 230)')
-                                    : 'rgb(144, 238, 144)'
+                                $seat['seating_plan']['CSM20']['trainee_id'] != 'Not Assigned' ? 'rgb(173, 216, 230)' : 'rgb(144, 238, 144)'
                             }};">
                                 @if($seat['seating_plan']['CSM20']['seat_status'] != 'Not Available')
                                     CSM20 <div style="font-size: 12px;">({{$seat['seating_plan']['CSM20']['trainee_id']}})</div>
@@ -323,14 +287,18 @@
                                     OTHER
                                 @endif
                             </td>
-                            <td id="CSM09" class="assign-popover" style="background-color: #90EE90;">
+                            <td id="CSM09" class="assign-popover" style="background-color: {{
+                                 $seat['seating_plan']['CSM09']['trainee_id'] != 'Not Assigned' ? 'rgb(173, 216, 230)' : 'rgb(144, 238, 144)'
+                            }};">
                                 @if($seat['seating_plan']['CSM09']['seat_status'] != 'Not Available')
                                     CSM09 <div style="font-size: 12px;">({{$seat['seating_plan']['CSM09']['trainee_id']}})</div>
                                 @else
                                     OTHER
                                 @endif
                             </td>
-                            <td id="CSM10" class="assign-popover" style="background-color: #90EE90;">
+                            <td id="CSM10" class="assign-popover" style="background-color: {{
+                                 $seat['seating_plan']['CSM10']['trainee_id'] != 'Not Assigned' ? 'rgb(173, 216, 230)' : 'rgb(144, 238, 144)'
+                            }};">
                                 @if($seat['seating_plan']['CSM10']['seat_status'] != 'Not Available')
                                     CSM10 <div style="font-size: 12px;">({{$seat['seating_plan']['CSM10']['trainee_id']}})</div>
                                 @else
@@ -353,9 +321,7 @@
                         </tr>
                         <tr>
                             <td style="width: 15.9768%; background-color: {{
-                                $seat['seating_plan']['T01']['trainee_id'] != 'Not Assigned'
-                                    ? ($seat['seating_plan']['T01']['trainee_id'] == $name ? 'rgb(255,255,153)' : 'rgb(173, 216, 230)')
-                                    : 'rgb(144, 238, 144)'
+                                 $seat['seating_plan']['T01']['trainee_id'] != 'Not Assigned' ? 'rgb(173, 216, 230)' : 'rgb(144, 238, 144)'
                             }};">
                                 <div style="text-align: center;" class="assign-popover" id="T01">
                                     @if($seat['seating_plan']['T01']['seat_status'] != 'Not Available')
@@ -366,9 +332,7 @@
                                 </div>
                             </td>
                             <td style="width: 15.9768%; background-color: {{
-                                $seat['seating_plan']['T02']['trainee_id'] != 'Not Assigned'
-                                    ? ($seat['seating_plan']['T02']['trainee_id'] == $name ? 'rgb(255,255,153)' : 'rgb(173, 216, 230)')
-                                    : 'rgb(144, 238, 144)'
+                                 $seat['seating_plan']['T02']['trainee_id'] != 'Not Assigned' ? 'rgb(173, 216, 230)' : 'rgb(144, 238, 144)'
                             }};">
                                 <div style="text-align: center;" class="assign-popover" id="T02">
                                     @if($seat['seating_plan']['T02']['seat_status'] != 'Not Available')
@@ -379,9 +343,7 @@
                                 </div>
                             </td>
                             <td style="width: 15.9768%; background-color: {{
-                                $seat['seating_plan']['Round-Table']['trainee_id'] != 'Not Assigned'
-                                    ? ($seat['seating_plan']['Round-Table']['trainee_id'] == $name ? 'rgb(255,255,153)' : 'rgb(173, 216, 230)')
-                                    : 'rgb(144, 238, 144)'
+                                 $seat['seating_plan']['Round-Table']['trainee_id'] != 'Not Assigned' ? 'rgb(173, 216, 230)' : 'rgb(144, 238, 144)'
                             }};">
                                 <div style="text-align: center;" class="assign-popover" id="Round-Table">
                                     @if($seat['seating_plan']['Round-Table']['seat_status'] != 'Not Available')
@@ -423,9 +385,7 @@
                         </tr>
                         <tr>
                             <td style="width: 9.9768%;background-color: {{
-                                $seat['seating_plan']['T03']['trainee_id'] != 'Not Assigned'
-                                    ? ($seat['seating_plan']['T03']['trainee_id'] == $name ? 'rgb(255,255,153)' : 'rgb(173, 216, 230)')
-                                    : 'rgb(144, 238, 144)'
+                                 $seat['seating_plan']['T03']['trainee_id'] != 'Not Assigned' ? 'rgb(173, 216, 230)' : 'rgb(144, 238, 144)'
                             }};">
                                 <div style="text-align: center;" class="assign-popover" id="T03">
                                     @if($seat['seating_plan']['T03']['seat_status'] != 'Not Available')
@@ -436,9 +396,7 @@
                                 </div>
                             </td>
                             <td style="width: 9.9768%;background-color: {{
-                                $seat['seating_plan']['T04']['trainee_id'] != 'Not Assigned'
-                                    ? ($seat['seating_plan']['T04']['trainee_id'] == $name ? 'rgb(255,255,153)' : 'rgb(173, 216, 230)')
-                                    : 'rgb(144, 238, 144)'
+                                 $seat['seating_plan']['T04']['trainee_id'] != 'Not Assigned' ? 'rgb(173, 216, 230)' : 'rgb(144, 238, 144)'
                             }};">
                                 <div style="text-align: center;" class="assign-popover" id="T04">
                                     @if($seat['seating_plan']['T04']['seat_status'] != 'Not Available')
@@ -449,9 +407,7 @@
                                 </div>
                             </td>
                             <td style="width: 10.4408%; background-color: {{
-                                $seat['seating_plan']['T05']['trainee_id'] != 'Not Assigned'
-                                    ? ($seat['seating_plan']['T05']['trainee_id'] == $name ? 'rgb(255,255,153)' : 'rgb(173, 216, 230)')
-                                    : 'rgb(144, 238, 144)'
+                                 $seat['seating_plan']['T05']['trainee_id'] != 'Not Assigned' ? 'rgb(173, 216, 230)' : 'rgb(144, 238, 144)'
                             }};">
                                 <div style="text-align: center;" class="assign-popover" id="T05">
                                     @if($seat['seating_plan']['T05']['seat_status'] != 'Not Available')
@@ -462,9 +418,7 @@
                                 </div>
                             </td>
                             <td style="width: 9.9768%; background-color: {{
-                                $seat['seating_plan']['T06']['trainee_id'] != 'Not Assigned'
-                                    ? ($seat['seating_plan']['T06']['trainee_id'] == $name ? 'rgb(255,255,153)' : 'rgb(173, 216, 230)')
-                                    : 'rgb(144, 238, 144)'
+                                 $seat['seating_plan']['T06']['trainee_id'] != 'Not Assigned' ? 'rgb(173, 216, 230)' : 'rgb(144, 238, 144)'
                             }};">
                                 <div style="text-align: center;" class="assign-popover" id="T06">
                                     @if($seat['seating_plan']['T06']['seat_status'] != 'Not Available')
@@ -485,9 +439,7 @@
                         </tr>
                         <tr>
                             <td style="width: 9.9768%; background-color: {{
-                                $seat['seating_plan']['T07']['trainee_id'] != 'Not Assigned'
-                                    ? ($seat['seating_plan']['T07']['trainee_id'] == $name ? 'rgb(255,255,153)' : 'rgb(173, 216, 230)')
-                                    : 'rgb(144, 238, 144)'
+                                 $seat['seating_plan']['T07']['trainee_id'] != 'Not Assigned' ? 'rgb(173, 216, 230)' : 'rgb(144, 238, 144)'
                             }};">
                                 <div style="text-align: center;" class="assign-popover" id="T07">
                                     @if($seat['seating_plan']['T07']['seat_status'] != 'Not Available')
@@ -500,9 +452,7 @@
                         </tr>
                         <tr>
                             <td style="width: 9.9768%; background-color: {{
-                                $seat['seating_plan']['T08']['trainee_id'] != 'Not Assigned'
-                                    ? ($seat['seating_plan']['T08']['trainee_id'] == $name ? 'rgb(255,255,153)' : 'rgb(173, 216, 230)')
-                                    : 'rgb(144, 238, 144)'
+                                 $seat['seating_plan']['T08']['trainee_id'] != 'Not Assigned' ? 'rgb(173, 216, 230)' : 'rgb(144, 238, 144)'
                             }};">
                                 <div style="text-align: center;" class="assign-popover" id="T08">
                                     @if($seat['seating_plan']['T08']['seat_status'] != 'Not Available')
@@ -513,9 +463,7 @@
                                 </div>
                             </td>
                             <td style="width: 10.4408%; background-color: {{
-                                $seat['seating_plan']['T09']['trainee_id'] != 'Not Assigned'
-                                    ? ($seat['seating_plan']['T09']['trainee_id'] == $name ? 'rgb(255,255,153)' : 'rgb(173, 216, 230)')
-                                    : 'rgb(144, 238, 144)'
+                                 $seat['seating_plan']['T09']['trainee_id'] != 'Not Assigned' ? 'rgb(173, 216, 230)' : 'rgb(144, 238, 144)'
                             }};">
                                 <div style="text-align: center;" class="assign-popover" id="T09">
                                     @if($seat['seating_plan']['T09']['seat_status'] != 'Not Available')
@@ -526,9 +474,7 @@
                                 </div>
                             </td>
                             <td style="width: 9.9768%; background-color: {{
-                                $seat['seating_plan']['T10']['trainee_id'] != 'Not Assigned'
-                                    ? ($seat['seating_plan']['T10']['trainee_id'] == $name ? 'rgb(255,255,153)' : 'rgb(173, 216, 230)')
-                                    : 'rgb(144, 238, 144)'
+                                $seat['seating_plan']['T10']['trainee_id'] != 'Not Assigned' ? 'rgb(173, 216, 230)' : 'rgb(144, 238, 144)'
                             }};">
                                 <div style="text-align: center;" class="assign-popover" id="T10">
                                     @if($seat['seating_plan']['T10']['seat_status'] != 'Not Available')
@@ -539,9 +485,7 @@
                                 </div>
                             </td>
                             <td style="width: 15.9768%; background-color: {{
-                                $seat['seating_plan']['T15']['trainee_id'] != 'Not Assigned'
-                                    ? ($seat['seating_plan']['T15']['trainee_id'] == $name ? 'rgb(255,255,153)' : 'rgb(173, 216, 230)')
-                                    : 'rgb(144, 238, 144)'
+                                 $seat['seating_plan']['T15']['trainee_id'] != 'Not Assigned' ? 'rgb(173, 216, 230)' : 'rgb(144, 238, 144)'
                             }};">
                                 <div style="text-align: center;" class="assign-popover" id="T15">
                                     @if($seat['seating_plan']['T15']['seat_status'] != 'Not Available')
@@ -556,9 +500,7 @@
                         <tr>
                             <td style="width: 9.9768%; background-color: rgb(211, 211, 211);" rowspan="2"><br></td>
                             <td style="width: 10.4408%; background-color: {{
-                                $seat['seating_plan']['T11']['trainee_id'] != 'Not Assigned'
-                                    ? ($seat['seating_plan']['T11']['trainee_id'] == $name ? 'rgb(255,255,153)' : 'rgb(173, 216, 230)')
-                                    : 'rgb(144, 238, 144)'
+                                 $seat['seating_plan']['T11']['trainee_id'] != 'Not Assigned' ? 'rgb(173, 216, 230)' : 'rgb(144, 238, 144)'
                             }};">
                                 <div style="text-align: center;" class="assign-popover" id="T11">
                                     @if($seat['seating_plan']['T11']['seat_status'] != 'Not Available')
@@ -569,9 +511,7 @@
                                 </div>
                             </td>
                             <td style="width: 9.9768%; background-color: {{
-                                $seat['seating_plan']['T12']['trainee_id'] != 'Not Assigned'
-                                    ? ($seat['seating_plan']['T12']['trainee_id'] == $name ? 'rgb(255,255,153)' : 'rgb(173, 216, 230)')
-                                    : 'rgb(144, 238, 144)'
+                                 $seat['seating_plan']['T12']['trainee_id'] != 'Not Assigned' ? 'rgb(173, 216, 230)' : 'rgb(144, 238, 144)'
                             }};">
                                 <div style="text-align: center;"class="assign-popover" id="T12">
                                     @if($seat['seating_plan']['T12']['seat_status'] != 'Not Available')
@@ -582,9 +522,7 @@
                                 </div>
                             </td>
                             <td style="width: 10.0185%; background-color: {{
-                                $seat['seating_plan']['T16']['trainee_id'] != 'Not Assigned'
-                                    ? ($seat['seating_plan']['T16']['trainee_id'] == $name ? 'rgb(255,255,153)' : 'rgb(173, 216, 230)')
-                                    : 'rgb(144, 238, 144)'
+                                 $seat['seating_plan']['T16']['trainee_id'] != 'Not Assigned' ? 'rgb(173, 216, 230)' : 'rgb(144, 238, 144)'
                             }};">
                                 <div style="text-align: center;" class="assign-popover" id="T16">
                                     @if($seat['seating_plan']['T16']['seat_status'] != 'Not Available')
@@ -598,9 +536,7 @@
                         </tr>
                         <tr>
                             <td style="width: 10.4408%; background-color: {{
-                                $seat['seating_plan']['T13']['trainee_id'] != 'Not Assigned'
-                                    ? ($seat['seating_plan']['T13']['trainee_id'] == $name ? 'rgb(255,255,153)' : 'rgb(173, 216, 230)')
-                                    : 'rgb(144, 238, 144)'
+                                $seat['seating_plan']['T13']['trainee_id'] != 'Not Assigned' ? 'rgb(173, 216, 230)' : 'rgb(144, 238, 144)'
                             }};">
                                 <div style="text-align: center;" class="assign-popover" id="T13">
                                     @if($seat['seating_plan']['T13']['seat_status'] != 'Not Available')
@@ -611,9 +547,7 @@
                                 </div>
                             </td>
                             <td style="width: 9.9768%; background-color: {{
-                                $seat['seating_plan']['T14']['trainee_id'] != 'Not Assigned'
-                                    ? ($seat['seating_plan']['T14']['trainee_id'] == $name ? 'rgb(255,255,153)' : 'rgb(173, 216, 230)')
-                                    : 'rgb(144, 238, 144)'
+                                 $seat['seating_plan']['T14']['trainee_id'] != 'Not Assigned' ? 'rgb(173, 216, 230)' : 'rgb(144, 238, 144)'
                             }};">
                                 <div style="text-align: center;" class="assign-popover" id="T14">
                                     @if($seat['seating_plan']['T14']['seat_status'] != 'Not Available')
@@ -624,9 +558,7 @@
                                 </div>
                             </td>
                             <td style="width: 10.0185%; background-color: {{
-                                $seat['seating_plan']['T17']['trainee_id'] != 'Not Assigned'
-                                    ? ($seat['seating_plan']['T17']['trainee_id'] == $name ? 'rgb(255,255,153)' : 'rgb(173, 216, 230)')
-                                    : 'rgb(144, 238, 144)'
+                                 $seat['seating_plan']['T17']['trainee_id'] != 'Not Assigned' ? 'rgb(173, 216, 230)' : 'rgb(144, 238, 144)'
                             }};">
                                 <div style="text-align: center;" class="assign-popover" id="T17">
                                     @if($seat['seating_plan']['T17']['seat_status'] != 'Not Available')
