@@ -483,9 +483,8 @@ class AdminController extends Controller
 
             $validatedData = $request->validate([
                 'fullName' => 'required|regex:/^[A-Za-z\s]+$/',
-                'phoneNum' => 'nullable|string|regex:/^\d+$/',
+                'phoneNum' => ['nullable', 'string', 'regex:/^(\+?6?01)[02-46-9][0-9]{7}$|^(\+?6?01)[1][0-9]{8}$/'],
                 'section' => 'nullable|string',
-                'personalEmail' => 'nullable|email',
                 'profilePicture' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
         
@@ -496,7 +495,6 @@ class AdminController extends Controller
             ->update([
                 'name' => $request->input('fullName'),
                 'phone_number' => $request->input('phoneNum'),
-                'personal_email' => $request->input('personalEmail'),
                 'section' => $request->input('section'),
             ]);
         
@@ -508,7 +506,7 @@ class AdminController extends Controller
 
             $validatedData = $request->validate([
                 'fullName' => 'required|regex:/^[A-Za-z\s]+$/',
-                'phoneNum' => 'nullable|string|regex:/^\d+$/',
+                'phoneNum' => ['nullable', 'string', 'regex:/^(\+?6?01)[02-46-9][0-9]{7}$|^(\+?6?01)[1][0-9]{8}$/'],
                 'expertise' => 'nullable|string',
                 'personalEmail' => 'nullable|email',
                 'startDate' => 'nullable|date',

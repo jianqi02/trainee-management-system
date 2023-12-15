@@ -101,17 +101,6 @@
             background-color: #0056b3;
         }
 
-        /* Remove underline from links */
-        .task-card-link {
-            text-decoration: none;
-        }
-
-        /* Add a hover animation to links */
-        .task-card-link:hover {
-            color: #007bff; /* Change the link color on hover to your preferred color */
-            transition: color 0.2s ease; /* Add a smooth color transition effect */
-        }
-
         img{
             margin-left: 10px;
             width: 20px;
@@ -120,6 +109,11 @@
 
         .btn-secondary:hover img {
             filter: brightness(0) invert(1);
+        }
+
+        .task-card:hover {
+            background-color: #f0f0f0;   
+            transition: background-color 0.3s ease;                
         }
     </style>
 </head>
@@ -171,7 +165,7 @@
 
             <!-- List of Tasks -->
             @foreach ($tasks as $task)
-                <a href="{{ route('trainee-task-detail', ['taskID' => $task->id]) }}" class="task-card-link" style="text-decoration:none;">
+                <a href="{{ route('trainee-task-detail', ['taskID' => $task->id]) }}" class="task-card-link" style="text-decoration: none; color: inherit;">
                     <div class="card mb-3 task-card">
                         <div class="card-body">
                             <h5 class="card-title">{{ $task->task_name }}</h5>

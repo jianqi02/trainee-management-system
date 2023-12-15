@@ -122,6 +122,11 @@
         .btn-secondary:hover img {
             filter: brightness(0) invert(1);
         }
+
+        .task-card:hover {
+            background-color: #f0f0f0;   
+            transition: background-color 0.3s ease;                
+        }
     </style>
 </head>
 <body>

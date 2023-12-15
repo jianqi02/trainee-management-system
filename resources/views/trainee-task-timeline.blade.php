@@ -121,6 +121,11 @@
             width: 20px;
             height: 20px;
         }
+
+        .task-card:hover {
+            background-color: #f0f0f0;   
+            transition: background-color 0.3s ease;                
+        }
     </style>
 </head>
 <body>
