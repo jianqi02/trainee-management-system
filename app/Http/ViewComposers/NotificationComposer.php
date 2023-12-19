@@ -21,17 +21,17 @@ class NotificationComposer
 
         //notification for admin
         if($user->role_id == 1){
-            // Check if there are more than 99 notifications ( maximum number of notifications: 99)
+            // Check if there are more than 40 notifications ( maximum number of notifications: 40)
             $notificationCount = DB::table('notifications')
             ->where('notifiable_id', 0)
             ->count();
 
-            if ($notificationCount >= 99) {
+            if ($notificationCount >= 40) {
                 // Calculate how many notifications to delete (the oldest ones)
                 $notificationsToDelete = DB::table('notifications')
                     ->where('notifiable_id', 0)
                     ->orderBy('created_at', 'asc')
-                    ->limit($notificationCount - 99)
+                    ->limit($notificationCount - 40)
                     ->pluck('id');
 
                 // Delete the oldest notifications
@@ -42,7 +42,7 @@ class NotificationComposer
 
             $notifications = DB::table('notifications')->where('notifiable_id', 0)
             ->orderBy('created_at', 'desc')
-            ->paginate(5);
+            ->get();
         }
         //notification for supervisor
         elseif($user->role_id == 2){
@@ -52,14 +52,14 @@ class NotificationComposer
             ->whereNot('notifiable_type', 'App\Models\Supervisor')
             ->count();
 
-            //limit the maximum numbers of notifications to 99.
-            if ($notificationCount >= 99) {
+            //limit the maximum numbers of notifications to 40.
+            if ($notificationCount >= 40) {
                 // Calculate how many notifications to delete (the oldest ones)
                 $notificationsToDelete = DB::table('notifications')
                     ->where('notifiable_id', $supervisorID)
                     ->whereNot('notifiable_type', 'App\Models\Supervisor')
                     ->orderBy('created_at', 'asc')
-                    ->limit($notificationCount - 99)
+                    ->limit($notificationCount - 40)
                     ->pluck('id');
 
                 // Delete the oldest notifications
@@ -71,7 +71,7 @@ class NotificationComposer
             $notifications = DB::table('notifications')->where('notifiable_id', $supervisorID)
             ->whereNot('notifiable_type', 'App\Models\Supervisor')
             ->orderBy('created_at', 'desc')
-            ->paginate(5);
+            ->get();
         }
         //notification for trainee
         else{
@@ -84,14 +84,14 @@ class NotificationComposer
                 ->whereJsonContains('data->name', $trainee_name)
                 ->count();
 
-            //limit the maximum numbers of notifications to 99.
-            if ($notificationCount >= 99) {
+            //limit the maximum numbers of notifications to 40.
+            if ($notificationCount >= 40) {
                 // Calculate how many notifications to delete (the oldest ones)
                 $notificationsToDelete = DB::table('notifications')
                     ->where('notifiable_id', $trainee_id)
                     ->where('notifiable_type', 'App\Models\Supervisor')
                     ->orderBy('created_at', 'asc')
-                    ->limit($notificationCount - 99)
+                    ->limit($notificationCount - 40)
                     ->pluck('id');
 
                 // Delete the oldest notifications
@@ -103,7 +103,7 @@ class NotificationComposer
             $notifications = DB::table('notifications')->where('notifiable_id', $trainee_id)
             ->whereJsonContains('data->name', $trainee_name)
             ->orderBy('created_at', 'desc')
-            ->paginate(5);
+            ->get();
         }
 
         if($user->role_id == 1){

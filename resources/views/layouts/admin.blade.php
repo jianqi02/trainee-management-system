@@ -134,7 +134,7 @@
                                 @csrf
                                 <button type="submit" class="btn btn-primary mb-3">Mark All as Read</button>
                             </form>
-                            <ul class="list-group">
+                            <ul class="list-group" style="height: 400px; overflow: auto;">
                                 @forelse($notifications as $notification)
                                     @php
                                         $notificationClass = $notification->read_at ? 'read-notification' : 'unread-notification';
@@ -164,7 +164,6 @@
                                     <li class="list-group-item">No notifications yet.</li>
                                 @endforelse
                             </ul>
-                            {{ $notifications->links() }}
                         </div>
                     </div>
                 </div>
