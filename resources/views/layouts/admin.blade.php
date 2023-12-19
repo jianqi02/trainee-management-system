@@ -53,6 +53,10 @@
         width: 24px; /* Adjust the width as needed */
         height: 24px; /* Adjust the height as needed */
       }
+
+      .unread-notification {
+                background-color: #f0f0f0; 
+            }
     </style>
 </head>
 <body>
@@ -88,10 +92,10 @@
                             @endif
                         @else
                             <li class="notification">
-                              <a href="{{ route('notification') }}">
-                                <i class="fa fa-bell"></i>
-                                <span class="badge badge-light">{{ $notification_number }}</span>
-                              </a>
+                                <a href="#" data-toggle="modal" data-target="#notificationsModal">
+                                    <i class="fa fa-bell"></i>
+                                    <span class="badge badge-light">{{ $notification_number }}</span>
+                                </a>
                             </li>
                             <li class="nav-item dropdown">
                               
@@ -114,6 +118,57 @@
                         @endguest
                     </ul>
                 </div>
+
+                  <!-- Notifications Modal -->
+            <div class="modal fade" id="notificationsModal" tabindex="-1" role="dialog" aria-labelledby="notificationsModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="notificationsModalLabel">Notifications</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="{{ route('mark-all-notifications-as-read') }}" method="POST">
+                                @csrf
+                                <button type="submit" class="btn btn-primary mb-3">Mark All as Read</button>
+                            </form>
+                            <ul class="list-group">
+                                @forelse($notifications as $notification)
+                                    @php
+                                        $notificationClass = $notification->read_at ? 'read-notification' : 'unread-notification';
+                                        $notificationData = json_decode($notification->data);
+                                    @endphp
+                                    <li class="list-group-item {{ $notificationClass }}" style="{{ $notificationData->style ?? '' }}">
+                                        <div class="d-flex justify-content-between" style="max-width: 620px;">
+                                            <div style="font-size: 14px; max-width: 620px; overflow: hidden; text-overflow: ellipsis;">
+                                                {{ $notificationData->data ?? '' }}  
+                                                
+                                            </div>
+                                            @if (!$notification->read_at)
+                                            <form action="{{ route('mark-notification-as-read', ['id' => urlencode($notification->id)]) }}" method="POST">
+                                                    @csrf
+                                                    @method('POST')
+                                                    <button type="submit" class="btn btn-link" style="margin-left: 150px;">Mark as Read</button>
+                                                </form>
+                                            @endif 
+                                            <div>
+                                                <span class="badge badge-primary badge-pill" style="background-color: grey; color: white; border-radius: 10px;">
+                                                    {{ Carbon\Carbon::parse($notification->created_at)->diffForHumans() }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </li>
+                                @empty
+                                    <li class="list-group-item">No notifications yet.</li>
+                                @endforelse
+                            </ul>
+                            {{ $notifications->links() }}
+                        </div>
+                    </div>
+                </div>
+            </div>
 
                 <div class="custom-sidebar">
                   <div class="sidebar-btn">
@@ -183,3 +238,4 @@
 </body>
 <script src="{{ asset('app.js') }}"></script>
 </html>
+

@@ -18,7 +18,7 @@
             overflow-x: hidden;
         }
 
-        .btn-primary {
+        .btn-add-task {
             width: 100%;
             background-color: #7f7f7f;
             height: 50px;
@@ -30,17 +30,18 @@
         }
 
         /* Hover effect */
-        .btn-primary:hover {
+        .btn-add-task:hover {
             background-color: #d3d3d3; /* Change to your preferred color on hover */
         }
 
         /* Focus effect (when the button is selected) */
-        .btn-primary:focus {
+        .btn-add-task:focus {
             outline: none; /* Remove the default outline */
             box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add a subtle shadow on focus */
         }
 
-        .modal {
+        .modal-edit-task,
+        .modal-overall-comment {
             display: none;
             position: fixed;
             z-index: 1;
@@ -52,7 +53,8 @@
             background-color: rgba(0, 0, 0, 0.4);
         }
 
-        .modal-content {
+        .modal-content-edit-task,
+        .modal-content-overall-comment {
             background-color: #f5f5f5; 
             margin: 5% auto;
             padding: 20px;
@@ -110,10 +112,6 @@
             border-radius: 4px;
             cursor: pointer;
             font-size: 16px;
-        }
-
-        button:hover {
-            background-color: #45a049;
         }
 
         /* Remove underline from links */
@@ -232,10 +230,10 @@
                         </p>
                     </div>
                 </div>
-                <button type="button" id="editTaskButton" class="btn btn-primary" style="padding: 7px; height: 40px;">Edit Task</button>
+                <button type="button" id="editTaskButton" class="btn btn-primary btn-add-task" style="padding: 7px; height: 40px;">Edit Task</button>
 
-                <div id="taskModal" class="modal">
-                    <div class="modal-content">
+                <div id="taskModal" class="modal modal-edit-task">
+                    <div class="modal-content modal-content-edit-task">
                         <span class="close" id="closeModal">&times;</span>
                         <h2>Edit This Task</h2>
                         <form id="taskForm" action="{{ route('trainee-edit-task', ['taskID' => $task->id]) }}" method="post">
@@ -339,10 +337,10 @@
                     </div>
                 </div>
 
-                <button type="button" id="commentButton" class="btn btn-primary" style="padding: 7px; height: 40px;">Add or Edit Note</button>
+                <button type="button" id="commentButton" class="btn btn-primary btn-add-task" style="padding: 7px; height: 40px;">Add or Edit Note</button>
 
-                <div id="commentModal" class="modal">
-                    <div class="modal-content">
+                <div id="commentModal" class="modal modal-overall-comment">
+                    <div class="modal-content modal-content-overall-comment">
                         <span class="close" id="closeCommentModal">&times;</span>
                         <h2>Add or Edit Note</h2>
                         <form id="commentForm" action="{{ route('task-timeline-overall-comment', ['taskID' => $task->id]) }}" method="post">

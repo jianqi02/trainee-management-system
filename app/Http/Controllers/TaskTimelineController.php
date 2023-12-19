@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use DateTime;
 use DatePeriod;
 use DateInterval;
+use Carbon\Carbon;
 use Ramsey\Uuid\Uuid;
 use App\Models\Trainee;
 use App\Models\AllTrainee;
@@ -147,6 +148,14 @@ class TaskTimelineController extends Controller
             return redirect()->route('trainee-task-timeline')->with('warning', 'Failed to add new task! Invalid date chosen!');
         }
 
+        // to check is the duration of the task is too long.
+        $parsed_start = Carbon::parse($startDate);
+        $parsed_end = Carbon::parse($endDate);
+
+        if($parsed_end->diffInDays($parsed_start) > 180){
+            return redirect()->route('trainee-task-timeline')->with('warning', 'The duration of the task is too long!');
+        }
+
         //input validation
         $validator = Validator::make($request->all(), [
             'taskName' => ['required', 'string', 'max:100'],
@@ -187,6 +196,19 @@ class TaskTimelineController extends Controller
             }
             elseif($user_role == 2){
                 return redirect()->route('sv-view-trainee-task-timeline', $traineeID)->with('warning', 'Failed to add new task! Invalid date chosen!');
+            }          
+        }
+
+        //to check if the task is too long in duration.
+        $parsed_start = Carbon::parse($startDate);
+        $parsed_end = Carbon::parse($endDate);
+
+        if($parsed_end->diffInDays($parsed_start) > 180){
+            if($user_role == 1){
+                return redirect()->route('admin-view-trainee-task-timeline', $traineeID)->with('warning', 'The duration of the task is too long!');
+            }
+            elseif($user_role == 2){
+                return redirect()->route('sv-view-trainee-task-timeline', $traineeID)->with('warning', 'The duration of the task is too long!');
             }
             
         }
@@ -238,6 +260,14 @@ class TaskTimelineController extends Controller
         //terminate the function when the user chooses invalid date (end date < start date)
         if($endDate < $startDate){
             return redirect()->route('trainee-task-detail', $taskID)->with('warning', 'Failed to change the task! Invalid date chosen!');
+        }
+
+        // to check is the duration of the task is too long.
+        $parsed_start = Carbon::parse($startDate);
+        $parsed_end = Carbon::parse($endDate);
+
+        if($parsed_end->diffInDays($parsed_start) > 180){
+            return redirect()->route('trainee-task-detail', $taskID)->with('warning', 'The duration of the task is too long!');
         }
 
         //get the status 

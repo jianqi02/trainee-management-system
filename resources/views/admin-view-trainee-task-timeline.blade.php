@@ -18,7 +18,7 @@
             overflow-x: hidden;
         }
 
-        .btn-primary {
+        .btn-add-task {
             width: 100%;
             background-color: #7f7f7f;
             height: 50px;
@@ -30,12 +30,12 @@
         }
 
         /* Hover effect */
-        .btn-primary:hover {
+        .btn-add-task:hover {
             background-color: #d3d3d3; /* Change to your preferred color on hover */
         }
 
         /* Focus effect (when the button is selected) */
-        .btn-primary:focus {
+        .btn-add-task:focus {
             outline: none; /* Remove the default outline */
             box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add a subtle shadow on focus */
         }
@@ -45,7 +45,8 @@
             color: #000000;
         }
 
-        .modal {
+        .modal-add-new-task,
+        .modal-delete {
             display: none;
             position: fixed;
             z-index: 1;
@@ -57,7 +58,8 @@
             background-color: rgba(0, 0, 0, 0.4);
         }
 
-        .modal-content {
+        .modal-content-add-new-task,
+        .modal-content-delete {
             background-color: #f5f5f5;
             margin: 2% auto;
             padding: 20px;
@@ -87,20 +89,6 @@
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
-        }
-
-        .btn-add-task {
-            width: 100%;
-            background-color: #007bff;
-            color: #fff;
-            padding: 10px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .btn-add-task:hover {
-            background-color: #0056b3;
         }
 
         img{
@@ -186,8 +174,8 @@
                 </a>
             @endforeach
 
-            <div class="modal" id="confirmDeleteModal">
-                <div class="modal-content">
+            <div class="modal modal-delete" id="confirmDeleteModal">
+                <div class="modal-content modal-content-delete">
                     <span class="close" id="closeConfirmDeleteModal">&times;</span>
                     <h2>Confirm Delete</h2>
                     <p>Are you sure you want to delete this task?</p>
@@ -195,10 +183,10 @@
                 </div>
             </div>
 
-            <button type="button" id="addTaskButton" class="btn btn-primary">+ Add New Task</button>
+            <button type="button" id="addTaskButton" class="btn btn-primar btn-add-task">+ Add New Task</button>
 
-            <div id="taskModal" class="modal">
-                <div class="modal-content">
+            <div id="taskModal" class="modal modal-add-new-task">
+                <div class="modal-content modal-content-add-new-task">
                     <span class="close" id="closeModal">&times;</span>
                     <h2 style="text-align: center;">Add New Task</h2>
                     <form id="taskForm" action="{{ route('trainee-add-new-task-sv', ['traineeID' => $traineeID]) }}" method="post">

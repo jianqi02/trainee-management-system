@@ -8,6 +8,7 @@ use Illuminate\View\View;
 use App\Models\AllTrainee;
 use App\Models\Supervisor;
 use App\Models\Notification;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Notifications\TelegramNotification;
 
@@ -15,7 +16,95 @@ class NotificationComposer
 {
     public function compose(View $view)
     {
+        //get the current login user information 
         $user = Auth::user();
+
+        //notification for admin
+        if($user->role_id == 1){
+            // Check if there are more than 99 notifications ( maximum number of notifications: 99)
+            $notificationCount = DB::table('notifications')
+            ->where('notifiable_id', 0)
+            ->count();
+
+            if ($notificationCount >= 99) {
+                // Calculate how many notifications to delete (the oldest ones)
+                $notificationsToDelete = DB::table('notifications')
+                    ->where('notifiable_id', 0)
+                    ->orderBy('created_at', 'asc')
+                    ->limit($notificationCount - 99)
+                    ->pluck('id');
+
+                // Delete the oldest notifications
+                DB::table('notifications')
+                    ->whereIn('id', $notificationsToDelete)
+                    ->delete();
+            }
+
+            $notifications = DB::table('notifications')->where('notifiable_id', 0)
+            ->orderBy('created_at', 'desc')
+            ->paginate(5);
+        }
+        //notification for supervisor
+        elseif($user->role_id == 2){
+            $supervisorID = Supervisor::where('sains_email', $user->email)->pluck('id')->first();
+            $notificationCount = DB::table('notifications')
+            ->where('notifiable_id', $supervisorID)
+            ->whereNot('notifiable_type', 'App\Models\Supervisor')
+            ->count();
+
+            //limit the maximum numbers of notifications to 99.
+            if ($notificationCount >= 99) {
+                // Calculate how many notifications to delete (the oldest ones)
+                $notificationsToDelete = DB::table('notifications')
+                    ->where('notifiable_id', $supervisorID)
+                    ->whereNot('notifiable_type', 'App\Models\Supervisor')
+                    ->orderBy('created_at', 'asc')
+                    ->limit($notificationCount - 99)
+                    ->pluck('id');
+
+                // Delete the oldest notifications
+                DB::table('notifications')
+                    ->whereIn('id', $notificationsToDelete)
+                    ->delete();
+            }
+
+            $notifications = DB::table('notifications')->where('notifiable_id', $supervisorID)
+            ->whereNot('notifiable_type', 'App\Models\Supervisor')
+            ->orderBy('created_at', 'desc')
+            ->paginate(5);
+        }
+        //notification for trainee
+        else{
+            $trainee_id = Trainee::where('sains_email', $user->email)->pluck('id')->first();
+            $trainee_name = Trainee::where('sains_email', $user->email)->pluck('name')->first();
+
+            // calculate the total number of notification that related to this trainee
+            $notificationCount = DB::table('notifications')
+                ->where('notifiable_id', $trainee_id)
+                ->whereJsonContains('data->name', $trainee_name)
+                ->count();
+
+            //limit the maximum numbers of notifications to 99.
+            if ($notificationCount >= 99) {
+                // Calculate how many notifications to delete (the oldest ones)
+                $notificationsToDelete = DB::table('notifications')
+                    ->where('notifiable_id', $trainee_id)
+                    ->where('notifiable_type', 'App\Models\Supervisor')
+                    ->orderBy('created_at', 'asc')
+                    ->limit($notificationCount - 99)
+                    ->pluck('id');
+
+                // Delete the oldest notifications
+                DB::table('notifications')
+                    ->whereIn('id', $notificationsToDelete)
+                    ->delete();
+            }
+
+            $notifications = DB::table('notifications')->where('notifiable_id', $trainee_id)
+            ->whereJsonContains('data->name', $trainee_name)
+            ->orderBy('created_at', 'desc')
+            ->paginate(5);
+        }
 
         if($user->role_id == 1){
             //get unread notification number
@@ -97,6 +186,8 @@ class NotificationComposer
         
 
         $view->with('notification_number', $notification_number);
+        $view->with('notifications', $notifications);
     }
 }
-?>
+
+

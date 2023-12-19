@@ -6,7 +6,6 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-body">
                     @if (session('status'))
                         <div class="alert alert-warning">
                             {{ session('status') }}
@@ -15,7 +14,7 @@
                     @if(session('success'))
                         <div class="alert alert-success">{{ session('success') }}</div>
                     @endif
-                <div class="card-header" style="width: 736px; margin-top: -17px; margin-left: -17px;">{{ __('Login') }}</div>
+                <div class="card-header">{{ __('Login') }}</div>
 
                 <div class="card-body">
                     <form method="POST" action="{{ route('login') }}">
@@ -65,7 +64,6 @@
                         
                     </form>
                 </div>
-            </div>
         </div>
     </div>
 </div>

@@ -117,8 +117,7 @@ class NotificationController extends Controller
 
     public function markAsRead(Request $request, $id)
     {
-        $notification = Notification::find($id);
-    
+        $notification = Notification::where('id', $id)->first();
         if ($notification) {
             $notification->read_at = now();
             $notification->save();

@@ -18,7 +18,7 @@
             overflow-x: hidden;
         }
 
-        .btn-primary {
+        .btn-add-task{
             width: 100%;
             background-color: #7f7f7f;
             height: 50px;
@@ -40,7 +40,8 @@
             box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add a subtle shadow on focus */
         }
 
-        .modal {
+        .modal-edit-daily-task,
+        .modal-comment {
             display: none;
             position: fixed;
             z-index: 1;
@@ -52,7 +53,8 @@
             background-color: rgba(0, 0, 0, 0.4);
         }
 
-        .modal-content {
+        .modal-content-edit-daily-task,
+        .modal-content-comment {
             background-color: #fff; /* White background */
             margin: 1% auto;
             padding: 20px;
@@ -110,10 +112,6 @@
             border-radius: 4px;
             cursor: pointer;
             font-size: 16px;
-        }
-
-        button:hover {
-            background-color: #45a049;
         }
 
         /* Remove underline from links */
@@ -235,11 +233,11 @@
                         @endif
                     </div>
                 </div>
-                <button type="button" id="editTaskButton" class="btn btn-primary" style="padding: 7px; height: 40px;">Edit Task</button>
+                <button type="button" id="editTaskButton" class="btn btn-primary btn-add-task" style="padding: 7px; height: 40px;">Edit Task</button>
 
                 
-                <div id="taskModal" class="modal">
-                    <div class="modal-content">
+                <div id="taskModal" class="modal modal-edit-daily-task">
+                    <div class="modal-content modal-content-edit-daily-task">
                         <span class="close" id="closeModal">&times;</span>
                         <h2>Edit Task</h2>
                         <form id="taskForm" action="{{ route('trainee-edit-daily-task', ['date' => $date, 'taskID' => $taskID]) }}" method="post">
@@ -282,10 +280,10 @@
                     </div>
                 </div>
 
-                <button type="button" id="commentButton" class="btn btn-primary" style="padding: 7px; height: 40px;">Add or Edit Note</button>
+                <button type="button" id="commentButton" class="btn btn-primary btn-add-task" style="padding: 7px; height: 40px;">Add or Edit Note</button>
 
-                <div id="commentModal" class="modal">
-                    <div class="modal-content">
+                <div id="commentModal" class="modal modal-comment">
+                    <div class="modal-content modal-content-comment">
                         <span class="close" id="closeCommentModal">&times;</span>
                         <h2>Add or Edit Note</h2>
                         <form id="commentForm" action="{{ route('task-timeline-daily-comment', ['date' => $date, 'taskID' => $taskID]) }}" method="post">
