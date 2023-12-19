@@ -1,6 +1,8 @@
 @extends('layouts.admin')
 @section('pageTitle', 'Edit Profile')
 
+@section('breadcrumbs', Breadcrumbs::render('admin-edit-trainee-profile', $user->name))
+
 @section('content')
 <head>
     <meta charset="UTF-8">

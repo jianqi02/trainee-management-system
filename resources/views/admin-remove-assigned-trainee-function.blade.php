@@ -1,6 +1,8 @@
 @extends('layouts.admin')
 @section('pageTitle', 'Remove Assignment')
 
+@section('breadcrumbs', Breadcrumbs::render('remove-sv-from-trainee', $traineeName))
+
 @section('content')
 <div class="container">
     <div class="row justify-content-center">

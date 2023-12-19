@@ -1,6 +1,8 @@
 @extends('layouts.sv')
 @section('pageTitle', 'Trainee Task Detail')
 
+@section('breadcrumbs', Breadcrumbs::render('sv-task-detail', $trainee_id, $task->id))
+
 @section('content')
 <head>
     <meta charset="UTF-8">

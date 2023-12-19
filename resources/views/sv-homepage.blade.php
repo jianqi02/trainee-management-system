@@ -1,6 +1,8 @@
 @extends('layouts.sv')
 @section('pageTitle', 'Homepage')
 
+@section('breadcrumbs', Breadcrumbs::render('sv-homepage'))
+
 @section('content') 
 <!DOCTYPE html>
 <html lang="en">
@@ -25,7 +27,7 @@
           margin-left: 150px;
           margin-right: 150px; 
           padding: 40px; 
-          height: 60vh;
+          height: 75vh;
           width: 80%;
           background-color: #e9eff3; 
           border-radius: 14px;
@@ -97,6 +99,11 @@
                   <div class="col-md-12">
                     <a href="/sv-view-seat-plan" class="rectangular-button" style="text-decoration: none;">View Seat Plan</a>
                   </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12 order-md-2"  style="margin-left: 200px;">
+                    <a href="/sv-change-password" class="rectangular-button" style="text-decoration: none;">Change Password</a>
+                </div>
               </div>
           </div>
       </div>

@@ -1,6 +1,8 @@
 @extends('layouts.app')
 @section('pageTitle', 'Task Timeline')
 
+@section('breadcrumbs', Breadcrumbs::render('timeline'))
+
 @section('content')
 <head>
     <meta charset="UTF-8">

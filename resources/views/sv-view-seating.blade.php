@@ -1,6 +1,8 @@
 @extends('layouts.sv')
 @section('pageTitle', 'Seating Plan')
 
+@section('breadcrumbs', Breadcrumbs::render('sv-seat-plan'))
+
 @section('content') 
 <!DOCTYPE html>
 <html lang="en">

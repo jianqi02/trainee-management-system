@@ -26,7 +26,7 @@
     <!-- icons are obtained from https://icons8.com/ -->
     <style>
       .custom-sidebar{
-        height: 75%;
+        height: 77%;
       }
 
       .notification{
@@ -164,6 +164,14 @@
                           </div>
                           <div class="label">Task Timeline</div>
                       </a>
+
+                      <a href="/trainee-change-password">
+                        <div class="icon">
+                            <img src="https://img.icons8.com/external-sbts2018-outline-sbts2018/58/808080/external-change-password-basic-ui-elements-2.3-sbts2018-outline-sbts2018.png" alt="change-password"/>
+                        </div>
+                        <div class="label">Change Password</div>
+                      </a>
+                      
                   </div>
               </div>
               
@@ -171,8 +179,12 @@
         </nav>
 
         <main class="py-4">
+            <div style="width: 80%; margin-left: 150px;">
+                @yield('breadcrumbs')
+            </div>
             @yield('content')
         </main>
+
     </div>
 </body>
 <script src="{{ asset('app.js') }}"></script>

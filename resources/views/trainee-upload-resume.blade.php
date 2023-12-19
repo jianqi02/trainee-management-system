@@ -1,6 +1,8 @@
 @extends('layouts.app')
 @section('pageTitle', 'Upload Resume')
 
+@section('breadcrumbs', Breadcrumbs::render('resume'))
+
 @section('content')
 <!DOCTYPE html>
 <html lang="en">
@@ -138,6 +140,9 @@
             @if(session('warning'))
                 <div class="alert alert-warning">{{ session('warning') }}</div>
             @endif
+            @error('resume')
+                <div class="alert alert-warning">{{ $message }}</div>
+            @enderror
             <ul>
                 @if ($trainee->resume_path == null)
                     <p>No resume uploaded yet.</p>

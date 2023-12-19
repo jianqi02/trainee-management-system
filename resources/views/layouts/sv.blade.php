@@ -149,12 +149,22 @@
                           <div class="label">View Seat Plan</div>
                       </a>
 
+                      <a href="/sv-change-password">
+                        <div class="icon">
+                            <img src="https://img.icons8.com/external-sbts2018-outline-sbts2018/58/808080/external-change-password-basic-ui-elements-2.3-sbts2018-outline-sbts2018.png" alt="change-password"/>
+                        </div>
+                        <div class="label">Change Password</div>
+                      </a>
+
                   </div>
               </div>
             </div>
         </nav>
 
         <main class="py-4">
+            <div style="width: 80%; margin-left: 150px;">
+                @yield('breadcrumbs')
+            </div>
             @yield('content')
         </main>
     </div>

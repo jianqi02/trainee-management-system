@@ -1,6 +1,8 @@
 @extends('layouts.sv')
 @section('pageTitle', 'Trainee Profile')
 
+@section('breadcrumbs', Breadcrumbs::render('go-profile', $trainee->name))
+
 @section('content') 
 <!DOCTYPE html>
 <html lang="en">

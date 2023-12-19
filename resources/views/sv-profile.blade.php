@@ -1,6 +1,8 @@
 @extends('layouts.sv')
 @section('pageTitle', 'Profile')
 
+@section('breadcrumbs', Breadcrumbs::render('sv-profile'))
+
 @section('content') 
 <!DOCTYPE html>
 <html lang="en">

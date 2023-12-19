@@ -68,8 +68,19 @@ class RegisterController extends Controller
                 'email',
                 'max:255',
                 'unique:users',
-                'regex:/^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$/',
+                'regex:/^(?=.{1,64}@)[A-Za-z0-9_]+(\.[A-Za-z0-9_]+)*@[^-][A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*(\.[A-Za-z]{2,})$/',
                 'ends_with:@sains.com.my',
+                function ($attribute, $value, $fail) {
+                    // Check if a special character is the first or last character
+                    if (preg_match('/^[^A-Za-z0-9_]/', $value) || preg_match('/[^A-Za-z0-9_]$/', $value)) {
+                        $fail($attribute.' is invalid.');
+                    }
+        
+                    // Check if special characters appear consecutively two or more times
+                    if (preg_match('/[^A-Za-z0-9_]{2,}/', $value)) {
+                        $fail($attribute.' is invalid.');
+                    }
+                },
             ],
             'role' => ['required', 'string', 'in:3,2'],
             'password' => [
@@ -127,7 +138,6 @@ class RegisterController extends Controller
                 'personal_email' => NULL,
                 'sains_email' => $data['email'],
                 'phone_number' => NULL,
-                'password' => Hash::make($data['password']),
                 'graduate_date' => NULL,
                 'expertise' => 'Not Specified',
                 'supervisor_status' => $supervisor_status,
@@ -142,7 +152,6 @@ class RegisterController extends Controller
                 'personal_email' => NULL,
                 'sains_email' => $data['email'],
                 'phone_number' => '',
-                'password' => Hash::make($data['password']),
                 'trainee_status' => 'Not Assigned',
             ]);
         }

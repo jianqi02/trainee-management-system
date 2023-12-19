@@ -1,6 +1,8 @@
 @extends('layouts.app')
 @section('pageTitle', 'Task Detail')
 
+@section('breadcrumbs', Breadcrumbs::render('task-detail', $task->id))
+
 @section('content')
 <head>
     <meta charset="UTF-8">

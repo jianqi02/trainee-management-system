@@ -46,7 +46,7 @@ Route::get('/', function () {
     }
 
     return view('home');
-});
+})->name('homepage');
 
 // Fallback route
 Route::fallback(function () {
@@ -68,17 +68,20 @@ Route::middleware(['role:3'])->group(function () {
     Route::get('/trainee-edit-profile', [TraineeController::class, 'placeholderProfile'])->name('trainee-edit-profile');
     Route::get('/trainee-upload-resume', [TraineeController::class, 'traineeResume'])->name('trainee-upload-resume');
     Route::get('/trainee-upload-logbook', [TraineeController::class, 'traineeLogbook'])->name('trainee-upload-logbook');
+    Route::post('trainee-update-password', [TraineeController::class, 'traineeUpdatePassword'])->name('trainee-update-password');
     Route::post('/update-profile', [TraineeController::class, 'updateProfile'])->name('update-profile');
     Route::post('/upload', [TraineeController::class, 'uploadResume'])->name('upload');
     Route::post('/upload-logbook', [TraineeController::class, 'uploadLogbook'])->name('upload-logbook');
     Route::delete('/logbooks/{logbook}', [TraineeController::class, 'destroy'])->name('logbooks.destroy');
     Route::delete('/resumes/{trainee}', [TraineeController::class, 'destroyResume'])->name('resumes.destroyResume');
+
 });
 //supervisor-related function
 Route::middleware(['role:2'])->group(function () {
     Route::get('/sv-profile', [SupervisorController::class, 'showProfileSV'])->name('sv-profile');
     Route::get('/sv-edit-profile', [SupervisorController::class, 'placeholderProfileSV'])->name('sv-edit-profile');
     Route::post('/update-profile-sv', [SupervisorController::class, 'updateProfileSV'])->name('update-profile-sv');
+    Route::post('sv-update-password', [SupervisorController::class, 'svUpdatePassword'])->name('sv-update-password');
     Route::get('/sv-trainee-assign', [SupervisorController::class, 'showAllTraineeProfileForSV'])->name('sv-trainee-assign');
     Route::get('/view-and-upload-logbook-sv/{traineeName}', [SupervisorController::class, 'svViewTraineeLogbook'])->name('view-and-upload-logbook-sv');
     Route::get('/go-profile/{traineeName}', [SupervisorController::class, 'goToTraineeProfile'])->name('go-profile');
@@ -182,6 +185,9 @@ Route::middleware(['role:3'])->group(function () {
     Route::get('/homepage', function () {
         return view('homepage');
     });
+    Route::get('/trainee-change-password', function () {
+        return view('trainee-change-password');
+    })->name('trainee-change-password');
 });
 
 Route::middleware(['role:1'])->group(function () {
@@ -194,6 +200,9 @@ Route::middleware(['role:2'])->group(function () {
     Route::get('/sv-homepage', function () {
         return view('sv-homepage');
     });
+    Route::get('/sv-change-password', function () {
+        return view('sv-change-password');
+    })->name('sv-change-password');
 });
 
 //forgot password : this will send a notification to the admin

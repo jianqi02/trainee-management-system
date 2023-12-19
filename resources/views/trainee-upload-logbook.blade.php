@@ -1,6 +1,8 @@
 @extends('layouts.app')
 @section('pageTitle', 'Upload Logbook')
 
+@section('breadcrumbs', Breadcrumbs::render('logbook'))
+
 @section('content')
 <!DOCTYPE html>
 <html lang="en">
@@ -152,6 +154,9 @@
             @if(session('error'))
                 <div class="alert alert-warning">{{ session('error') }}</div>
             @endif
+            @error('logbook')
+                <div class="alert alert-warning">{{ $message }}</div>
+            @enderror
             <ul>
                 @if ($logbooks->isEmpty())
                     <p>No logbooks uploaded yet.</p>

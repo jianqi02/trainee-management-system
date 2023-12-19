@@ -17,8 +17,10 @@ use Illuminate\Support\Facades\DB;
 use Spatie\Browsershot\Browsershot;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\TraineeController;
 use App\Notifications\TelegramNotification;
 
@@ -82,7 +84,24 @@ class TraineeController extends Controller
         $validatedData = $request->validate([
             'phoneNum' => ['required', 'string', 'regex:/^(\+?6?01)[02-46-9][0-9]{7}$|^(\+?6?01)[1][0-9]{8}$/'],
             'expertise' => 'nullable|string',
-            'personalEmail' => ['required', 'email', 'regex:/^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$/'],
+            'personalEmail' => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                'regex:/^(?=.{1,64}@)[A-Za-z0-9_]+(\.[A-Za-z0-9_]+)*@[^-][A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*(\.[A-Za-z]{2,})$/',
+                function ($attribute, $value, $fail) {
+                    // Check if a special character is the first or last character
+                    if (preg_match('/^[^A-Za-z0-9_]/', $value) || preg_match('/[^A-Za-z0-9_]$/', $value)) {
+                        $fail($attribute.' is invalid.');
+                    }
+        
+                    // Check if special characters appear consecutively two or more times
+                    if (preg_match('/[^A-Za-z0-9_]{2,}/', $value)) {
+                        $fail($attribute.' is invalid.');
+                    }
+                },
+            ],
             'graduateDate' => 'nullable|date',
             'profilePicture' => 'image|mimes:jpeg,png,jpg|max:2048',
         ]);
@@ -118,10 +137,17 @@ class TraineeController extends Controller
         public function uploadResume(Request $request)
     {
         $user = Auth::user();
-        // Validate the uploaded file
-        $request->validate([
+        //validate the uploaded resume
+        $validator = Validator::make($request->all(), [
             'resume' => 'required|mimes:pdf|max:2048',
+        ],[
+            'resume.max' => 'The resume must not exceed 2MB in size.',
+            'resume.mimes' => 'Accepted resume types are .pdf only.',
         ]);
+        
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
 
         $resumeExistCheck = Trainee::where('sains_email', $user->email)->first();
 
@@ -160,10 +186,17 @@ class TraineeController extends Controller
         $trainee = Trainee::where('sains_email', $user->email)->pluck('name')->first();
         $id = Trainee::where('sains_email', $user->email)->pluck('id')->first();
 
-        // Validate the uploaded file
-        $request->validate([
+        //validate the uploaded logbook
+        $validator = Validator::make($request->all(), [
             'logbook' => 'required|mimes:pdf,doc,docx|max:2048',
+        ],[
+            'logbook.max' => 'The logbook must not exceed 2MB in size.',
+            'logbook.mimes' => 'Accepted logbook types are .pdf, .doc and .docx only.',
         ]);
+        
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
 
         // The unsigned logbook (uploaded by trainee) cannot be more than 4.
         $logbookCount = Logbook::where('trainee_id', $id)
@@ -317,6 +350,51 @@ class TraineeController extends Controller
 
         }
         return view('trainee-view-seating', compact('weeksInMonth', 'seatingData', 'name'));
+    }
+
+    public function traineeUpdatePassword(Request $request){
+        $user = Auth::user();
+        $validator = Validator::make($request->all(), [
+            'current_password' => 'required|string',
+            'new_password' => [
+                'required',
+                'string',
+                'min:8',
+                'regex:/^(?=.*[A-Z])(?=.*[!@#$%^&*()_+])[a-zA-Z0-9!@#$%^&*()_+]+$/',
+            ],
+            'confirm_password' => 'required|string|same:new_password',
+        ], [
+            'new_password.min' => 'The password must have at least 8 characters.',
+            'new_password.regex' => 'The format of the password is incorrect.',
+            'confirm_password.same' => 'The confirm password does not match the new password.',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $current_password = $request->input('current_password');
+        $new_password = $request->input('new_password');
+        $confirm_password = $request->input('confirm_password');
+
+        // check the password inputed is same as the original password or not
+        if (Hash::check($current_password, $user->password)) {
+            //check the new password is same as the current password or not
+            if(Hash::check($new_password, $user->password)){
+                return redirect()->back()->with('error', 'Cannot set the same password as new password.');
+            }
+            else{
+                $user->password = $new_password;
+                $user->save();
+            }
+        }
+        else{
+            return redirect()->back()->with('error', 'Wrong current password.');
+        }
+
+        return redirect()->back()->with('success', 'Password successfully changed!');
     }
 }
 

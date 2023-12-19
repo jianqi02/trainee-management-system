@@ -358,8 +358,19 @@ class AdminController extends Controller
                 'email',
                 'max:255',
                 'unique:users',
-                'regex:/^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$/',
+                'regex:/^(?=.{1,64}@)[A-Za-z0-9_]+(\.[A-Za-z0-9_]+)*@[^-][A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*(\.[A-Za-z]{2,})$/',
                 'ends_with:@sains.com.my',
+                function ($attribute, $value, $fail) {
+                    // Check if a special character is the first or last character
+                    if (preg_match('/^[^A-Za-z0-9_]/', $value) || preg_match('/[^A-Za-z0-9_]$/', $value)) {
+                        $fail($attribute.' is invalid.');
+                    }
+        
+                    // Check if special characters appear consecutively two or more times
+                    if (preg_match('/[^A-Za-z0-9_]{2,}/', $value)) {
+                        $fail($attribute.' is invalid.');
+                    }
+                },
             ],
             'role' => 'required|in:2,3',
             'password' => [
@@ -508,7 +519,24 @@ class AdminController extends Controller
                 'fullName' => 'required|regex:/^[A-Za-z\s]+$/',
                 'phoneNum' => ['nullable', 'string', 'regex:/^(\+?6?01)[02-46-9][0-9]{7}$|^(\+?6?01)[1][0-9]{8}$/'],
                 'expertise' => 'nullable|string',
-                'personalEmail' => 'nullable|email',
+                'personalEmail' => [
+                    'nullable',
+                    'string',
+                    'email',
+                    'max:255',
+                    'regex:/^(?=.{1,64}@)[A-Za-z0-9_]+(\.[A-Za-z0-9_]+)*@[^-][A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*(\.[A-Za-z]{2,})$/',
+                    function ($attribute, $value, $fail) {
+                        // Check if a special character is the first or last character
+                        if (preg_match('/^[^A-Za-z0-9_]/', $value) || preg_match('/[^A-Za-z0-9_]$/', $value)) {
+                            $fail($attribute.' is invalid.');
+                        }
+            
+                        // Check if special characters appear consecutively two or more times
+                        if (preg_match('/[^A-Za-z0-9_]{2,}/', $value)) {
+                            $fail($attribute.' is invalid.');
+                        }
+                    },
+                ],
                 'startDate' => 'nullable|date',
                 'endDate' => 'nullable|date',
                 'graduateDate' => 'nullable|date',

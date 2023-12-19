@@ -127,7 +127,10 @@ class TaskTimelineController extends Controller
         //get all the task for this trainee
         $tasks = TaskTimeline::where('trainee_id', $traineeID)->get();
 
-        return view('admin-view-trainee-task-timeline', compact('tasks', 'traineeID'));
+        //get the trainee name
+        $traineeName = Trainee::where('id', $traineeID)->pluck('name')->first();
+
+        return view('admin-view-trainee-task-timeline', compact('tasks', 'traineeID', 'traineeName'));
     }
 
     public function traineeAddNewTask(Request $request){
@@ -349,15 +352,20 @@ class TaskTimelineController extends Controller
             if(TraineeAssign::where('trainee_id', $trainee_ref_id)->where('assigned_supervisor_id', $supervisorID)->first() == null){
                 return redirect()->back()->with('error', 'You do not have access to view this page.');
             }
-            return view('sv-view-trainee-task-detail', compact('task', 'dateRange', 'timelineData', 'comments'));
+            return view('sv-view-trainee-task-detail', compact('task', 'dateRange', 'timelineData', 'comments', 'trainee_id'));
         } elseif ($user_role == 1 ){
-            return view('admin-view-trainee-task-detail', compact('task', 'dateRange', 'timelineData', 'comments'));
+            //get the trainee name and id
+            $trainee_id = TaskTimeline::where('id', $taskID)->pluck('trainee_id')->first();
+            $traineeName = Trainee::where('id', $trainee_id)->pluck('name')->first();
+            return view('admin-view-trainee-task-detail', compact('task', 'dateRange', 'timelineData', 'comments', 'trainee_id', 'traineeName'));
         }
     }
     
 
     public function showDailyTaskDetailForTrainee($date, $taskID){
         $dailyTask = TaskTimeline::where('id', $taskID)->first();
+
+        $taskName = $dailyTask->task_name;
 
         if($dailyTask == null){
             return redirect()->back();
@@ -406,7 +414,7 @@ class TaskTimelineController extends Controller
             if(TaskTimeline::where('id', $taskID)->pluck('trainee_id')->first() != $trainee_id){
                 return redirect()->back()->with('error', 'You do not have access to view this page.');
             }
-            return view('trainee-daily-task-detail', compact('date', 'taskDetail', 'taskID', 'dayOfWeek'));
+            return view('trainee-daily-task-detail', compact('date', 'taskDetail', 'taskID', 'dayOfWeek', 'taskName'));
         }
         elseif($user_role == 2){
             $trainee_id = TaskTimeline::where('id', $taskID)->pluck('trainee_id')->first();
@@ -417,10 +425,13 @@ class TaskTimelineController extends Controller
             if(TraineeAssign::where('trainee_id', $trainee_ref_id)->where('assigned_supervisor_id', $supervisorID)->first() == null){
                 return redirect()->back()->with('error', 'You do not have access to view this page.');
             }
-            return view('sv-view-trainee-daily-task-detail', compact('date', 'taskDetail', 'taskID', 'dayOfWeek'));
+            return view('sv-view-trainee-daily-task-detail', compact('date', 'taskDetail', 'taskID', 'dayOfWeek', 'trainee_id', 'taskName'));
         }
         elseif($user_role == 1){
-            return view('admin-view-trainee-daily-task-detail', compact('date', 'taskDetail', 'taskID', 'dayOfWeek'));
+            //get the trainee id and trainee name
+            $trainee_id = TaskTimeline::where('id', $taskID)->pluck('trainee_id')->first();
+            $traineeName = Trainee::where('id', $trainee_id)->pluck('name')->first();
+            return view('admin-view-trainee-daily-task-detail', compact('date', 'taskDetail', 'taskID', 'dayOfWeek', 'trainee_id', 'traineeName', 'taskName'));
         }
        
     }

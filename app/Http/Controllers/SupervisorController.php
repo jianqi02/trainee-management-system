@@ -16,6 +16,8 @@ use Illuminate\Http\Request;
 use App\Models\TraineeAssign;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class SupervisorController extends Controller
 {
@@ -329,6 +331,45 @@ class SupervisorController extends Controller
 
         }
         return view('sv-view-seating', compact('weeksInMonth', 'seatingData'));
+    }
+
+    public function svUpdatePassword(Request $request){
+        $user = Auth::user();
+        $validator = Validator::make($request->all(), [
+            'current_password' => 'required|string',
+            'new_password' => [
+                'required',
+                'string',
+                'min:8',
+                'regex:/^(?=.*[A-Z])(?=.*[!@#$%^&*()_+])[a-zA-Z0-9!@#$%^&*()_+]+$/',
+            ],
+            'confirm_password' => 'required|string|same:new_password',
+        ], [
+            'new_password.min' => 'The password must have at least 8 characters.',
+            'new_password.regex' => 'The format of the password is incorrect.',
+            'confirm_password.same' => 'The confirm password does not match the new password.',
+        ]);
+
+        $current_password = $request->input('current_password');
+        $new_password = $request->input('new_password');
+        $confirm_password = $request->input('confirm_password');
+
+        // check the password inputed is same as the original password or not
+        if (Hash::check($current_password, $user->password)) {
+            //check the new password is same as the current password or not
+            if(Hash::check($new_password, $user->password)){
+                return redirect()->back()->with('error', 'Cannot set the same password as new password.');
+            }
+            else{
+                $user->password = $new_password;
+                $user->save();
+            }
+        }
+        else{
+            return redirect()->back()->with('error', 'Wrong current password.');
+        }
+
+        return redirect()->back()->with('success', 'Password successfully changed!');
     }
 
 }

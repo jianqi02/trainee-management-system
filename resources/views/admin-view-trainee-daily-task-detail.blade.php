@@ -1,6 +1,8 @@
 @extends('layouts.admin')
 @section('pageTitle', 'Daily Task Detail')
 
+@section('breadcrumbs', Breadcrumbs::render('admin-daily-task-detail', $traineeName, $trainee_id, $date, $taskID))
+
 @section('content')
 <head>
     <meta charset="UTF-8">
@@ -205,6 +207,7 @@
     @endphp
     <div class="task-container">
         <div class="row">
+            <p style="margin-left: 5px;"><small>You are currently viewing on the daily task for task <strong>{{ $taskName }}</strong>.</small></p>
             <h3>Daily Task Detail</h3>
             @if(session('warning'))
                 <div class="alert alert-warning" style="width: 64.3%; margin-left: 15px;">{{ session('warning') }}</div>

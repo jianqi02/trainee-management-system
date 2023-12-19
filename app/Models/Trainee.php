@@ -19,7 +19,6 @@ class Trainee extends Model
         'personal_email',
         'sains_email',
         'phone_number',
-        'password',
         'graduate_date',
         'expertise',
         'profile_image',

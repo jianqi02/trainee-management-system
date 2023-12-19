@@ -1,6 +1,8 @@
 @extends('layouts.admin')
 @section('pageTitle', 'Trainee Task Detail')
 
+@section('breadcrumbs', Breadcrumbs::render('admin-task-detail', $traineeName, $trainee_id, $task->id))
+
 @section('content')
 <head>
     <meta charset="UTF-8">

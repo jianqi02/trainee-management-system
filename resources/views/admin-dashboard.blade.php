@@ -1,6 +1,8 @@
 @extends('layouts.admin')
 @section('pageTitle', 'Admin Dashboard')
 
+@section('breadcrumbs', Breadcrumbs::render('dashboard'))
+
 @section('content') 
 <!DOCTYPE html>
 <html lang="en">

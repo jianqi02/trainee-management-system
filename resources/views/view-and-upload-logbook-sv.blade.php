@@ -1,5 +1,8 @@
 @extends('layouts.sv')
 @section('pageTitle', 'Trainee Logbook')
+
+@section('breadcrumbs', Breadcrumbs::render('view-trainee-logbook', $name))
+
 @section('content')
 <!DOCTYPE html>
 <html lang="en">

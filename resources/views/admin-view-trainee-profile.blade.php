@@ -1,6 +1,8 @@
 @extends('layouts.admin')
 @section('pageTitle', 'Trainee Profile')
 
+@section('breadcrumbs', Breadcrumbs::render('admin-view-trainee-profile', $trainee->name))
+
 @section('content') 
 <!DOCTYPE html>
 <html lang="en">

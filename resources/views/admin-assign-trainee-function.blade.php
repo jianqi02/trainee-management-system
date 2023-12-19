@@ -1,6 +1,8 @@
 @extends('layouts.admin')
 @section('pageTitle', 'Assign Supervisor')
 
+@section('breadcrumbs', Breadcrumbs::render('assign-sv-to-trainee', $trainee->name))
+
 @section('content')
 <div class="container">
     <div class="row justify-content-center">

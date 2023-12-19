@@ -174,6 +174,9 @@
         </nav>
 
         <main class="py-4">
+            <div style="width: 80%; margin-left: 150px;">
+                @yield('breadcrumbs')
+            </div>
             @yield('content')
         </main>
     </div>

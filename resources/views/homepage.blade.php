@@ -1,6 +1,8 @@
 @extends('layouts.app')
 @section('pageTitle', 'Homepage')
 
+@section('breadcrumbs', Breadcrumbs::render('homepage'))
+
 @section('content') 
 <!DOCTYPE html>
 <html lang="en">
@@ -48,6 +50,11 @@
                       <a href="/trainee-task-timeline" class="rectangular-button" style="text-decoration: none;">Task Timeline</a>
                   </div>
               </div>
+              <div class="row">
+                <div class="col-md-12 order-md-2"  style="margin-left: 200px;">
+                    <a href="/trainee-change-password" class="rectangular-button" style="text-decoration: none;">Change Password</a>
+                </div>
+            </div>
           </div>
       </div>
       

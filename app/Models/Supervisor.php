@@ -20,7 +20,6 @@ class Supervisor extends Model
         'personal_email',
         'sains_email',
         'phone_number',
-        'password',
         'trainee_status',
     ];
 

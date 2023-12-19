@@ -1,6 +1,8 @@
 @extends('layouts.sv')
 @section('pageTitle', 'My Trainee')
 
+@section('breadcrumbs', Breadcrumbs::render('my-trainee'))
+
 @section('content') 
 <!DOCTYPE html>
 <html lang="en">
@@ -84,34 +86,35 @@
     .card{
       margin-right: 10px;
     }
-
-
   </style>
-  <div class="container sv-trainee-assign-container">
-    <h4 class="text-center">My Trainee</h5>
-      <div class="card-group">
-        @foreach($traineeBasicDatas as $traineeData)
+<div class="container sv-trainee-assign-container">
+  <h4 class="text-center">My Trainee</h4>
+  <div class="row">
+      @foreach($traineeBasicDatas as $traineeData)
           @if($traineeData != null)
-          <div class="card" style="width: 18rem;">
-            <img class="image-placeholder" src="{{ asset('storage/' . str_replace('public/', '', $traineeData->profile_image)) }}" alt="Profile Picture">
-              <div class="card-body">
-                  <h5 class="card-title text-center">{{ $traineeData->name }}</h5><br>
-                  <p><strong>Expertise:</strong> {{ $traineeData->expertise }}</p>
-                  <p><strong>H/P No.:</strong> {{ $traineeData->phone_number }}</p>
-                  <p><strong>Personal Email: </strong>{{ $traineeData->personal_email }}</p>
-                  <p><strong>SAINS Email:</strong> {{ $traineeData->sains_email }}</p>
-                  @if($traineeData->sains_email != "")
-                    <a href="{{ route('go-profile', ['traineeName' => $traineeData->name]) }}" class="btn btn-primary">Go To Profile</a>
-                  @endif
-                  @if($traineeData->sains_email != "")
-                    <a href="{{ route('go-task-timeline', ['traineeName' => $traineeData->name]) }}" class="btn btn-primary">Task Timeline</a>
-                  @endif
+              <div class="col-md-6 mb-4">
+                  <div class="card">
+                      <img class="image-placeholder" src="{{ asset('storage/' . str_replace('public/', '', $traineeData->profile_image)) }}" alt="Profile Picture">
+                      <div class="card-body">
+                          <h5 class="card-title text-center">{{ $traineeData->name }}</h5><br>
+                          <p><strong>Expertise:</strong> {{ $traineeData->expertise }}</p>
+                          <p><strong>H/P No.:</strong> {{ $traineeData->phone_number }}</p>
+                          <p><strong>Personal Email: </strong>{{ $traineeData->personal_email }}</p>
+                          <p><strong>SAINS Email:</strong> {{ $traineeData->sains_email }}</p>
+                          @if($traineeData->sains_email != "")
+                              <a href="{{ route('go-profile', ['traineeName' => $traineeData->name]) }}" class="btn btn-primary">Go To Profile</a>
+                          @endif
+                          @if($traineeData->sains_email != "")
+                              <a href="{{ route('go-task-timeline', ['traineeName' => $traineeData->name]) }}" class="btn btn-primary">Task Timeline</a>
+                          @endif
+                      </div>
+                  </div>
               </div>
-          </div>
           @endif
-        @endforeach
-    </div>
+      @endforeach
   </div>
+</div>
+
 </body>
 </html>
 @endsection

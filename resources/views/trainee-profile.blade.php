@@ -1,6 +1,8 @@
 @extends('layouts.app')
 @section('pageTitle', 'Profile')
 
+@section('breadcrumbs', Breadcrumbs::render('profile'))
+
 @section('content') 
 <!DOCTYPE html>
 <html lang="en">

@@ -1,6 +1,8 @@
 @extends('layouts.admin')
 @section('pageTitle', 'Create New Record')
 
+@section('breadcrumbs', Breadcrumbs::render('new-record'))
+
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
