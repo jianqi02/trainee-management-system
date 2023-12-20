@@ -98,6 +98,12 @@
                                             @endif
                                         </td>                                      
                                         <td class="trainee-list-td">
+                                            @if($trainee->traineeRecordExists())
+                                            <a class="icon-link" href="{{ route('admin-go-profile', ['traineeName' => urlencode($trainee->name)]) }}" style="text-decoration: none; font-size: 16.5px; color: grey; margin-right: 10px;">
+                                                <i class="fa fa-user" aria-hidden="true"></i>
+                                                <span class="tooltip">View Profile</span>
+                                            </a>
+                                            @endif
                                             <a class="icon-link" href="/admin-trainee-assign">
                                                 <i class="fas fa-user-plus action-btn"></i>
                                                 <span class="tooltip">Assign Supervisor</span>

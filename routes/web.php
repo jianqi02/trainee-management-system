@@ -208,4 +208,5 @@ Route::middleware(['role:2'])->group(function () {
 //forgot password : this will send a notification to the admin
 Route::post('/forgot-password', [NotificationController::class, 'forgotPasswordNotification'])->name('forgot-password');
 
+
 Auth::routes();

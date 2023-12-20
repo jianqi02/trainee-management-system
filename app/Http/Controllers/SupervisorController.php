@@ -174,10 +174,16 @@ class SupervisorController extends Controller
         // Get the uploaded file
         $file = $request->file('logbook');
 
-        // Get the original filename
-        $originalFileName = $file->getClientOriginalName();
+        // Get the random filename
+        $randomFileName = Str::random(32);
 
-        $logbook_path = 'storage/logbooks/' . $originalFileName;
+        // Get the original extension of the file
+        $extension = $file->getClientOriginalExtension();
+
+        // Concatenate the random filename and the original extension
+        $newFileName = $randomFileName . '.' . $extension;
+
+        $logbook_path = 'storage/logbooks/' . $newFileName;
 
         if(Logbook::where('logbook_path', $logbook_path)->exists()){
             // If the user upload a pdf with same name
@@ -187,12 +193,12 @@ class SupervisorController extends Controller
             // Save the file path in the database for the user
             Logbook::create([
                 'trainee_id' => $trainee_id,
-                'logbook_path' => 'storage/logbooks/' . $originalFileName,
+                'logbook_path' => 'storage/logbooks/' . $newFileName,
                 'status' => 'Signed',
             ]);
 
             // Store the file in the "public" disk
-            $file->storeAs('public/logbooks/', $originalFileName);
+            $file->storeAs('public/logbooks/', $newFileName);
         }
         
         //send the notification about the signed logbook to the trainee.

@@ -10,6 +10,7 @@ use App\Models\Trainee;
 use Illuminate\View\View;
 use App\Models\AllTrainee;
 use App\Models\Supervisor;
+use Illuminate\Support\Str;
 use App\Models\Notification;
 use Illuminate\Http\Request;
 use App\Models\TraineeAssign;
@@ -158,15 +159,21 @@ class TraineeController extends Controller
         // Get the uploaded file
         $file = $request->file('resume');
 
-        // Get the original filename
-        $originalFileName = $file->getClientOriginalName();
+        // Get the random filename
+        $randomFileName = Str::random(32);
+
+        // Get the original extension of the file
+        $extension = $file->getClientOriginalExtension();
+
+        // Concatenate the random filename and the original extension
+        $newFileName = $randomFileName . '.' . $extension;
 
         // Store the file in the "public" disk (you may configure other disks as needed)
-        $file->storeAs('public/resumes/', $originalFileName);
+        $file->storeAs('public/resumes/', $newFileName);
 
         // Save the file path in the database for the user
         $trainee = Trainee::where('name', $user->name)->first();
-        $trainee->resume_path = 'storage/resumes/' . $originalFileName;
+        $trainee->resume_path = 'storage/resumes/' . $newFileName;
         $trainee->save();
 
         // Redirect the user to a success page
@@ -210,10 +217,16 @@ class TraineeController extends Controller
         // Get the uploaded file
         $file = $request->file('logbook');
 
-        // Get the original filename
-        $originalFileName = $file->getClientOriginalName();
+        // Get the random filename
+        $randomFileName = Str::random(32);
 
-        $logbook_path = 'storage/logbooks/' . $originalFileName;
+        // Get the original extension of the file
+        $extension = $file->getClientOriginalExtension();
+
+        // Concatenate the random filename and the original extension
+        $newFileName = $randomFileName . '.' . $extension;
+
+        $logbook_path = 'storage/logbooks/' . $newFileName;
 
         if(Logbook::where('logbook_path', $logbook_path)->exists()){
             // If the user upload a pdf with same name
@@ -223,12 +236,12 @@ class TraineeController extends Controller
             // Save the file path in the database for the user
             Logbook::create([
                 'trainee_id' => $id,
-                'logbook_path' => 'storage/logbooks/' . $originalFileName,
+                'logbook_path' => 'storage/logbooks/' . $newFileName,
                 'status' => 'Unsigned',
             ]);
 
             // Store the file in the "public" disk
-            $file->storeAs('public/logbooks/', $originalFileName);
+            $file->storeAs('public/logbooks/', $FileName);
         }
 
         //get the id of the trainee in the list (all trainee list)
