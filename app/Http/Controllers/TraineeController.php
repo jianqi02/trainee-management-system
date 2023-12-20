@@ -241,7 +241,7 @@ class TraineeController extends Controller
             ]);
 
             // Store the file in the "public" disk
-            $file->storeAs('public/logbooks/', $FileName);
+            $file->storeAs('public/logbooks/', $newFileName);
         }
 
         //get the id of the trainee in the list (all trainee list)

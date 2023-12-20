@@ -10,6 +10,7 @@ use App\Models\Seating;
 use App\Models\Trainee;
 use App\Models\AllTrainee;
 use App\Models\Supervisor;
+use Illuminate\Support\Str;
 use App\Models\Notification;
 use App\Models\TaskTimeline;
 use Illuminate\Http\Request;
