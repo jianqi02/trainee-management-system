@@ -31,7 +31,7 @@
 
         /* Hover effect */
         .btn-primary:hover {
-            background-color: #d3d3d3; /* Change to your preferred color on hover */
+            background-color: #d3d3d3; 
         }
 
         /* Focus effect (when the button is selected) */
@@ -121,7 +121,7 @@
 
         /* Add a hover animation to links */
         .task-card-link:hover {
-            color: #007bff; /* Change the link color on hover to your preferred color */
+            color: #007bff; 
             transition: color 0.2s ease; /* Add a smooth color transition effect */
         }
 
@@ -153,7 +153,7 @@
             }
 
             .timeline__component--bg:hover {
-                background-color: #f0f0f0; /* Change to your preferred background color on hover */
+                background-color: #f0f0f0;
                 cursor: pointer; /* Change cursor to pointer on hover to indicate interactivity */
             }
 

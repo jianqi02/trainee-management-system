@@ -21,8 +21,6 @@
 
                     <p class="lead">Manage your trainees or your tasks efficiently with our Trainee Management System (TMS)!</p>
 
-                    <img src="{{ asset('images/trainee_management.png') }}" alt="Trainee Management System" class="img-fluid my-4">
-
                     <p><ins>Features for supervisors:</ins></p>
                     <ul>
                         <li>Track trainee information.</li>

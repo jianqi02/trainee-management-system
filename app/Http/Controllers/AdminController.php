@@ -617,10 +617,26 @@ class AdminController extends Controller
         //get the trainee id
         $trainee_id = Trainee::where('name', 'LIKE', $name)->pluck('id')->first();
 
-        // Validate the uploaded file
-        $request->validate([
+        //validate the uploaded logbook
+        $validator = Validator::make($request->all(), [
             'logbook' => 'required|mimes:pdf,doc,docx|max:2048',
+        ],[
+            'logbook.max' => 'The logbook must not exceed 2MB in size.',
+            'logbook.mimes' => 'Accepted logbook types are .pdf, .doc and .docx only.',
         ]);
+        
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        // The unsigned logbook (uploaded by trainee) cannot be more than 4.
+        $logbookCount = Logbook::where('trainee_id', $trainee_id)
+        ->where('status', 'Signed')
+        ->count();
+
+        if ($logbookCount >= 4) {
+            return redirect()->back()->with('error', 'You can only upload a maximum of 4 logbooks.');
+        }
 
         // Get the uploaded file
         $file = $request->file('logbook');
@@ -884,5 +900,50 @@ class AdminController extends Controller
 
             return redirect()->back()->with('success', 'Password for this supervisor has changed successfully.');
         }
+    }
+
+    public function adminUpdatePassword(Request $request){
+        $user = Auth::user();
+        $validator = Validator::make($request->all(), [
+            'current_password' => 'required|string',
+            'new_password' => [
+                'required',
+                'string',
+                'min:12',
+                'regex:/^(?=.*[A-Z])(?=.*[!@#$%^&*()_+])[a-zA-Z0-9!@#$%^&*()_+]+$/',
+            ],
+            'confirm_password' => 'required|string|same:new_password',
+        ], [
+            'new_password.min' => 'The password must have at least 12 characters.',
+            'new_password.regex' => 'The format of the password is incorrect.',
+            'confirm_password.same' => 'The confirm password does not match the new password.',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $current_password = $request->input('current_password');
+        $new_password = $request->input('new_password');
+        $confirm_password = $request->input('confirm_password');
+
+        // check the password inputed is same as the original password or not
+        if (Hash::check($current_password, $user->password)) {
+            //check the new password is same as the current password or not
+            if(Hash::check($new_password, $user->password)){
+                return redirect()->back()->with('error', 'Cannot set the same password as new password.');
+            }
+            else{
+                $user->password = $new_password;
+                $user->save();
+            }
+        }
+        else{
+            return redirect()->back()->with('error', 'Wrong current password.');
+        }
+
+        return redirect()->back()->with('success', 'Password successfully changed!');
     }
 }

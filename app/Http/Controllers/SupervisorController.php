@@ -115,6 +115,11 @@ class SupervisorController extends Controller
         $name = urldecode($traineeName);
         $trainee = Trainee::where('name', $name)->first();
 
+        if($trainee == null){
+            return redirect()->back()
+            ->with('error', 'Trainee does not exist.');
+        }
+
         $internship_dates = AllTrainee::where('name', 'LIKE', $name)
         ->select('internship_start', 'internship_end')
         ->first();
@@ -125,6 +130,14 @@ class SupervisorController extends Controller
         $supervisor_id = Supervisor::where('sains_email', Auth::user()->email)
             ->pluck('id')
             ->first();
+
+        //reference id for trainee
+        $trainee_ref_id = AllTrainee::where('name', $name)->pluck('id')->first();
+        
+        //check whether this trainee is under this supervisor.
+        if (TraineeAssign::where('trainee_id', $trainee_ref_id)->where('assigned_supervisor_id', $supervisor_id)->first() == null) {
+            return redirect()->back()->with('error', 'You do not have access to view this page.');
+        }
 
         $comment = Comment::where('supervisor_id', $supervisor_id)
             ->where('trainee_id', $trainee_id)
@@ -154,7 +167,22 @@ class SupervisorController extends Controller
     public function svViewTraineeLogbook($traineeName)
     {
         $name = urldecode($traineeName);
+
+        //reference id for trainee
+        $trainee_ref_id = AllTrainee::where('name', $name)->pluck('id')->first();
+
+        //reference id for supervisor
+        $sv_ref_id = Supervisor::where('sains_email', Auth::user()->email)->pluck('id')->first();
+
+        //check whether this trainee is under this supervisor.
+        if (TraineeAssign::where('trainee_id', $trainee_ref_id)->where('assigned_supervisor_id', $sv_ref_id)->first() == null) {
+            return redirect()->back()->with('error', 'You do not have access to view this page.');
+        }
+
         $trainee_id = Trainee::where('name','LIKE', $name)->pluck('id')->first();
+
+
+
         $logbooks = Logbook::where('trainee_id', $trainee_id)->get();
         return view('view-and-upload-logbook-sv', compact('logbooks','name'));
     }
@@ -166,11 +194,27 @@ class SupervisorController extends Controller
 
         //get the trainee id
         $trainee_id = Trainee::where('name', 'LIKE', $name)->pluck('id')->first();
-        
-        // Validate the uploaded file
-        $request->validate([
+
+        //validate the uploaded logbook
+        $validator = Validator::make($request->all(), [
             'logbook' => 'required|mimes:pdf,doc,docx|max:2048',
+        ],[
+            'logbook.max' => 'The logbook must not exceed 2MB in size.',
+            'logbook.mimes' => 'Accepted logbook types are .pdf, .doc and .docx only.',
         ]);
+        
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        // The unsigned logbook (uploaded by trainee) cannot be more than 4.
+        $logbookCount = Logbook::where('trainee_id', $trainee_id)
+        ->where('status', 'Signed')
+        ->count();
+
+        if ($logbookCount >= 4) {
+            return redirect()->back()->with('error', 'You can only upload a maximum of 4 logbooks.');
+        }
 
         // Get the uploaded file
         $file = $request->file('logbook');
@@ -242,8 +286,21 @@ class SupervisorController extends Controller
         $name = urldecode($traineeName);
         $trainee = Trainee::where('name', $name)->first();
 
+        if($trainee == null){
+            return redirect()->back()->with('error', 'Trainee not found');
+        }
+
         $user = Auth::user();
         $supervisor_id = Supervisor::where('sains_email', $user->email)->pluck('id')->first();
+
+        //reference id for trainee
+        $trainee_ref_id = AllTrainee::where('name', $name)->pluck('id')->first();
+
+        //check whether this trainee is under this supervisor.
+        if (TraineeAssign::where('trainee_id', $trainee_ref_id)->where('assigned_supervisor_id', $supervisor_id)->first() == null) {
+            return redirect()->back()->with('error', 'You do not have access to view this page.');
+        }
+
         $trainee_id = $trainee->id;
         $comment = Comment::where('supervisor_id', $supervisor_id)
             ->where('trainee_id', $trainee_id)

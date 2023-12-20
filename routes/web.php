@@ -74,6 +74,7 @@ Route::middleware(['role:3'])->group(function () {
     Route::post('/upload-logbook', [TraineeController::class, 'uploadLogbook'])->name('upload-logbook');
     Route::delete('/logbooks/{logbook}', [TraineeController::class, 'destroy'])->name('logbooks.destroy');
     Route::delete('/resumes/{trainee}', [TraineeController::class, 'destroyResume'])->name('resumes.destroyResume');
+    Route::get('/my-supervisor', [TraineeController::class, 'mySupervisorPage'])->name('my-supervisor');
 
 });
 //supervisor-related function
@@ -126,6 +127,7 @@ Route::middleware(['role:1'])->group(function () {
     Route::get('/delete-exist-account/{traineeID}', [AdminController::class, 'deleteAccount'])->name('delete-exist-account');
     Route::get('/delete-exist-sv-account/{supervisorID}', [AdminController::class, 'deleteSVAccount'])->name('delete-exist-sv-account');
     Route::post('/admin-change-password/{id}/{type}', [AdminController::class, 'adminChangePassword'])->name('admin-change-password');
+    Route::post('admin-update-password', [AdminController::class, 'adminUpdatePassword'])->name('admin-update-password');
 });
 
 
@@ -194,6 +196,9 @@ Route::middleware(['role:1'])->group(function () {
     Route::get('/admin-create-account', function () {
         return view('admin-create-account');
     })->name('admin-create-account');
+    Route::get('/admin-change-self-password', function () {
+        return view('admin-change-password');
+    })->name('admin-change-self-password');
 });
 
 Route::middleware(['role:2'])->group(function () {

@@ -31,7 +31,7 @@
 
         /* Hover effect */
         .btn-add-task:hover {
-            background-color: #d3d3d3; /* Change to your preferred color on hover */
+            background-color: #d3d3d3; 
         }
 
         /* Focus effect (when the button is selected) */

@@ -102,7 +102,7 @@
 
         /* Add a hover animation to links */
         .task-card-link:hover {
-            color: #007bff; /* Change the link color on hover to your preferred color */
+            color: #007bff; 
             transition: color 0.2s ease; /* Add a smooth color transition effect */
         }
 

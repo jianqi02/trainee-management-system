@@ -10,6 +10,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css\trainee.css">
+    <style>
+        .rectangular-button{
+            height: 50px;
+        }
+    </style>
 </head>
 <body class="hoempage-view">
   <div class="container homepage-container">
@@ -31,27 +36,32 @@
                   </div>
               </div>
               <div class="row">
-                  <div class="col-md-12 order-md-2" style="margin-left: 200px;">
+                <div class="col-md-12 order-md-2" style="margin-left: 200px;">
+                    <a href="/my-supervisor" class="rectangular-button" style="text-decoration: none;">My Supervisor</a>
+                </div>
+              </div>
+              <div class="row">
+                  <div class="col-md-12">
                       <a href="/view-seat-plan" class="rectangular-button" style="text-decoration: none;">View Seat Plan</a>
                   </div>
               </div>
               <div class="row">
-                  <div class="col-md-12">
+                  <div class="col-md-12 order-md-2" style="margin-left: 200px;">
                       <a href="/trainee-upload-resume" class="rectangular-button" style="text-decoration: none;">Upload Resume</a>
                   </div>
               </div>
               <div class="row">
-                  <div class="col-md-12 order-md-2"  style="margin-left: 200px;">
+                  <div class="col-md-12">
                       <a href="/trainee-upload-logbook" class="rectangular-button" style="text-decoration: none;">Upload Logbook</a>
                   </div>
               </div>
               <div class="row">
-                  <div class="col-md-12">
+                  <div class="col-md-12 order-md-2"  style="margin-left: 200px;">
                       <a href="/trainee-task-timeline" class="rectangular-button" style="text-decoration: none;">Task Timeline</a>
                   </div>
               </div>
               <div class="row">
-                <div class="col-md-12 order-md-2"  style="margin-left: 200px;">
+                <div class="col-md-12">
                     <a href="/trainee-change-password" class="rectangular-button" style="text-decoration: none;">Change Password</a>
                 </div>
             </div>

@@ -107,7 +107,7 @@
         }
 
         .custom-file-upload:hover {
-            background: #235a9b; /* Change to your desired hover color */
+            background: #235a9b; 
         }
 
         /* Style for the "Upload resume" button */
@@ -122,7 +122,7 @@
         }
 
         .upload-button:hover {
-            background: #45a049; /* Change to your desired hover color */
+            background: #45a049; 
         }
     </style>
 </head>

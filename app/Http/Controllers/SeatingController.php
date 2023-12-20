@@ -135,6 +135,30 @@ class SeatingController extends Controller
                     $existingSeat->save();
                 }
             }
+
+            //hardcoded seat that is not available for second floor (Level 3), add or remove if needed
+            $seatDetail['T11'] = [
+                'trainee_id' => 'Not Assigned',
+                'seat_status' => 'Not Available',
+            ];
+
+            $seatDetail['T12'] = [
+                'trainee_id' => 'Not Assigned',
+                'seat_status' => 'Not Available',
+            ];
+
+            $seatDetail['T13'] = [
+                'trainee_id' => 'Not Assigned',
+                'seat_status' => 'Not Available',
+            ];
+            $seatDetail['T14'] = [
+                'trainee_id' => 'Not Assigned',
+                'seat_status' => 'Not Available',
+            ];
+
+            $existingSeat->seat_detail = json_encode($seatDetail);
+            $existingSeat->save();
+    
     
             $roundTableSeatNames = ['Round-Table'];
     

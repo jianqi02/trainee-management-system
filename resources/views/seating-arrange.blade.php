@@ -230,7 +230,7 @@
         <div class="seating-arrange-wrapper" id="seating-plan">
             <div id="carouselExample" class="carousel slide">
                 <div class="carousel-inner">
-                  <div class="carousel-item active">
+                  <div class="carousel-item">
                     @php
                         $seat = json_decode($seatingData, true);
                     @endphp
@@ -395,7 +395,7 @@
                             </tbody>
                         </table>
                   </div>
-                  <div class="carousel-item">
+                  <div class="carousel-item active">
                     <p class="text-center">Second Floor Map (Level 3)</p>
                     <table style="width: 80%;">
                         <tbody>
@@ -752,7 +752,6 @@
     // Add a click event listener to the "Remove" button
     removeBtn.addEventListener("click", function () {
         if (lastClickedButtonId) {
-            // Implement your remove logic here for the selected seat
             var req = new XMLHttpRequest();
             req.open("GET", "/remove-seat/" + lastClickedButtonId + "?week=" + week, true);
             req.send();
@@ -774,7 +773,6 @@
     // Add a click event listener to the "Change Seat Status" button
     changeOwnershipButton.addEventListener("click", function () {
         if (lastClickedButtonId) {
-            // Send the selectedCellId to your controller using an HTTP request (e.g., AJAX)
             var req2= new XMLHttpRequest();
             req2.open("GET", "/change-ownership/" + lastClickedButtonId + "?week=" + week, true);
             req2.send();

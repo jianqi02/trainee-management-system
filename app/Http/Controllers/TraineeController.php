@@ -409,6 +409,22 @@ class TraineeController extends Controller
 
         return redirect()->back()->with('success', 'Password successfully changed!');
     }
+    
+    public function mySupervisorPage(){
+        //get the current login trainee information
+        $user = Auth::user();
+
+        //use the id from the trainee list to find all this trainee's supervisor
+        $traineeID = AllTrainee::where('name', $user->name)->pluck('id')->first();
+
+        if($traineeID){
+            $supervisorIDs = TraineeAssign::where('trainee_id', $traineeID)->pluck('assigned_supervisor_id')->toArray();
+            $supervisorBasicDatas = Supervisor::whereIn('id', $supervisorIDs)->get();
+            return view('trainee-view-supervisor', compact('supervisorBasicDatas'));
+        }else{
+            return redirect()->back()->with('error', 'You do not have any supervisor yet.');
+        }
+    }
 }
 
 

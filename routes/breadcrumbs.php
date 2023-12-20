@@ -96,6 +96,12 @@ Breadcrumbs::for('seat-plan', function ($trail) {
     $trail->push('Seat Plan', route('view-seat-plan'));
 });
 
+// Home > My Supervisor
+Breadcrumbs::for('my-supervisor', function ($trail) {
+    $trail->parent('homepage');
+    $trail->push('My Supervisor', route('my-supervisor'));
+});
+
 
 /* breadcrumbs for trainee ends */
 
@@ -268,5 +274,11 @@ Breadcrumbs::for('admin-daily-task-detail', function ($trail, $name, $traineeID,
 Breadcrumbs::for('create-new-account', function ($trail) {
     $trail->parent('dashboard');
     $trail->push('Create New Account', route('admin-create-account'));
+});
+
+// Dashboard > Change Password
+Breadcrumbs::for('admin-change-password', function ($trail) {
+    $trail->parent('dashboard');
+    $trail->push('Change Password', route('admin-change-self-password'));
 });
 /* breadcrumbs for admin ends */

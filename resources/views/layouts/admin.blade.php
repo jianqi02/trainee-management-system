@@ -29,7 +29,11 @@
 
     <style>
       .custom-sidebar{
-        height: 75%;
+        height: 80%;
+      }
+
+      .menu a{
+        margin-bottom: -10px;
       }
 
       .notification{
@@ -222,6 +226,14 @@
                           </div>
                           <div class="label">Create Account</div>
                       </a>
+
+                      <a href="/admin-change-self-password">
+                        <div class="icon">
+                            <img src="https://img.icons8.com/external-sbts2018-outline-sbts2018/58/808080/external-change-password-basic-ui-elements-2.3-sbts2018-outline-sbts2018.png" alt="change-password"/>
+                        </div>
+                        <div class="label">Change Password</div>
+                      </a>
+
                   </div>
               </div>
             </div>

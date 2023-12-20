@@ -14,18 +14,15 @@
 </head>
 <body>
     <div class="content">
-        
-        <h1>Dashboard</h1>
-        
-        
-        <form action="{{ route('admin-dashboard') }}" style="margin-top: 20px;">
-            <div style="display: flex; align-items: center;">
-                <label for="week" style="margin-right: 10px; font-weight: bold; color: #555;">Select a week:</label>
-                <input type="week" id="week" name="week" value="{{ $weekRequired }}" style="padding: 5px; border: 1px solid #ccc; border-radius: 3px; font-size: 16px;">
-                <button type="submit" style="background-color: #007BFF; color: #fff; border: none; border-radius: 3px; padding: 5px 10px; font-size: 16px; cursor: pointer; margin-left: 20px;">Display Information</button>
-            </div>
-        </form>
         <div class="container mt-5">
+            <h1 style="margin-top: -50px;">Dashboard</h1>     
+            <form action="{{ route('admin-dashboard') }}" style="margin-top: 20px;">
+                <div style="display: flex; align-items: center;">
+                    <label for="week" style="margin-right: 10px; font-weight: bold; color: #555;">Select a week:</label>
+                    <input type="week" id="week" name="week" value="{{ $weekRequired }}" style="padding: 5px; border: 1px solid #ccc; border-radius: 3px; font-size: 16px;">
+                    <button type="submit" style="background-color: #007BFF; color: #fff; border: none; border-radius: 3px; padding: 5px 10px; font-size: 16px; cursor: pointer; margin-left: 20px;">Display Information</button>
+                </div>
+            </form>
             <div class="row">
                 <div class="col-sm-6 mb-3 mb-sm-0">
                     <div class="card">

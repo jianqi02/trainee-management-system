@@ -110,7 +110,7 @@
         }
 
         .custom-file-upload:hover {
-            background: #235a9b; /* Change to your desired hover color */
+            background: #235a9b; 
         }
 
         /* Style for the "Upload Logbook" button */
@@ -125,7 +125,7 @@
         }
 
         .upload-button:hover {
-            background: #45a049; /* Change to your desired hover color */
+            background: #45a049;
         }
 
         .status-unsigned {
@@ -155,6 +155,9 @@
             @if(session('error'))
                 <div class="alert alert-warning">{{ session('error') }}</div>
             @endif
+            @error('logbook')
+                <div class="alert alert-warning">{{ $message }}</div>
+            @enderror
             <ul>
                 @if ($logbooks->isEmpty())
                     <p>No logbooks uploaded yet.</p>
