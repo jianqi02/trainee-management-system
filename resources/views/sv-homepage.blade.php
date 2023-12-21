@@ -72,7 +72,7 @@
     </style>
 </head>
 <body>
-  <div class="container homepage-container">
+  <div class="container homepage-container mx-auto">
     @if(session('error'))
       <div class="alert alert-warning">{{ session('error') }}</div>
     @endif 

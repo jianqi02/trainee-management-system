@@ -16,8 +16,8 @@
         }
     </style>
 </head>
-<body class="hoempage-view">
-  <div class="container homepage-container">
+<body class="homepage-view">
+  <div class="container homepage-container mx-auto">
     @if(session('error'))
         <div class="alert alert-warning">{{ session('error') }}</div>
     @endif 

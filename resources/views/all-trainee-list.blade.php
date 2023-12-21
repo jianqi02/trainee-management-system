@@ -33,10 +33,59 @@
         <div class="trainee-list-container">
 
             <div class="tab-content" id="myTabContent">
-                <div class="input-group mb-3">
-                    <input type="text" class="form-control" placeholder="Search trainee" id="assign-trainee-for-sv-search">
-                    <button class="btn btn-outline-secondary" type="button" id="search-button">Search</button>
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="search" class="form-label">Search:</label>
+                    <input type="text" class="form-control" id="search" placeholder="Type to search...">
                 </div>
+                <div class="col-md-4">
+                    <label for="filterMonth" class="form-label">Filter by Start Date:</label>
+                    <select id="filterMonth" class="form-select">
+                        <option value="">All Months</option>
+                        <option value="-01-">January</option>
+                        <option value="-02-">February</option>
+                        <option value="-03-">March</option>
+                        <option value="-04-">April</option>
+                        <option value="-05-">May</option>
+                        <option value="-06-">June</option>
+                        <option value="-07-">July</option>
+                        <option value="-08-">August</option>
+                        <option value="-09-">September</option>
+                        <option value="-10-">October</option>
+                        <option value="-11-">November</option>
+                        <option value="-12-">December</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="filterEndMonth" class="form-label">Filter by End Date:</label>
+                    <select id="filterEndMonth" class="form-select">
+                        <option value="">All Months</option>
+                        <option value="-01-">January</option>
+                        <option value="-02-">February</option>
+                        <option value="-03-">March</option>
+                        <option value="-04-">April</option>
+                        <option value="-05-">May</option>
+                        <option value="-06-">June</option>
+                        <option value="-07-">July</option>
+                        <option value="-08-">August</option>
+                        <option value="-09-">September</option>
+                        <option value="-10-">October</option>
+                        <option value="-11-">November</option>
+                        <option value="-12-">December</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="filterStatus" class="form-label">Filter by Status:</label>
+                    <select id="filterStatus" class="form-select">
+                        <option value="">All</option>
+                        <option value="Registered">Registered</option>
+                        <option value="Unregistered">Unregistered</option>
+                    </select>
+                </div>
+            </div>
                     <div style="max-height: 300px; overflow-y: scroll;">
                         <table class="all-trainee-list-table" id="all-trainee-list-table">
                             <thead>
@@ -94,7 +143,7 @@
                                             @if ($trainee->traineeRecordExists())
                                                 Registered
                                             @else
-                                                Not Registered
+                                                Unregistered
                                             @endif
                                         </td>                                      
                                         <td class="trainee-list-td">
@@ -154,26 +203,7 @@
     let columnToSort = -1; // Track the currently sorted column
     let ascending = true; // Track the sorting order
 
-    //search function for searching trainee
-    document.addEventListener("DOMContentLoaded", function () {
-    const searchInput = document.getElementById("assign-trainee-for-sv-search");
-    const svTable = document.getElementById("all-trainee-list-table");
 
-        searchInput.addEventListener("keyup", function () {
-            const searchValue = searchInput.value.toLowerCase();
-
-            for (let i = 1; i < svTable.rows.length; i++) {
-                const row = svTable.rows[i];
-                const name = row.cells[0].textContent.toLowerCase();
-                
-                if (name.includes(searchValue)) {
-                    row.style.display = "";
-                } else {
-                    row.style.display = "none";
-                }
-            }
-        });
-    });
     
     filterButtons.forEach((button) => {
         button.addEventListener('click', () => {
@@ -215,7 +245,52 @@
         // Update the href attribute with the correct route including the recordId
         confirmDeleteButton.attr('href', "{{ url('delete-trainee-record') }}/" + recordId);
     });
-</script>
+
+    $(document).ready(function () {
+  // Handle keyup event on the search input
+  $('#search').on('keyup', function () {
+    updateTableFilters();
+  });
+
+  // Handle change event on the start date filter dropdown
+  $('#filterMonth').on('change', function () {
+    updateTableFilters();
+  });
+
+  // Handle change event on the end date filter dropdown
+  $('#filterEndMonth').on('change', function () {
+    updateTableFilters();
+  });
+
+  // Handle change event on the status filter dropdown
+  $('#filterStatus').on('change', function () {
+    updateTableFilters();
+  });
+
+  function updateTableFilters() {
+    const searchText = $('#search').val().toLowerCase();
+    const selectedMonth = $('#filterMonth').val();
+    const selectedEndMonth = $('#filterEndMonth').val();
+    const selectedStatus = $('#filterStatus').val();
+
+    // Iterate through each table row
+    $('.trainee-list-tr').each(function () {
+      const rowText = $(this).text().toLowerCase();
+      const rowMonth = $(this).find('.trainee-list-td').eq(1).text(); // Assuming the month is in the second column
+      const rowEndMonth = $(this).find('.trainee-list-td').eq(2).text(); // Assuming the end month is in the third column 
+      const rowStatus = $(this).find('.trainee-list-td').eq(3).text(); // Assuming the status is in the fourth column
+
+      // Show or hide the row based on search text and selected filters
+      const matchesSearch = rowText.includes(searchText);
+      const matchesMonth = selectedMonth === '' || rowMonth.includes(selectedMonth);
+      const matchesEndMonth = selectedEndMonth === '' || rowEndMonth.includes(selectedEndMonth);
+      const matchesStatus = selectedStatus === '' || rowStatus.includes(selectedStatus);
+
+      $(this).toggle(matchesSearch && matchesMonth && matchesEndMonth && matchesStatus);
+    });
+  }
+});
+  </script>
 </html>
 
 @endsection
