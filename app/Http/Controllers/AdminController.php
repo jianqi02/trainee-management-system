@@ -401,7 +401,6 @@ class AdminController extends Controller
                 'personal_email' => NULL,
                 'sains_email' => $request->input('email'),
                 'phone_number' => NULL,
-                'password' => Hash::make($request->input('password')),
                 'graduate_date' => NULL,
                 'expertise' => 'Not Specified',
                 'supervisor_status' => 'Not Assigned',
@@ -413,10 +412,8 @@ class AdminController extends Controller
                 'name' => $request->input('name'), 
                 'section' => '',
                 'department' => 'CSM',
-                'personal_email' => NULL,
                 'sains_email' => $request->input('email'),
                 'phone_number' => '',
-                'password' => Hash::make($request->input('password')),
                 'trainee_status' => 'Not Assigned',
             ]);
         }
@@ -838,7 +835,7 @@ class AdminController extends Controller
 
     public function adminChangePassword(Request $request, $id, $type){
         if($type == 'Trainee'){
-            $traineeRecord = Trainee::find($id);
+            $traineeRecord = Trainee::where('id', $id)->first();
             $userRecord = User::where('email', $traineeRecord->sains_email)->first();
             
             $validator = Validator::make($request->all(), [
@@ -861,8 +858,6 @@ class AdminController extends Controller
             }
 
             $newPassword = Hash::make($password);
-            $traineeRecord->password = $newPassword;
-            $traineeRecord->save();
 
             $userRecord->password= $newPassword;
             $userRecord->save();
@@ -870,7 +865,7 @@ class AdminController extends Controller
             return redirect()->back()->with('success', 'Password for this trainee has changed successfully.');
         }
         else{
-            $supervisorRecord = Supervisor::find($id);
+            $supervisorRecord = Supervisor::where('id',$id)->first();
             $userRecord = User::where('email', $supervisorRecord->sains_email)->first();
             
             $validator = Validator::make($request->all(), [
@@ -892,10 +887,7 @@ class AdminController extends Controller
             }
 
             $newPassword = Hash::make($password);
-            $supervisorRecord->password = $newPassword;
-            $supervisorRecord->save();
-
-            $userRecord->password= $newPassword;
+            $userRecord->password = $newPassword;
             $userRecord->save();
 
             return redirect()->back()->with('success', 'Password for this supervisor has changed successfully.');
