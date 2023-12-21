@@ -139,7 +139,7 @@
                         <div class="card">
                             <div class="card-body">
                                 <h5 class="card-title">
-                                    <a href="{{ asset($trainee->resume_path) }}" target="_blank" class="resume-link" style="color: blue;" download>
+                                    <a href="{{ asset($trainee->resume_path) }}" target="_blank" class="resume-link" style="color: blue;">
                                         {{ pathinfo($trainee->resume_path, PATHINFO_BASENAME) }}
                                     </a>
                                 </h5>

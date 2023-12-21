@@ -213,7 +213,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">
-                            <a href="{{ asset($trainee->resume_path) }}" target="_blank" class="resume-link" style="color: blue;" download>
+                            <a href="{{ asset($trainee->resume_path) }}" target="_blank" class="resume-link" style="color: blue;">
                                 {{ pathinfo($trainee->resume_path, PATHINFO_BASENAME) }}
                             </a>
                         </h5>
@@ -240,7 +240,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">
-                            <a href="{{ asset($logbook->logbook_path) }}" target="_blank" class="logbook-link" style="color: blue;" download>
+                            <a href="{{ asset($logbook->logbook_path) }}" target="_blank" class="logbook-link" style="color: blue;">
                                 {{ pathinfo($logbook->logbook_path, PATHINFO_BASENAME) }}
                             </a>
                         </h5>
