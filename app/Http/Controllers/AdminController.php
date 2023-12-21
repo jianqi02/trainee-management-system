@@ -401,7 +401,6 @@ class AdminController extends Controller
                 'personal_email' => NULL,
                 'sains_email' => $request->input('email'),
                 'phone_number' => NULL,
-                'password' => Hash::make($request->input('password')),
                 'graduate_date' => NULL,
                 'expertise' => 'Not Specified',
                 'supervisor_status' => 'Not Assigned',
@@ -413,10 +412,8 @@ class AdminController extends Controller
                 'name' => $request->input('name'), 
                 'section' => '',
                 'department' => 'CSM',
-                'personal_email' => NULL,
                 'sains_email' => $request->input('email'),
                 'phone_number' => '',
-                'password' => Hash::make($request->input('password')),
                 'trainee_status' => 'Not Assigned',
             ]);
         }
