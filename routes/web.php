@@ -153,6 +153,7 @@ Route::middleware(['role:1,2,3'])->group(function () {
 Route::middleware(['role:3'])->group(function () {
     Route::get('/trainee-task-timeline', [TaskTimelineController::class, 'traineeTaskTimeline'])->name('trainee-task-timeline');
     Route::post('/trainee-add-new-task', [TaskTimelineController::class, 'traineeAddNewTask'])->name('trainee-add-new-task');
+    Route::post('/apply-filter',[TaskTimelineController::class, 'applyFilter'])->name('apply-filter');
 });
 
 Route::middleware(['role:1,2,3'])->group(function () {
@@ -172,6 +173,7 @@ Route::middleware(['role:2'])->group(function () {
 
 Route::middleware(['role:1,2'])->group(function () {
     Route::post('/trainee-add-new-task-sv/{traineeID}', [TaskTimelineController::class, 'traineeAddNewTaskSV'])->name('trainee-add-new-task-sv');
+    Route::post('/apply-filters/{traineeID}',[TaskTimelineController::class, 'applyFilterWithID'])->name('apply-filters');
 });
 
 Route::middleware(['role:1,2,3'])->group(function () {

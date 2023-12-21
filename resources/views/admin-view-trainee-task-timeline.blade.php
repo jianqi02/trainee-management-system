@@ -119,7 +119,9 @@
                 <div class="alert alert-warning">{{ session('warning') }}</div>
             @endif
             <hr>
-
+            <button type="button" class="btn btn-primary btn-block" data-bs-toggle="modal" data-bs-target="#filterModal">
+                Filter
+            </button>
             <!-- Sorting Option -->
             <p>Sort by</p>
             <div class="row" style="margin-bottom: 20px;">
@@ -217,6 +219,93 @@
                     </form>
                 </div>
             </div>
+
+            <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="filterModalLabel">Filter Options</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="filterForm" action="{{ route('apply-filters', ['traineeID' => $traineeID]) }}" method="post">
+                                @csrf
+                                <!-- Search by -->
+                                <div class="mb-3">
+                                    <label for="search" class="form-label">Search by:</label>
+                                    <input type="text" class="form-control" id="search" name="search">
+                                </div>
+            
+                                <!-- Filter by task start date -->
+                                <div class="mb-3">
+                                    <label for="taskStartDate" class="form-label">Filter by Task Start Date:</label>
+                                    <select class="form-select" id="taskStartDate" name="taskStartDate">
+                                        <option value="">All Months</option>
+                                        <option value="-01-">January</option>
+                                        <option value="-02-">February</option>
+                                        <option value="-03-">March</option>
+                                        <option value="-04-">April</option>
+                                        <option value="-05-">May</option>
+                                        <option value="-06-">June</option>
+                                        <option value="-07-">July</option>
+                                        <option value="-08-">August</option>
+                                        <option value="-09-">September</option>
+                                        <option value="-10-">October</option>
+                                        <option value="-11-">November</option>
+                                        <option value="-12-">December</option>
+                                    </select>
+                                </div>
+            
+                                <!-- Filter by task end date -->
+                                <div class="mb-3">
+                                    <label for="taskEndDate" class="form-label">Filter by Task End Date:</label>
+                                    <select class="form-select" id="taskEndDate" name="taskEndDate">
+                                        <option value="">All Months</option>
+                                        <option value="-01-">January</option>
+                                        <option value="-02-">February</option>
+                                        <option value="-03-">March</option>
+                                        <option value="-04-">April</option>
+                                        <option value="-05-">May</option>
+                                        <option value="-06-">June</option>
+                                        <option value="-07-">July</option>
+                                        <option value="-08-">August</option>
+                                        <option value="-09-">September</option>
+                                        <option value="-10-">October</option>
+                                        <option value="-11-">November</option>
+                                        <option value="-12-">December</option>
+                                    </select>
+                                </div>
+            
+                                <!-- Filter by task priority -->
+                                <div class="mb-3">
+                                    <label for="taskPriority" class="form-label">Filter by Task Priority:</label>
+                                    <select class="form-select" id="taskPriority" name="taskPriority">
+                                        <option value="">None</option>
+                                        <option value="High">High</option>
+                                        <option value="Medium">Medium</option>
+                                        <option value="Low">Low</option>
+                                    </select>
+                                </div>
+            
+                                <!-- Filter by status -->
+                                <div class="mb-3">
+                                    <label for="taskStatus" class="form-label">Filter by Status:</label>
+                                    <select class="form-select" id="taskStatus" name="taskStatus">
+                                        <option value="">None</option>
+                                        <option value="Not Started">Not Started</option>
+                                        <option value="Completed">Completed</option>
+                                        <option value="Ongoing">On Going</option>
+                                        <option value="Postponed">Postponed</option>
+                                    </select>
+                                </div>
+            
+                                <button type="submit" class="btn btn-primary">Apply Filters</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>

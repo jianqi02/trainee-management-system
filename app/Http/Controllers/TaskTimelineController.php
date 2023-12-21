@@ -675,4 +675,88 @@ class TaskTimelineController extends Controller
             return redirect()->route('admin-view-trainee-task-timeline', ['traineeID' => $traineeID])->with('success', 'Task deleted.');
         }
     }
+
+    public function applyFilter(Request $request){
+        $user = Auth::user();
+        $trainee_id = Trainee::where('sains_email', $user->email)->pluck('id')->first();
+        $search_input = $request->input('search');
+        $start_date_input = $request->input('taskStartDate');
+        $end_date_input = $request->input('taskEndDate');
+        $priority_input = $request->input('taskPriority');
+        $status_input = $request->input('taskStatus');
+
+        //filter the task based on the input
+        $query = TaskTimeline::where('trainee_id', $trainee_id);
+
+        if ($search_input) {
+            $query->where('task_name', 'like', '%' . $search_input . '%');
+        }
+        
+        if ($start_date_input) {
+            $query->where('task_start_date', 'like', '%' . $start_date_input . '%');
+        }
+        
+        if ($end_date_input) {
+            $query->where('task_end_date', 'like', '%' . $end_date_input . '%');
+        }
+        
+        if ($priority_input) {
+            $query->where('task_priority', $priority_input);
+        }
+        
+        if ($status_input) {
+            $query->where('task_status', $status_input);
+        }
+        
+        $tasks = $query->get();
+
+        return view('trainee-task-timeline', compact('tasks'));
+    }
+
+    //admin & spervisor method to apply the filter on the task
+    public function applyFilterWithID(Request $request, $traineeID){
+        $search_input = $request->input('search');
+        $start_date_input = $request->input('taskStartDate');
+        $end_date_input = $request->input('taskEndDate');
+        $priority_input = $request->input('taskPriority');
+        $status_input = $request->input('taskStatus');
+
+        //filter the task based on the input
+        $query = TaskTimeline::where('trainee_id', $traineeID);
+
+        if ($search_input) {
+            $query->where('task_name', 'like', '%' . $search_input . '%');
+        }
+        
+        if ($start_date_input) {
+            $query->where('task_start_date', 'like', '%' . $start_date_input . '%');
+        }
+        
+        if ($end_date_input) {
+            $query->where('task_end_date', 'like', '%' . $end_date_input . '%');
+        }
+        
+        if ($priority_input) {
+            $query->where('task_priority', $priority_input);
+        }
+        
+        if ($status_input) {
+            $query->where('task_status', $status_input);
+        }
+        
+        $tasks = $query->get();
+
+        // get the user role
+        $role_id = Auth::user()->role_id;
+      
+        //supervisor
+        if($role_id == 2){
+            return view('sv-view-trainee-task-timeline', compact('tasks', 'traineeID'));
+        }
+        //admin
+        else{
+            $traineeName = Trainee::where('id', $traineeID)->pluck('name')->first();
+            return view('admin-view-trainee-task-timeline', compact('tasks', 'traineeName', 'traineeID'));
+        }
+    }
 }
