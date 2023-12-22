@@ -3,21 +3,16 @@
 
 @section('breadcrumbs', Breadcrumbs::render('activity-log'))
 
-@section('content')<!DOCTYPE html>
+@section('content')
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Activity Log</title>
-    <!-- Link to Bootstrap CSS (you may need to adjust the path based on your project setup) -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            padding: 20px;
-        }
 
-        .container {
+        .container-activity {
             max-width: 1200px;
             margin-left: 130px;
         }
@@ -54,7 +49,7 @@
 </head>
 <body>
 
-<div class="container">
+<div class="container container-activity">
     <h2 class="mt-5 mb-4">Activity Log</h2>
 
     <!-- Filter Options (if needed) -->

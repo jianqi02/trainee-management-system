@@ -3,10 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Spatie\Activitylog\Models\Activity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class ActivityLog extends Activity
+class ActivityLog extends Model
 {
     use HasFactory;
     protected $table = 'activity_log';
