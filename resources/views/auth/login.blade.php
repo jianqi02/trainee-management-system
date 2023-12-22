@@ -4,6 +4,13 @@
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
+        @if($errors->any())
+            <div class="alert alert-danger">
+                @foreach($errors->all() as $error)
+                    <p>{{ $error }}</p>
+                @endforeach
+            </div>
+        @endif
         <div class="col-md-8">
             <div class="card">
                     @if (session('status'))

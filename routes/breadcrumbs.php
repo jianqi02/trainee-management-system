@@ -281,4 +281,10 @@ Breadcrumbs::for('admin-change-password', function ($trail) {
     $trail->parent('dashboard');
     $trail->push('Change Password', route('admin-change-self-password'));
 });
+
+// Dashboard > Activity Log
+Breadcrumbs::for('activity-log', function ($trail) {
+    $trail->parent('dashboard');
+    $trail->push('Activity Log', route('activity-log'));
+});
 /* breadcrumbs for admin ends */

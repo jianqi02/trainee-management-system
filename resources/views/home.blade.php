@@ -25,18 +25,18 @@
                     <ul>
                         <li>Track trainee information.</li>
                         <li>Assign a specific duration task to trainee.</li>
-                        <li>Monitor task timelines and progress.</li>
+                        <li>Monitor trainee task timeline and progress.</li>
                         <li>View all trainee seat plans for the month.</li>
                     </ul>
                     <br>
                     <p><ins>Features for trainees:</ins></p>
                     <ul>
-                        <li>Record and update your progress of a task.</li>
+                        <li>Record and update your task progress.</li>
                         <li>Upload a logbook to be signed.</li>
                         <li>View all the seat plans for the month and locate your seat for the week easily.</li>
                     </ul>
 
-                    <p><i>Get started today by <a href="{{ route('register') }}">registering</a> or <a href="{{ route('login') }}">logging in</a>.</i></p>
+                    <p>Get started today! <a href="{{ route('register') }}">Register</a> or <a href="{{ route('login') }}">Login</a></p>
                 </div>
             </div>
         </div>

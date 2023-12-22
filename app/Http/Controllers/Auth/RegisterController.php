@@ -7,6 +7,7 @@ use Ramsey\Uuid\Uuid;
 use App\Models\Trainee;
 use App\Models\AllTrainee;
 use App\Models\Supervisor;
+use App\Models\ActivityLog;
 use App\Models\Notification;
 use App\Models\TraineeAssign;
 use App\Http\Controllers\Controller;
@@ -96,8 +97,7 @@ class RegisterController extends Controller
             'email.ends_with' => 'The email field should end with @sains.com.my.',
             'role.in' => 'The role field should be either 2 or 3.',
             'password.regex' => 'The password field should contain at least one uppercase letter and one special character.',
-        ]);
-                   
+        ]);              
     }
 
     /**
@@ -144,16 +144,6 @@ class RegisterController extends Controller
                 'resume_path' => NULL,
                 'acc_status' => 'Active',
             ]);
-        } elseif ($data['role'] == 2) { // Supervisor
-            Supervisor::create([
-                'name' => $data['name'], 
-                'section' => '',
-                'department' => 'CSM',
-                'personal_email' => NULL,
-                'sains_email' => $data['email'],
-                'phone_number' => '',
-                'trainee_status' => 'Not Assigned',
-            ]);
         }
         $admin = User::where('role_id', 1)->first();
         // Ignore case sensitive when comparing the name 
@@ -171,6 +161,15 @@ class RegisterController extends Controller
             $notification->save(); // Save the notification to the database
 
             $notification->notify(new TelegramNotification('Unknown Account Registered', '', $data['name'], 'A new trainee ' . $data['name'] . ' which is not in the list has registered.'));
+
+            $activityLog = new ActivityLog([
+                'username' => $data['name'],
+                'action' => 'register',
+                'outcome' => 'success',
+                'details' => 'This trainee is not in the record.',
+            ]);
+    
+            $activityLog->save();
         }
         else{
             $notification = new Notification();
@@ -184,6 +183,15 @@ class RegisterController extends Controller
             $notification->save(); // Save the notification to the database
 
             $notification->notify(new TelegramNotification('Account Registered', '', $data['name'], 'A new trainee ' . $data['name'] . ' has registered.'));
+
+            $activityLog = new ActivityLog([
+                'username' => $data['name'],
+                'action' => 'register',
+                'outcome' => 'success',
+                'details' => 'This trainee is in the record.',
+            ]);
+    
+            $activityLog->save();
         }
     
         return $user;

@@ -10,6 +10,7 @@ use App\Models\Trainee;
 use Illuminate\View\View;
 use App\Models\AllTrainee;
 use App\Models\Supervisor;
+use App\Models\ActivityLog;
 use Illuminate\Support\Str;
 use App\Models\Notification;
 use Illuminate\Http\Request;
@@ -130,6 +131,15 @@ class TraineeController extends Controller
             }    
     
             $trainee->save();
+
+            $activityLog = new ActivityLog([
+                'username' => $trainee->name,
+                'action' => 'Edit Profile',
+                'outcome' => 'success',
+                'details' => $trainee,
+            ]);
+    
+            $activityLog->save();
         }
     
         return redirect()->route('trainee-profile')->with('success', 'Profile updated successfully');
@@ -147,12 +157,31 @@ class TraineeController extends Controller
         ]);
         
         if ($validator->fails()) {
+            // Extract error messages
+            $errorMessages = implode(' ', $validator->errors()->all());
+
+            $activityLog = new ActivityLog([
+                'username' => $user->name,
+                'action' => 'Resume Upload',
+                'outcome' => 'failed',
+                'details' => $errorMessages,
+            ]);
+    
+            $activityLog->save();
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
         $resumeExistCheck = Trainee::where('sains_email', $user->email)->first();
 
         if ($resumeExistCheck->resume_path != null) {
+            $activityLog = new ActivityLog([
+                'username' => $user->name,
+                'action' => 'Resume Upload',
+                'outcome' => 'failed',
+                'details' => 'Trying to upload more than one resume',
+            ]);
+    
+            $activityLog->save();
             return redirect()->route('trainee-upload-resume')->with('warning', 'You can only upload one resume!');
         }
 
@@ -175,6 +204,15 @@ class TraineeController extends Controller
         $trainee = Trainee::where('name', $user->name)->first();
         $trainee->resume_path = 'storage/resumes/' . $newFileName;
         $trainee->save();
+
+        $activityLog = new ActivityLog([
+            'username' => $trainee->name,
+            'action' => 'Resume Upload',
+            'outcome' => 'success',
+            'details' => $trainee->resume_path,
+        ]);
+
+        $activityLog->save();
 
         // Redirect the user to a success page
         return redirect()->route('trainee-upload-resume')->with('success', 'Resume uploaded successfully');
@@ -202,6 +240,18 @@ class TraineeController extends Controller
         ]);
         
         if ($validator->fails()) {
+            // Extract error messages
+            $errorMessages = implode(' ', $validator->errors()->all());
+
+            $activityLog = new ActivityLog([
+                'username' => $trainee,
+                'action' => 'Logbook Upload',
+                'outcome' => 'failed',
+                'details' => $errorMessages,
+            ]);
+    
+            $activityLog->save();
+
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
@@ -211,6 +261,14 @@ class TraineeController extends Controller
             ->count();
 
         if ($logbookCount >= 4) {
+            $activityLog = new ActivityLog([
+                'username' => $trainee,
+                'action' => 'Logbook Upload',
+                'outcome' => 'failed',
+                'details' => 'Trying to upload more than 4 logbooks',
+            ]);
+    
+            $activityLog->save();
             return redirect()->route('trainee-upload-logbook')->with('error', 'You can only upload a maximum of 4 logbooks.');
         }
 
@@ -265,6 +323,15 @@ class TraineeController extends Controller
 
             $supervisor_name = Supervisor::where('id', $assigned_supervisor_id)->pluck('name')->first();
             $notification->notify(new TelegramNotification('Logbook Uploaded', $supervisor_name, $trainee, 'Your trainee has uploaded a logbook.'));
+
+            $activityLog = new ActivityLog([
+                'username' => $trainee,
+                'action' => 'Logbook Upload',
+                'outcome' => 'success',
+                'details' => $logbook_path,
+            ]);
+    
+            $activityLog->save();
         }
 
         // Redirect the user to a success page
@@ -287,6 +354,15 @@ class TraineeController extends Controller
             unlink($resumePath);
         }
 
+        $activityLog = new ActivityLog([
+            'username' => $trainee->name,
+            'action' => 'Resume Deletion',
+            'outcome' => 'success',
+            'details' => 'Deleted ' . $trainee->resume_path,
+        ]);
+
+        $activityLog->save();
+
         // Replace the resume path in the database with null
         $trainee->resume_path = null;
         $trainee->save();
@@ -296,11 +372,21 @@ class TraineeController extends Controller
 
     public function destroy(Logbook $logbook)
     {
+        $name = Auth::user()->name;
         // Delete the logbook file from storage
         $logbookPath = storage_path('app/public/logbooks/') . basename($logbook->logbook_path);
         if (file_exists($logbookPath)) {
             unlink($logbookPath);
         }
+
+        $activityLog = new ActivityLog([
+            'username' => $name,
+            'action' => 'Logbook Deletion',
+            'outcome' => 'success',
+            'details' => 'Deleted ' . $logbook->logbook_path,
+        ]);
+
+        $activityLog->save();
 
         // Delete the logbook record from the database
         $logbook->delete();
@@ -383,6 +469,18 @@ class TraineeController extends Controller
         ]);
 
         if ($validator->fails()) {
+             // Extract error messages
+            $errorMessages = implode(' ', $validator->errors()->all());
+
+            $activityLog = new ActivityLog([
+                'username' => $user->name,
+                'action' => 'Change Password',
+                'outcome' => 'failed',
+                'details' => $errorMessages,
+            ]);
+    
+            $activityLog->save();
+
             return redirect()->back()
                 ->withErrors($validator)
                 ->withInput();
@@ -396,6 +494,14 @@ class TraineeController extends Controller
         if (Hash::check($current_password, $user->password)) {
             //check the new password is same as the current password or not
             if(Hash::check($new_password, $user->password)){
+                $activityLog = new ActivityLog([
+                    'username' => $user->name,
+                    'action' => 'Change Password',
+                    'outcome' => 'failed',
+                    'details' => 'Try to set the new password same as previous password',
+                ]);
+        
+                $activityLog->save();
                 return redirect()->back()->with('error', 'Cannot set the same password as new password.');
             }
             else{
@@ -404,9 +510,25 @@ class TraineeController extends Controller
             }
         }
         else{
+            $activityLog = new ActivityLog([
+                'username' => $user->name,
+                'action' => 'Change Password',
+                'outcome' => 'failed',
+                'details' => 'Wrong current password entered',
+            ]);
+    
+            $activityLog->save();
             return redirect()->back()->with('error', 'Wrong current password.');
         }
 
+        $activityLog = new ActivityLog([
+            'username' => $user->name,
+            'action' => 'Change Password',
+            'outcome' => 'success',
+            'details' => '',
+        ]);
+
+        $activityLog->save();
         return redirect()->back()->with('success', 'Password successfully changed!');
     }
     

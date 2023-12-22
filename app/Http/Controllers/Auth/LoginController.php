@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Auth;
 use Carbon\Carbon;
 use Ramsey\Uuid\Uuid;
 use App\Models\Trainee;
+use App\Models\ActivityLog;
 use App\Models\Notification;
 use App\Models\TaskTimeline;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
@@ -14,6 +16,7 @@ use App\Providers\RouteServiceProvider;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Notifications\Notifiable;
 use App\Notifications\TelegramNotification;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 class LoginController extends Controller
@@ -70,6 +73,15 @@ class LoginController extends Controller
                     $user->last_login = null;
                     $user->save();
 
+                    $activityLog = new ActivityLog([
+                        'username' => $user->name,
+                        'action' => 'Session Expired',
+                        'outcome' => 'success',
+                        'details' => '',
+                    ]);
+                    
+                    $activityLog->save();
+
                     // Log out the user
                     Auth::logout();
                     
@@ -118,6 +130,16 @@ class LoginController extends Controller
             }
             // Check the trainee's account status
             if ($trainee->acc_status === 'Active') {
+
+                $activityLog = new ActivityLog([
+                    'username' => $trainee->name,
+                    'action' => 'Login',
+                    'outcome' => 'success',
+                    'details' => '',
+                ]);
+                
+                $activityLog->save();
+
                 if($trainee->personal_email == null || $trainee->phone_number == null){
 
                     //save the session in the db
@@ -133,6 +155,16 @@ class LoginController extends Controller
                 // If the account is inactive, log the user out and show a message
                 $user->session_id = null;
                 $user->save();
+
+                $activityLog = new ActivityLog([
+                    'username' => $trainee->name,
+                    'action' => 'Login',
+                    'outcome' => 'failed',
+                    'details' => 'Account is inactive',
+                ]);
+                
+                $activityLog->save();
+
                 Auth::logout();
                 return redirect('/login')->with('status', 'Your account is inactive. Please contact admin.');
             }
@@ -142,17 +174,63 @@ class LoginController extends Controller
                 $user->session_id = session_id();
                 $user->last_login = now();
                 $user->save();
+
+                $activityLog = new ActivityLog([
+                    'username' => $user->name,
+                    'action' => 'Login',
+                    'outcome' => 'success',
+                    'details' => '',
+                ]);
+                
+                $activityLog->save();
+
                 return redirect('/sv-homepage');
             }
             elseif($user->role_id == 1){
                 $user->session_id = session_id();
                 $user->last_login = now();
                 $user->save();
+
+                $activityLog = new ActivityLog([
+                    'username' => $user->name,
+                    'action' => 'Login',
+                    'outcome' => 'success',
+                    'details' => '',
+                ]);
+                
+                $activityLog->save();
+
                 return redirect('/admin-dashboard');
             }
             else{
+
+                $activityLog = new ActivityLog([
+                    'username' => $user->name,
+                    'action' => 'Login',
+                    'outcome' => 'failed',
+                    'details' => 'Unexpected or invalid role',
+                ]);
+                
+                $activityLog->save();
+
                 return redirect('/login')->with('status', 'Please try again.');
             }
         }
+    }
+
+    protected function sendFailedLoginResponse(Request $request)
+    {
+        $activityLog = new ActivityLog([
+            'username' => $request->input('email'),
+            'action' => 'Login',
+            'outcome' => 'failed',
+            'details' => 'Invalid credentials entered',
+        ]);
+    
+        $activityLog->save();
+
+        throw ValidationException::withMessages([
+           'Invalid credentials.'
+        ]);
     }
 }

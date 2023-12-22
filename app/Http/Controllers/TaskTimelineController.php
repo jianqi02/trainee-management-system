@@ -10,6 +10,7 @@ use Ramsey\Uuid\Uuid;
 use App\Models\Trainee;
 use App\Models\AllTrainee;
 use App\Models\Supervisor;
+use App\Models\ActivityLog;
 use App\Models\Notification;
 use App\Models\TaskTimeline;
 use Illuminate\Http\Request;
@@ -145,6 +146,14 @@ class TaskTimelineController extends Controller
 
         //terminate the function when the user chooses invalid date (end date < start date)
         if($endDate < $startDate){
+            $activityLog = new ActivityLog([
+                'username' => $user->name,
+                'action' => 'Add New Task',
+                'outcome' => 'failed',
+                'details' => 'Invalid date chosen.',
+            ]);
+    
+            $activityLog->save();
             return redirect()->route('trainee-task-timeline')->with('warning', 'Failed to add new task! Invalid date chosen!');
         }
 
@@ -153,6 +162,14 @@ class TaskTimelineController extends Controller
         $parsed_end = Carbon::parse($endDate);
 
         if($parsed_end->diffInDays($parsed_start) > 180){
+            $activityLog = new ActivityLog([
+                'username' => $user->name,
+                'action' => 'Add New Task',
+                'outcome' => 'failed',
+                'details' => 'Duration of the task is over 180 days.',
+            ]);
+    
+            $activityLog->save();
             return redirect()->route('trainee-task-timeline')->with('warning', 'The duration of the task is too long!');
         }
 
@@ -163,6 +180,14 @@ class TaskTimelineController extends Controller
 
         // Check if the validation fails
         if ($validator->fails()) {
+            $activityLog = new ActivityLog([
+                'username' => $user->name,
+                'action' => 'Add New Task',
+                'outcome' => 'failed',
+                'details' => 'Task name is too long.',
+            ]);
+    
+            $activityLog->save();
             return redirect()->back()->with('warning', 'The task name is too long. Please try again.');
         }
 
@@ -180,6 +205,15 @@ class TaskTimelineController extends Controller
         $task->task_detail = json_encode($taskDetail);
         $task->save();
 
+        $activityLog = new ActivityLog([
+            'username' => $user->name,
+            'action' => 'Add New Task',
+            'outcome' => 'success',
+            'details' => $task,
+        ]);
+
+        $activityLog->save();
+
         return redirect()->route('trainee-task-timeline')->with('success', 'New task added.');
     }
 
@@ -191,10 +225,26 @@ class TaskTimelineController extends Controller
 
         //terminate the function when the user chooses invalid date (end date < start date)
         if($endDate < $startDate){
-            if($user_role == 1){
+            if($user_role == 1){            
+                $activityLog = new ActivityLog([
+                    'username' => Auth::user()->name,
+                    'action' => 'Add New Task',
+                    'outcome' => 'failed',
+                    'details' => 'Invalid date chosen.',
+                ]);
+        
+                $activityLog->save();
                 return redirect()->route('admin-view-trainee-task-timeline', $traineeID)->with('warning', 'Failed to add new task! Invalid date chosen!');
             }
             elseif($user_role == 2){
+                $activityLog = new ActivityLog([
+                    'username' => Auth::user()->name,
+                    'action' => 'Add New Task',
+                    'outcome' => 'failed',
+                    'details' => 'Invalid date chosen.',
+                ]);
+        
+                $activityLog->save();
                 return redirect()->route('sv-view-trainee-task-timeline', $traineeID)->with('warning', 'Failed to add new task! Invalid date chosen!');
             }          
         }
@@ -205,9 +255,25 @@ class TaskTimelineController extends Controller
 
         if($parsed_end->diffInDays($parsed_start) > 180){
             if($user_role == 1){
+                $activityLog = new ActivityLog([
+                    'username' => Auth::user()->name,
+                    'action' => 'Add New Task',
+                    'outcome' => 'failed',
+                    'details' => 'The duration of the task is more than 180 days.',
+                ]);
+        
+                $activityLog->save();
                 return redirect()->route('admin-view-trainee-task-timeline', $traineeID)->with('warning', 'The duration of the task is too long!');
             }
             elseif($user_role == 2){
+                $activityLog = new ActivityLog([
+                    'username' => Auth::user()->name,
+                    'action' => 'Add New Task',
+                    'outcome' => 'failed',
+                    'details' => 'The duration of the task is more than 180 days.',
+                ]);
+        
+                $activityLog->save();
                 return redirect()->route('sv-view-trainee-task-timeline', $traineeID)->with('warning', 'The duration of the task is too long!');
             }
             
@@ -220,6 +286,14 @@ class TaskTimelineController extends Controller
 
         // Check if the validation fails
         if ($validator->fails()) {
+            $activityLog = new ActivityLog([
+                'username' => Auth::user()->name,
+                'action' => 'Add New Task',
+                'outcome' => 'failed',
+                'details' => 'The task name is too long.',
+            ]);
+    
+            $activityLog->save();
             return redirect()->back()->with('warning', 'The task name is too long. Please try again.');
         }
 
@@ -236,6 +310,15 @@ class TaskTimelineController extends Controller
         ];
         $task->task_detail = json_encode($taskDetail);
         $task->save();
+
+        $activityLog = new ActivityLog([
+            'username' => Auth::user()->name,
+            'action' => 'Add New Task',
+            'outcome' => 'success',
+            'details' => $task,
+        ]);
+
+        $activityLog->save();
 
         if($user_role == 2){
             return redirect()->route('sv-view-trainee-task-timeline', $traineeID)->with('success', 'New task added.');
@@ -259,6 +342,14 @@ class TaskTimelineController extends Controller
 
         //terminate the function when the user chooses invalid date (end date < start date)
         if($endDate < $startDate){
+            $activityLog = new ActivityLog([
+                'username' => Auth::user()->name,
+                'action' => 'Edit Task',
+                'outcome' => 'failed',
+                'details' => 'Invalid date chosen.',
+            ]);
+    
+            $activityLog->save();
             return redirect()->route('trainee-task-detail', $taskID)->with('warning', 'Failed to change the task! Invalid date chosen!');
         }
 
@@ -267,6 +358,14 @@ class TaskTimelineController extends Controller
         $parsed_end = Carbon::parse($endDate);
 
         if($parsed_end->diffInDays($parsed_start) > 180){
+            $activityLog = new ActivityLog([
+                'username' => Auth::user()->name,
+                'action' => 'Edit Task',
+                'outcome' => 'failed',
+                'details' => 'The duration of the task is more than 180 days.',
+            ]);
+    
+            $activityLog->save();
             return redirect()->route('trainee-task-detail', $taskID)->with('warning', 'The duration of the task is too long!');
         }
 
@@ -281,6 +380,14 @@ class TaskTimelineController extends Controller
 
         // Check if the validation fails
         if ($validator->fails()) {
+            $activityLog = new ActivityLog([
+                'username' => Auth::user()->name,
+                'action' => 'Edit Task',
+                'outcome' => 'failed',
+                'details' => 'The task name or task description is too long.',
+            ]);
+    
+            $activityLog->save();
             return redirect()->back()->with('warning', 'The task name or task description is too long. Please try again.');
         }
 
@@ -297,6 +404,15 @@ class TaskTimelineController extends Controller
         $task->task_detail = json_encode($taskDetail);
 
         $task->save();
+
+        $activityLog = new ActivityLog([
+            'username' => Auth::user()->name,
+            'action' => 'Edit Task',
+            'outcome' => 'success',
+            'details' => $task,
+        ]);
+
+        $activityLog->save();
 
         //use the id in list to search for the trainee's supervisor
         $assigned_supervisor_ids = TraineeAssign::where('trainee_id', $traineeID)
@@ -479,6 +595,14 @@ class TaskTimelineController extends Controller
 
         // Check if the validation fails
         if ($validator->fails()) {
+            $activityLog = new ActivityLog([
+                'username' => Auth::user()->name,
+                'action' => 'Edit Daily Task',
+                'outcome' => 'failed',
+                'details' => 'The task name or task description is too long.',
+            ]);
+    
+            $activityLog->save();
             return redirect()->back()->with('warning', 'The task name or task description is too long. Please try again.');
         }
 
@@ -490,6 +614,15 @@ class TaskTimelineController extends Controller
             // Update the timeline in the database
             $task->timeline = json_encode($timeline);
             $task->save();
+
+            $activityLog = new ActivityLog([
+                'username' => Auth::user()->name,
+                'action' => 'Edit Daily Task',
+                'outcome' => 'success',
+                'details' => 'Date: ' . $date . ' , Task name: ' . $timeline[$date]['Name'] . ' , Task description: ' . $timeline[$date]['Description'] . ' , Task status: ' . $timeline[$date]['Status'],
+            ]);
+    
+            $activityLog->save();
     
             return redirect()->route('trainee-daily-task-detail', ['date' => $date, 'taskID' => $taskID])->with('success', 'Task edited.');  
         } else {
@@ -503,6 +636,14 @@ class TaskTimelineController extends Controller
             // Update the timeline in the database
             $task->timeline = json_encode($timeline);
             $task->save();
+            $activityLog = new ActivityLog([
+                'username' => Auth::user()->name,
+                'action' => 'Edit Daily Task',
+                'outcome' => 'success',
+                'details' => json_encode($timeline),
+            ]);
+    
+            $activityLog->save();
             return redirect()->route('trainee-daily-task-detail', ['date' => $date, 'taskID' => $taskID])->with('success', 'Task added.');
         }
     }
@@ -521,9 +662,30 @@ class TaskTimelineController extends Controller
 
             // Check if the validation fails
             if ($validator->fails()) {
+                // Extract error messages
+                $errorMessages = implode(' ', $validator->errors()->all());
+
+                $activityLog = new ActivityLog([
+                    'username' => Auth::user()->name,
+                    'action' => 'Overall Note',
+                    'outcome' => 'failed',
+                    'details' => $errorMessages,
+                ]);
+        
+                $activityLog->save();
+
                 return redirect()->back()->with('warning', 'Invalid note. Please Try Again.');
             }
             $comment['Trainee'] = $request->input('comment');
+
+            $activityLog = new ActivityLog([
+                'username' => Auth::user()->name,
+                'action' => 'Overall Note',
+                'outcome' => 'success',
+                'details' => 'Comment from trainee changed: ' . $request->input('comment'),
+            ]);
+    
+            $activityLog->save();
         }
         elseif($user_role == 2){
             $sv_name = Auth::user()->name;
@@ -536,9 +698,29 @@ class TaskTimelineController extends Controller
 
             // Check if the validation fails
             if ($validator->fails()) {
+                // Extract error messages
+                $errorMessages = implode(' ', $validator->errors()->all());
+
+                $activityLog = new ActivityLog([
+                    'username' => Auth::user()->name,
+                    'action' => 'Overall Note',
+                    'outcome' => 'failed',
+                    'details' => $errorMessages,
+                ]);
+        
+                $activityLog->save();
                 return redirect()->back()->with('warning', 'Invalid note. Please try again!');
             }
             $comment['Supervisor'] = $request->input('comment');
+
+            $activityLog = new ActivityLog([
+                'username' => Auth::user()->name,
+                'action' => 'Overall Note',
+                'outcome' => 'success',
+                'details' => 'Note from supervisor changed: ' . $request->input('comment'),
+            ]);
+    
+            $activityLog->save();
 
             $task_name = TaskTimeline::where('id', $taskID)->pluck('task_name')->first();
 
@@ -562,10 +744,30 @@ class TaskTimelineController extends Controller
 
             // Check if the validation fails
             if ($validator->fails()) {
+                // Extract error messages
+                $errorMessages = implode(' ', $validator->errors()->all());
+
+                $activityLog = new ActivityLog([
+                    'username' => Auth::user()->name,
+                    'action' => 'Overall Note',
+                    'outcome' => 'failed',
+                    'details' => $errorMessages,
+                ]);
+        
+                $activityLog->save();
                 return redirect()->back()->with('warning', 'Invalid note. Please try again!');
             }
             $comment['Supervisor'] = $request->input('commentSV');
             $comment['Trainee'] = $request->input('commentTR');
+
+            $activityLog = new ActivityLog([
+                'username' => Auth::user()->name,
+                'action' => 'Overall Note',
+                'outcome' => 'success',
+                'details' => 'Note from supervisor changed: ' . $request->input('commentSV') . ' , Comment from trainee changed: ' . $request->input('commentTR'),
+            ]);
+    
+            $activityLog->save();
         }
 
         $task->task_overall_comment = json_encode($comment);
@@ -587,9 +789,28 @@ class TaskTimelineController extends Controller
 
                 // Check if the validation fails
                 if ($validator->fails()) {
+                    // Extract error messages
+                    $errorMessages = implode(' ', $validator->errors()->all());
+
+                    $activityLog = new ActivityLog([
+                        'username' => Auth::user()->name,
+                        'action' => 'Dail Task Note',
+                        'outcome' => 'failed',
+                        'details' => $errorMessages,
+                    ]);
+            
+                    $activityLog->save();
                     return redirect()->back()->with('warning', 'Invalid note. Please try again.');
                 }
                 $timeline[$date]['Supervisor'] = $request->input('comment');
+                $activityLog = new ActivityLog([
+                    'username' => Auth::user()->name,
+                    'action' => 'Daily Task Note',
+                    'outcome' => 'success',
+                    'details' => 'Note from supervisor changed: ' . $request->input('comment'),
+                ]);
+        
+                $activityLog->save();
             }
             elseif($user_role == 3){
                 //input validation
@@ -599,9 +820,28 @@ class TaskTimelineController extends Controller
 
                 // Check if the validation fails
                 if ($validator->fails()) {
+                    // Extract error messages
+                    $errorMessages = implode(' ', $validator->errors()->all());
+
+                    $activityLog = new ActivityLog([
+                        'username' => Auth::user()->name,
+                        'action' => 'Dail Task Note',
+                        'outcome' => 'failed',
+                        'details' => $errorMessages,
+                    ]);
+            
+                    $activityLog->save();
                     return redirect()->back()->with('warning', 'Invalid note. Please try again!');
                 }
                 $timeline[$date]['Trainee'] = $request->input('comment');
+                $activityLog = new ActivityLog([
+                    'username' => Auth::user()->name,
+                    'action' => 'Daily Task Note',
+                    'outcome' => 'success',
+                    'details' => 'Note from trainee changed: ' . $request->input('comment'),
+                ]);
+        
+                $activityLog->save();
             }
             elseif($user_role == 1){
                 //input validation
@@ -612,10 +852,30 @@ class TaskTimelineController extends Controller
 
                 // Check if the validation fails
                 if ($validator->fails()) {
+                    // Extract error messages
+                    $errorMessages = implode(' ', $validator->errors()->all());
+
+                    $activityLog = new ActivityLog([
+                        'username' => Auth::user()->name,
+                        'action' => 'Dail Task Note',
+                        'outcome' => 'failed',
+                        'details' => $errorMessages,
+                    ]);
+            
+                    $activityLog->save();
                     return redirect()->back()->with('warning', 'Invalid note. Please try again!');
                 }
                 $timeline[$date]['Supervisor'] = $request->input('commentSV');
                 $timeline[$date]['Trainee'] = $request->input('commentTR');
+
+                $activityLog = new ActivityLog([
+                    'username' => Auth::user()->name,
+                    'action' => 'Daily Task Note',
+                    'outcome' => 'success',
+                    'details' => 'Note from supervisor changed: ' . $request->input('commentSV') . ' , Comment from trainee changed: ' . $request->input('commentTR'),
+                ]);
+        
+                $activityLog->save();
             }
     
             // Update the timeline in the database
@@ -624,8 +884,6 @@ class TaskTimelineController extends Controller
     
             return redirect()->route('trainee-daily-task-detail', ['date' => $date, 'taskID' => $taskID])->with('success', 'Comment changed.');  
         } else {
-
-
             if($user_role == 2){
                 // add supervisor comment into $timeline[$date]
                 $timeline[$date] = [
@@ -641,25 +899,32 @@ class TaskTimelineController extends Controller
             // Update the timeline in the database
             $task->timeline = json_encode($timeline);
             $task->save();
+
+            $activityLog = new ActivityLog([
+                'username' => Auth::user()->name,
+                'action' => 'Daily Task Note',
+                'outcome' => 'success',
+                'details' => 'Note added: ' . $request->input('comment'),
+            ]);
+    
+            $activityLog->save();
             return redirect()->route('trainee-daily-task-detail', ['date' => $date, 'taskID' => $taskID])->with('success', 'Comment added.');
         }
-
-        if($user_role == 3){
-            $comment['Trainee'] = $request->input('comment');
-        }
-        elseif($user_role == 2){
-            $comment['Supervisor'] = $request->input('comment');
-        }
-
-        $task->task_overall_comment = json_encode($comment);
-        $task->save();
-
-        return redirect()->route('trainee-task-detail', ['taskID' => $taskID])->with('success', 'Comment has changed successfully.');
     }
 
     public function deleteTask($taskID){
-        $targetTask = TaskTimeline::find($taskID);
+        $targetTask = TaskTimeline::where('id',$taskID)->first();
         $traineeID = $targetTask->trainee_id;
+
+        $activityLog = new ActivityLog([
+            'username' => Auth::user()->name,
+            'action' => 'Task Deletion',
+            'outcome' => 'success',
+            'details' => 'Task Deleted: ' . $targetTask->task_name,
+        ]);
+
+        $activityLog->save();
+
         $targetTask->delete();
 
         $user_role = Auth::user()->role_id;

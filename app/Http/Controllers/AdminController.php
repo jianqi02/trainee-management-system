@@ -11,6 +11,7 @@ use App\Models\Seating;
 use App\Models\Trainee;
 use App\Models\AllTrainee;
 use App\Models\Supervisor;
+use App\Models\ActivityLog;
 use Illuminate\Support\Str;
 use App\Models\Notification;
 use App\Models\TaskTimeline;
@@ -186,6 +187,15 @@ class AdminController extends Controller
             foreach($assignRecord as $assign){
                 $assign->delete();
             }
+            $activityLog = new ActivityLog([
+                'username' => $supervisor_name,
+                'action' => 'Trainee Record Deletion',
+                'outcome' => 'success',
+                'details' => 'Trainee record deleted: ' . $record->name,
+            ]);
+    
+            $activityLog->save();
+
             $record->delete();
     
             return redirect()->route('all-trainee-list')->with('status', 'Record successfully deleted.');
@@ -212,6 +222,17 @@ class AdminController extends Controller
         ]);
         
         if ($validator->fails()) {
+            // Extract error messages
+            $errorMessages = implode(' ', $validator->errors()->all());
+
+            $activityLog = new ActivityLog([
+                'username' => Auth::user()->name,
+                'action' => 'Edit Trainee Record',
+                'outcome' => 'failed',
+                'details' => $errorMessages,
+            ]);
+    
+            $activityLog->save();
             return redirect()->route('all-trainee-list')
                         ->withErrors($validator)
                         ->withInput();
@@ -223,6 +244,14 @@ class AdminController extends Controller
 
         // return an error messae when the admin choose invalid date (end date <= start date)
         if($updated_internship_end <= $updated_internship_start){
+            $activityLog = new ActivityLog([
+                'username' => Auth::user()->name,
+                'action' => 'Edit Trainee Record',
+                'outcome' => 'failed',
+                'details' => 'Invalid internship date chosen.',
+            ]);
+    
+            $activityLog->save();
             return redirect()->route('all-trainee-list')->with('error', 'Invalid internship date!');
         }
 
@@ -234,6 +263,15 @@ class AdminController extends Controller
 
 
         $record->save();
+
+        $activityLog = new ActivityLog([
+            'username' => Auth::user()->name,
+            'action' => 'Edit Trainee Record',
+            'outcome' => 'success',
+            'details' => 'Updated trainee record: ' . $record->name,
+        ]);
+
+        $activityLog->save();
 
         return redirect()->route('all-trainee-list')->with('status', 'Record has updated successfully!');
     }
@@ -297,6 +335,14 @@ class AdminController extends Controller
                 }
             }
         }
+        $activityLog = new ActivityLog([
+            'username' => Auth::user()->name,
+            'action' => 'Supervisor Assignment',
+            'outcome' => 'success',
+            'details' => $selectedSupervisors . ' are assigned to trainee ' . $selected_trainee,
+        ]);
+
+        $activityLog->save();
         return redirect()->route('admin-trainee-assign')->with('status', 'Supervisor Assigned Successfully');
     }
     
@@ -341,6 +387,14 @@ class AdminController extends Controller
                 }
             }
         }
+        $activityLog = new ActivityLog([
+            'username' => Auth::user()->name,
+            'action' => 'Supervisor Assignment',
+            'outcome' => 'success',
+            'details' => $selectedSupervisors . ' are removed from trainee ' . $selected_trainee,
+        ]);
+
+        $activityLog->save();
         return redirect()->route('admin-trainee-assign')->with('status', 'Supervisor Removed Successfully');
     }
 
@@ -407,6 +461,14 @@ class AdminController extends Controller
                 'resume_path' => NULL,
                 'acc_status' => 'Active',
             ]);
+            $activityLog = new ActivityLog([
+                'username' => Auth::user()->name,
+                'action' => 'Create New Account',
+                'outcome' => 'success',
+                'details' => 'A new trainee account ' . $request->input('name') . ' is created.',
+            ]);
+    
+            $activityLog->save();
         } elseif ($request->input('role') == 2) { // Supervisor
             Supervisor::create([
                 'name' => $request->input('name'), 
@@ -416,6 +478,14 @@ class AdminController extends Controller
                 'phone_number' => '',
                 'trainee_status' => 'Not Assigned',
             ]);
+            $activityLog = new ActivityLog([
+                'username' => Auth::user()->name,
+                'action' => 'Create New Account',
+                'outcome' => 'success',
+                'details' => 'A new supervisor account ' . $request->input('name') . ' is created.',
+            ]);
+    
+            $activityLog->save();
         }
 
         // Redirect to a success page or any other desired action
@@ -435,6 +505,17 @@ class AdminController extends Controller
         ]);
         
         if ($validator->fails()) {
+            // Extract error messages
+            $errorMessages = implode(' ', $validator->errors()->all());
+
+            $activityLog = new ActivityLog([
+                'username' => Auth::user()->name,
+                'action' => 'Create Trainee Record',
+                'outcome' => 'failed',
+                'details' => $errorMessages,
+            ]);
+    
+            $activityLog->save();
             return redirect()->route('all-trainee-list')
                         ->withErrors($validator)
                         ->withInput();
@@ -444,7 +525,15 @@ class AdminController extends Controller
         $internship_end = $request->input('internship_end');
 
         // return an error messae when the admin choose invalid date (end date <= start date)
-        if($internship_end <= $internship_start){
+        if($internship_end <= $internship_start){            
+            $activityLog = new ActivityLog([
+                'username' => Auth::user()->name,
+                'action' => 'Create Trainee Record',
+                'outcome' => 'failed',
+                'details' => 'Invalid internship date chosen.',
+            ]);
+
+            $activityLog->save();
             return redirect()->route('all-trainee-list')->with('error', 'Invalid internship date!');
         }
 
@@ -453,6 +542,15 @@ class AdminController extends Controller
             'internship_start' => $internship_start,
             'internship_end' => $internship_end,
         ]);
+
+        $activityLog = new ActivityLog([
+            'username' => Auth::user()->name,
+            'action' => 'Create Trainee Record',
+            'outcome' => 'success',
+            'details' => 'New trainee record ' . $request->input('name') . ' is created.',
+        ]);
+
+        $activityLog->save();
 
         // Redirect to a success page or any other desired action
         return redirect()->route('all-trainee-list')->with('status', 'Trainee Created Successfully');
@@ -505,6 +603,15 @@ class AdminController extends Controller
                 'phone_number' => $request->input('phoneNum'),
                 'section' => $request->input('section'),
             ]);
+
+            $activityLog = new ActivityLog([
+                'username' => Auth::user()->name,
+                'action' => 'Edit Profile',
+                'outcome' => 'success',
+                'details' => 'Profile for ' . $target->name . ' has been updated. ',
+            ]);
+
+            $activityLog->save();
         
             return redirect()->route('sv-profile');
 
@@ -547,6 +654,15 @@ class AdminController extends Controller
             $endDate = $request->input('endDate');
 
             if($endDate <= $startDate){
+                $activityLog = new ActivityLog([
+                    'username' => Auth::user()->name,
+                    'action' => 'Edit Profile',
+                    'outcome' => 'failed',
+                    'details' => 'Invalid internship start or end date chosen.',
+                ]);
+
+                $activityLog->save();
+
                 return redirect()->back()->with('error', 'Invalid internship date!');
             }
     
@@ -579,6 +695,15 @@ class AdminController extends Controller
                 $target_trainee->profile_image = $imagePath;
             }
             $target_trainee->save();
+
+            $activityLog = new ActivityLog([
+                'username' => Auth::user()->name,
+                'action' => 'Edit Profile',
+                'outcome' => 'success',
+                'details' => 'Profile for ' . $target_trainee->name . 'has been updated.',
+            ]);
+    
+            $activityLog->save();
 
             return redirect()->route('admin-go-profile', $target->name)->with('success', 'Profile updated successfully.');
 
@@ -623,6 +748,17 @@ class AdminController extends Controller
         ]);
         
         if ($validator->fails()) {
+            // Extract error messages
+            $errorMessages = implode(' ', $validator->errors()->all());
+
+            $activityLog = new ActivityLog([
+                'username' => Auth::user()->name,
+                'action' => 'Logbook Upload',
+                'outcome' => 'failed',
+                'details' => $errorMessages,
+            ]);
+    
+            $activityLog->save();
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
@@ -632,6 +768,14 @@ class AdminController extends Controller
         ->count();
 
         if ($logbookCount >= 4) {
+            $activityLog = new ActivityLog([
+                'username' => Auth::user()->name,
+                'action' => 'Logbook Upload',
+                'outcome' => 'failed',
+                'details' => 'Trying to upload more than 4 logbooks.',
+            ]);
+    
+            $activityLog->save();
             return redirect()->back()->with('error', 'You can only upload a maximum of 4 logbooks.');
         }
 
@@ -664,6 +808,13 @@ class AdminController extends Controller
             $file->storeAs('public/logbooks/', $newFileName);
         }
 
+        $activityLog = new ActivityLog([
+            'username' => Auth::user()->name,
+            'action' => 'Logbook Upload',
+            'outcome' => 'success',
+            'details' => $logbook_path,
+        ]);
+
 
         // Redirect the user to a success page
         return redirect()->route('view-and-upload-logbook', $name)->with('success', 'Logbook uploaded successfully');
@@ -676,6 +827,15 @@ class AdminController extends Controller
         if (file_exists($logbookPath)) {
             unlink($logbookPath);
         }
+
+        $activityLog = new ActivityLog([
+            'username' => Auth::user()->name,
+            'action' => 'Logbook Deletion',
+            'outcome' => 'success',
+            'details' => 'Deleted ' . $logbook->logbook_path,
+        ]);
+
+        $activityLog->save();
 
         // Delete the logbook record from the database
         $logbook->delete();
@@ -703,9 +863,28 @@ class AdminController extends Controller
     }
 
     public function adminUploadResume(Request $request, $traineeName){
-        $request->validate([
+        //validate the uploaded resume
+        $validator = Validator::make($request->all(), [
             'resume' => 'required|mimes:pdf|max:2048',
+        ],[
+            'resume.max' => 'The resume must not exceed 2MB in size.',
+            'resume.mimes' => 'Accepted resume types are .pdf only.',
         ]);
+
+        if ($validator->fails()) {
+            // Extract error messages
+            $errorMessages = implode(' ', $validator->errors()->all());
+
+            $activityLog = new ActivityLog([
+                'username' => Auth::user()->name,
+                'action' => 'Resume Upload',
+                'outcome' => 'failed',
+                'details' => $errorMessages,
+            ]);
+
+            $activityLog->save();
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
 
         $trainee = Trainee::where('name', $traineeName)->first();
 
@@ -735,22 +914,40 @@ class AdminController extends Controller
         $trainee->resume_path = 'storage/resumes/' . $newFileName;
         $trainee->save();
 
+        $activityLog = new ActivityLog([
+            'username' => Auth::user()->name,
+            'action' => 'Resume Upload',
+            'outcome' => 'success',
+            'details' => $trainee->resume_path ,
+        ]);
+
+        $activityLog->save();
+
         // Redirect the user to a success page
         return redirect()->route('admin-go-profile', $traineeName)->with('success', 'Resume uploaded successfully');
     }
 
     public function changeSVComment(Request $request, $commentID){
-        $comment = Comment::find($commentID);
+        $comment = Comment::where('id', $commentID)->first();
         $editedComment = $request->input('editedComment');
         $comment->comment = $editedComment;
         $comment->save();
+
+        $activityLog = new ActivityLog([
+            'username' => Auth::user()->name,
+            'action' => 'Personal Comment',
+            'outcome' => 'success',
+            'details' => 'Comment has edited: ' . $editedComment ,
+        ]);
+
+        $activityLog->save();
 
         return redirect()->back()->with('success', 'Comment edited successfully.');
     }
 
     public function deleteAccount($traineeID){
         //find for the account need to be deleted.
-        $acc = Trainee::find($traineeID);
+        $acc = Trainee::where('id', $traineeID)->first();
 
         //delete all related information from DB.
 
@@ -787,6 +984,16 @@ class AdminController extends Controller
         }
 
         $user_record = User::where('email', $acc->sains_email)->first();
+
+        $activityLog = new ActivityLog([
+            'username' => Auth::user()->name,
+            'action' => 'Account Deletion',
+            'outcome' => 'success',
+            'details' => 'Deleted Account: ' . $user_record->name ,
+        ]);
+
+        $activityLog->save();
+
         if($user_record){
             $user_record->delete();
         }
@@ -798,7 +1005,7 @@ class AdminController extends Controller
 
     public function deleteSVAccount($supervisorID){
         //find for the account need to be deleted.
-        $acc = Supervisor::find($supervisorID);
+        $acc = Supervisor::where('id', $supervisorID)->first();
 
         //delete all related information from DB.
 
@@ -824,6 +1031,16 @@ class AdminController extends Controller
         }
 
         $user_record = User::where('email', $acc->sains_email)->first();
+
+        $activityLog = new ActivityLog([
+            'username' => Auth::user()->name,
+            'action' => 'Account Deletion',
+            'outcome' => 'success',
+            'details' => 'Deleted Account: ' . $user_record->name ,
+        ]);
+
+        $activityLog->save();
+
         if($user_record){
             $user_record->delete();
         }
@@ -845,6 +1062,17 @@ class AdminController extends Controller
         
             // Check if the validation fails
             if ($validator->fails()) {
+                // Extract error messages
+                $errorMessages = implode(' ', $validator->errors()->all());
+
+                $activityLog = new ActivityLog([
+                    'username' => Auth::user()->name,
+                    'action' => 'Change Trainee Password',
+                    'outcome' => 'failed',
+                    'details' => $errorMessages,
+                ]);
+        
+                $activityLog->save();
                 return redirect()->back()->withErrors($validator)->withInput();
             }
 
@@ -853,14 +1081,30 @@ class AdminController extends Controller
 
             // check the password and confirmed password is matched or not.
             if($password != $confirmedPassword){
+                $activityLog = new ActivityLog([
+                    'username' => Auth::user()->name,
+                    'action' => 'Change Trainee Password',
+                    'outcome' => 'failed',
+                    'details' => 'Password and confirmed password do not match.',
+                ]);
+        
+                $activityLog->save();
                 return redirect()->back()->with('warning', 'Password and confirmed password do not match.');
-
             }
 
             $newPassword = Hash::make($password);
 
             $userRecord->password= $newPassword;
             $userRecord->save();
+
+            $activityLog = new ActivityLog([
+                'username' => Auth::user()->name,
+                'action' => 'Change Trainee Password',
+                'outcome' => 'success',
+                'details' => 'Successfully changed the password for trainee ' . $userRecord->name,
+            ]);
+    
+            $activityLog->save();
 
             return redirect()->back()->with('success', 'Password for this trainee has changed successfully.');
         }
@@ -875,6 +1119,17 @@ class AdminController extends Controller
         
             // Check if the validation fails
             if ($validator->fails()) {
+                 // Extract error messages
+                $errorMessages = implode(' ', $validator->errors()->all());
+
+                $activityLog = new ActivityLog([
+                    'username' => Auth::user()->name,
+                    'action' => 'Change Supervisor Password',
+                    'outcome' => 'failed',
+                    'details' => $errorMessages,
+                ]);
+        
+                $activityLog->save();
                 return redirect()->back()->withErrors($validator)->withInput();
             }
 
@@ -883,12 +1138,29 @@ class AdminController extends Controller
 
             // check the password and confirmed password is matched or not.
             if($password != $confirmedPassword){
+                $activityLog = new ActivityLog([
+                    'username' => Auth::user()->name,
+                    'action' => 'Change Supervisor Password',
+                    'outcome' => 'failed',
+                    'details' => 'Password and confirmed password do not match.',
+                ]);
+        
+                $activityLog->save();
                 return redirect()->back()->with('warning', 'Password and confirmed password do not match.');
             }
 
             $newPassword = Hash::make($password);
             $userRecord->password = $newPassword;
             $userRecord->save();
+
+            $activityLog = new ActivityLog([
+                'username' => Auth::user()->name,
+                'action' => 'Change Supevisor Password',
+                'outcome' => 'success',
+                'details' => 'Successfully changed the password for supervisor ' . $userRecord->name,
+            ]);
+    
+            $activityLog->save();
 
             return redirect()->back()->with('success', 'Password for this supervisor has changed successfully.');
         }
@@ -912,6 +1184,18 @@ class AdminController extends Controller
         ]);
 
         if ($validator->fails()) {
+            // Extract error messages
+           $errorMessages = implode(' ', $validator->errors()->all());
+
+           $activityLog = new ActivityLog([
+               'username' => $user->name,
+               'action' => 'Change Password',
+               'outcome' => 'failed',
+               'details' => $errorMessages,
+           ]);
+   
+           $activityLog->save();
+
             return redirect()->back()
                 ->withErrors($validator)
                 ->withInput();
@@ -925,6 +1209,14 @@ class AdminController extends Controller
         if (Hash::check($current_password, $user->password)) {
             //check the new password is same as the current password or not
             if(Hash::check($new_password, $user->password)){
+                $activityLog = new ActivityLog([
+                    'username' => $user->name,
+                    'action' => 'Change Password',
+                    'outcome' => 'failed',
+                    'details' => 'Try to set the new password same as previous password',
+                ]);
+        
+                $activityLog->save();
                 return redirect()->back()->with('error', 'Cannot set the same password as new password.');
             }
             else{
@@ -933,9 +1225,30 @@ class AdminController extends Controller
             }
         }
         else{
+            $activityLog = new ActivityLog([
+                'username' => $user->name,
+                'action' => 'Change Password',
+                'outcome' => 'failed',
+                'details' => 'Wrong current password entered',
+            ]);
+    
+            $activityLog->save();
             return redirect()->back()->with('error', 'Wrong current password.');
         }
+        $activityLog = new ActivityLog([
+            'username' => $user->name,
+            'action' => 'Change Password',
+            'outcome' => 'success',
+            'details' => '',
+        ]);
+
+        $activityLog->save();
 
         return redirect()->back()->with('success', 'Password successfully changed!');
+    }
+
+    public function displayActivityLog(){
+        $activityLogs = ActivityLog::paginate(20);
+        return view('activity-log',compact('activityLogs'));
     }
 }

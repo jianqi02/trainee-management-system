@@ -173,7 +173,6 @@
                   <div class="logo"></div>
               
                   <div class="menu">
-                      <div class="menu-title">Menu</div>
               
                       <a href="/sv-homepage">
                           <div class="icon">

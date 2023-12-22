@@ -26,7 +26,7 @@
     <!-- icons are obtained from https://icons8.com/ -->
     <style>
       .custom-sidebar{
-        height: 77%;
+        height: 75%;
       }
 
       .notification{
@@ -176,7 +176,6 @@
                   <div class="logo"></div>
               
                   <div class="menu">
-                      <div class="menu-title">Menu</div>
               
                       <a href="/homepage">
                           <div class="icon">

@@ -128,6 +128,7 @@ Route::middleware(['role:1'])->group(function () {
     Route::get('/delete-exist-sv-account/{supervisorID}', [AdminController::class, 'deleteSVAccount'])->name('delete-exist-sv-account');
     Route::post('/admin-change-password/{id}/{type}', [AdminController::class, 'adminChangePassword'])->name('admin-change-password');
     Route::post('admin-update-password', [AdminController::class, 'adminUpdatePassword'])->name('admin-update-password');
+    Route::get('/activity-log', [AdminController::class, 'displayActivityLog'])->name('activity-log');
 });
 
 

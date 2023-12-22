@@ -29,7 +29,11 @@
 
     <style>
       .custom-sidebar{
-        height: 80%;
+        height: 75%;
+      }
+
+      .label{
+        font-size: 14px;
       }
 
       .menu a{
@@ -54,8 +58,8 @@
       }
 
       .icon img {
-        width: 24px; /* Adjust the width as needed */
-        height: 24px; /* Adjust the height as needed */
+        width: 22px; /* Adjust the width as needed */
+        height: 22px; /* Adjust the height as needed */
       }
 
       .unread-notification {
@@ -183,13 +187,12 @@
                   <div class="logo"></div>
               
                   <div class="menu">
-                      <div class="menu-title">Menu</div>
               
                       <a href="/admin-dashboard">
                           <div class="icon">
                               <img src="https://img.icons8.com/ios/452/home-page.png" alt="Homepage Icon" class="w-6 h-6"/>
                           </div>
-                          <div class="label">Dashboard</div>
+                          <div class="label" >Dashboard</div>
                       </a>
               
                       <a href="/all-trainee-list">
@@ -234,6 +237,14 @@
                         <div class="label">Change Password</div>
                       </a>
 
+                      <a href="/activity-log">
+                        <div class="icon">
+                            <img src="https://img.icons8.com/ios/50/log.png" alt="log"/>
+                        </div>
+                        <div class="label">Activity Log</div>
+                      </a>
+
+                      
                   </div>
               </div>
             </div>

@@ -10,6 +10,7 @@ use App\Models\Seating;
 use App\Models\Trainee;
 use App\Models\AllTrainee;
 use App\Models\Supervisor;
+use App\Models\ActivityLog;
 use Illuminate\Support\Str;
 use App\Models\Notification;
 use App\Models\TaskTimeline;
@@ -106,6 +107,15 @@ class SupervisorController extends Controller
         ->update([
             'phone_number' => $request->input('phoneNum'),
         ]);
+
+        $activityLog = new ActivityLog([
+            'username' => $user->name,
+            'action' => 'Edit Profile',
+            'outcome' => 'success',
+            'details' => 'Update phone number to ' . $request->input('phoneNum'),
+        ]);
+
+        $activityLog->save();
     
         return redirect()->route('sv-profile');
     }
@@ -204,6 +214,17 @@ class SupervisorController extends Controller
         ]);
         
         if ($validator->fails()) {
+            // Extract error messages
+            $errorMessages = implode(' ', $validator->errors()->all());
+
+            $activityLog = new ActivityLog([
+                'username' => $supervisor_name,
+                'action' => 'Logbook Upload',
+                'outcome' => 'failed',
+                'details' => $errorMessages,
+            ]);
+    
+            $activityLog->save();
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
@@ -213,6 +234,14 @@ class SupervisorController extends Controller
         ->count();
 
         if ($logbookCount >= 4) {
+            $activityLog = new ActivityLog([
+                'username' => $supervisor_name,
+                'action' => 'Logbook Upload',
+                'outcome' => 'failed',
+                'details' => 'Trying to upload more than 4 logbooks.',
+            ]);
+    
+            $activityLog->save();
             return redirect()->back()->with('error', 'You can only upload a maximum of 4 logbooks.');
         }
 
@@ -258,6 +287,15 @@ class SupervisorController extends Controller
         ]);
         $notification->save(); // Save the notification to the database
 
+        $activityLog = new ActivityLog([
+            'username' => $supervisor_name,
+            'action' => 'Logbook Upload',
+            'outcome' => 'success',
+            'details' => $logbook_path,
+        ]);
+
+        $activityLog->save();
+
         // Redirect the user to a success page
         return redirect()->route('view-and-upload-logbook-sv', $name)->with('success', 'Logbook uploaded successfully');
     }
@@ -269,6 +307,15 @@ class SupervisorController extends Controller
         if (file_exists($logbookPath)) {
             unlink($logbookPath);
         }
+
+        $activityLog = new ActivityLog([
+            'username' => Auth::user()->name,
+            'action' => 'Logbook Deletion',
+            'outcome' => 'success',
+            'details' => 'Deleted ' . $logbook->logbook_path,
+        ]);
+
+        $activityLog->save();
 
         // Delete the logbook record from the database
         $logbook->delete();
@@ -339,6 +386,15 @@ class SupervisorController extends Controller
         }
 
         $traineeName = Trainee::where('id', $trainee_id)->first()->name;
+
+        $activityLog = new ActivityLog([
+            'username' => Auth::user()->name,
+            'action' => 'Personal Comment',
+            'outcome' => 'success',
+            'details' => 'Comment: '. $comment,
+        ]);
+
+        $activityLog->save();
 
         return redirect()->route('go-profile', $traineeName)->with('success', 'Comment submitted successfully');
     }
@@ -413,6 +469,24 @@ class SupervisorController extends Controller
             'new_password.regex' => 'The format of the password is incorrect.',
             'confirm_password.same' => 'The confirm password does not match the new password.',
         ]);
+        
+        if ($validator->fails()) {
+            // Extract error messages
+           $errorMessages = implode(' ', $validator->errors()->all());
+
+           $activityLog = new ActivityLog([
+               'username' => $user->name,
+               'action' => 'Change Password',
+               'outcome' => 'failed',
+               'details' => $errorMessages,
+           ]);
+   
+           $activityLog->save();
+
+           return redirect()->back()
+               ->withErrors($validator)
+               ->withInput();
+       }
 
         $current_password = $request->input('current_password');
         $new_password = $request->input('new_password');
@@ -422,6 +496,14 @@ class SupervisorController extends Controller
         if (Hash::check($current_password, $user->password)) {
             //check the new password is same as the current password or not
             if(Hash::check($new_password, $user->password)){
+                $activityLog = new ActivityLog([
+                    'username' => $user->name,
+                    'action' => 'Change Password',
+                    'outcome' => 'failed',
+                    'details' => 'Try to set the new password same as previous password',
+                ]);
+        
+                $activityLog->save();
                 return redirect()->back()->with('error', 'Cannot set the same password as new password.');
             }
             else{
@@ -430,9 +512,24 @@ class SupervisorController extends Controller
             }
         }
         else{
+            $activityLog = new ActivityLog([
+                'username' => $user->name,
+                'action' => 'Change Password',
+                'outcome' => 'failed',
+                'details' => 'Wrong current password entered',
+            ]);
+    
+            $activityLog->save();
             return redirect()->back()->with('error', 'Wrong current password.');
         }
+        $activityLog = new ActivityLog([
+            'username' => $user->name,
+            'action' => 'Change Password',
+            'outcome' => 'success',
+            'details' => '',
+        ]);
 
+        $activityLog->save();
         return redirect()->back()->with('success', 'Password successfully changed!');
     }
 

@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use App\Models\Seating;
 use App\Models\Trainee;
 use App\Models\AllTrainee;
+use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -297,6 +298,14 @@ class SeatingController extends Controller
                 ->route('seating-arrange', ['week' => $week])
                 ->with('warning', count($unassignedTrainee) . ' trainees are not assigned to any seats. Please assign them manually.');
         }
+        $activityLog = new ActivityLog([
+            'username' => Auth::user()->name,
+            'action' => 'Random Seating Assignment',
+            'outcome' => 'success',
+            'details' => 'Random seating assignment is successfully for date from ' . $formattedStartDate . ' to ' . $formattedEndDate,
+        ]);
+
+        $activityLog->save();
         return redirect()->route('seating-arrange', ['week' => $week])->with('success', 'Seats random-assigned successfully');
     }
 
@@ -325,11 +334,22 @@ class SeatingController extends Controller
         $seatDetail = json_decode($seatData, true);
     
         if ($seatDetail[$seat]) {
+            //get the trainee name
+            $traineeName = AllTrainee::where('id', $seatDetail[$seat]['trainee_id'])->pluck('name')->first();
             
             // Clear the seat by setting the trainee_id column to an empty string
             $seatDetail[$seat]['trainee_id'] = 'Not Assigned';
             Seating::where('week', $week)->update(['seat_detail' => json_encode($seatDetail)]);
     
+            $activityLog = new ActivityLog([
+                'username' => Auth::user()->name,
+                'action' => 'Seating Arrangement',
+                'outcome' => 'success',
+                'details' => 'Removed trainee ' . $traineeName . ' from seat ' . $seat,
+            ]);
+    
+            $activityLog->save();
+
             return redirect()->back()->with('success', 'Trainee removed successfully');
         }
     
@@ -358,6 +378,15 @@ class SeatingController extends Controller
                 // Update the seat_detail column in the database
                 Seating::where('week', $week)->update(['seat_detail' => json_encode($seatDetail)]);
     
+                $activityLog = new ActivityLog([
+                    'username' => Auth::user()->name,
+                    'action' => 'Seating Arrangement',
+                    'outcome' => 'success',
+                    'details' => 'Changed the status of seat ' . $seat ,
+                ]);
+        
+                $activityLog->save();
+
                 return redirect()->back()->with('success', 'Seat changed successfully');
             }
         }
@@ -376,12 +405,30 @@ class SeatingController extends Controller
     
         if ($seatDetail[$seat]) {
             if($seatDetail[$seat]['seat_status'] == 'Not Available'){
+                $activityLog = new ActivityLog([
+                    'username' => Auth::user()->name,
+                    'action' => 'Seating Arrangement',
+                    'outcome' => 'failed',
+                    'details' => 'Trying to assign a trainee to a seat that is not available.',
+                ]);
+        
+                $activityLog->save();
                 return redirect()->back()->with('error', 'You cannot assign a trainee to a seat that is not available.');
             }
             
             // Assign the seat to the trainee by setting the trainee_id column to the trainee's name
             $seatDetail[$seat]['trainee_id'] = $id;
             Seating::where('week', $week)->update(['seat_detail' => json_encode($seatDetail)]);
+
+            $traineeName = AllTrainee::where('id', $id)->pluck('name')->first();
+            $activityLog = new ActivityLog([
+                'username' => Auth::user()->name,
+                'action' => 'Seating Arrangement',
+                'outcome' => 'success',
+                'details' => 'Assigned trainee ' . $traineeName. ' to seat ' . $seat,
+            ]);
+    
+            $activityLog->save();
     
             return redirect()->back()->with('success', 'Seat assigned successfully');
         }
