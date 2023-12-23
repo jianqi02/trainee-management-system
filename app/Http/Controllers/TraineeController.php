@@ -136,7 +136,7 @@ class TraineeController extends Controller
                 'username' => $trainee->name,
                 'action' => 'Edit Profile',
                 'outcome' => 'success',
-                'details' => $trainee,
+                'details' => '',
             ]);
     
             $activityLog->save();

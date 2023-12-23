@@ -111,6 +111,9 @@
                 <li class="nav-item" role="presentation">
                     <a class="nav-link" id="other-list-tab" data-bs-toggle="tab" href="#other-list" role="tab" aria-controls="other-list" aria-selected="false">Supervisor List</a>
                 </li>
+                <li class="nav-item ms-auto">
+                    <a href="/admin-create-account">+ Create Account</a>
+                </li>
             </ul>
             <div class="tab-content" id="myTabContent">
                 <div class="tab-pane fade show active" id="trainee-list" role="tabpanel" aria-labelledby="trainee-list-tab">

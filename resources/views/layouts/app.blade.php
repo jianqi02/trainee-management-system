@@ -101,6 +101,9 @@
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" href="/trainee-change-password">
+                                        {{ __('Change Password') }}
+                                    </a>    
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
@@ -217,15 +220,7 @@
                               <img src="https://img.icons8.com/ios/452/timeline.png" alt="Task Timeline Icon" class="w-6 h-6"/>
                           </div>
                           <div class="label">Task Timeline</div>
-                      </a>
-
-                      <a href="/trainee-change-password">
-                        <div class="icon">
-                            <img src="https://img.icons8.com/external-sbts2018-outline-sbts2018/58/808080/external-change-password-basic-ui-elements-2.3-sbts2018-outline-sbts2018.png" alt="change-password"/>
-                        </div>
-                        <div class="label">Change Password</div>
-                      </a>
-                      
+                      </a>                    
                   </div>
               </div>
               

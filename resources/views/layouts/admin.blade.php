@@ -112,6 +112,9 @@
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" href="/admin-change-self-password">
+                                        {{ __('Change Password') }}
+                                    </a> 
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                       >
                                         {{ __('Logout') }}
@@ -222,29 +225,13 @@
                           </div>
                           <div class="label">User Management</div>
                       </a>
-              
-                      <a href="/admin-create-account">
-                          <div class="icon">
-                            <img width="50" height="50" src="https://img.icons8.com/ios/50/add-user-male.png" alt="Create Account Icon" class="w-6 h-6"/>
-                          </div>
-                          <div class="label">Create Account</div>
-                      </a>
-
-                      <a href="/admin-change-self-password">
-                        <div class="icon">
-                            <img src="https://img.icons8.com/external-sbts2018-outline-sbts2018/58/808080/external-change-password-basic-ui-elements-2.3-sbts2018-outline-sbts2018.png" alt="change-password"/>
-                        </div>
-                        <div class="label">Change Password</div>
-                      </a>
 
                       <a href="/activity-log">
                         <div class="icon">
                             <img src="https://img.icons8.com/ios/50/log.png" alt="log"/>
                         </div>
                         <div class="label">Activity Log</div>
-                      </a>
-
-                      
+                      </a>             
                   </div>
               </div>
             </div>

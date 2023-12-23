@@ -335,11 +335,15 @@ class AdminController extends Controller
                 }
             }
         }
+
+        //convert the array to string
+        $supervisorsString = implode(', ', $selectedSupervisors);
+
         $activityLog = new ActivityLog([
             'username' => Auth::user()->name,
             'action' => 'Supervisor Assignment',
             'outcome' => 'success',
-            'details' => $selectedSupervisors . ' are assigned to trainee ' . $selected_trainee,
+            'details' => $supervisorsString . ' are assigned to trainee ' . $selectedTrainee,
         ]);
 
         $activityLog->save();
@@ -387,11 +391,15 @@ class AdminController extends Controller
                 }
             }
         }
+
+        //convert the array to string
+        $supervisorsString = implode(', ', $selectedSupervisors);
+
         $activityLog = new ActivityLog([
             'username' => Auth::user()->name,
             'action' => 'Supervisor Assignment',
             'outcome' => 'success',
-            'details' => $selectedSupervisors . ' are removed from trainee ' . $selected_trainee,
+            'details' => $supervisorsString . ' are removed from trainee ' . $selectedTrainee,
         ]);
 
         $activityLog->save();
@@ -488,8 +496,7 @@ class AdminController extends Controller
             $activityLog->save();
         }
 
-        // Redirect to a success page or any other desired action
-        return redirect()->route('admin-create-account')->with('success', 'A new account successfully added.');
+        return redirect()->back()->with('success', 'A new account successfully added.');
     }
 
     public function showCreateRecordForm()
@@ -815,6 +822,7 @@ class AdminController extends Controller
             'details' => $logbook_path,
         ]);
 
+        $activityLog->save();
 
         // Redirect the user to a success page
         return redirect()->route('view-and-upload-logbook', $name)->with('success', 'Logbook uploaded successfully');
@@ -1247,8 +1255,9 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'Password successfully changed!');
     }
 
+    //obtain the activity log from the last record to the first record
     public function displayActivityLog(){
-        $activityLogs = ActivityLog::paginate(20);
-        return view('activity-log',compact('activityLogs'));
+        $activityLogs = ActivityLog::orderBy('id', 'desc')->get();
+        return view('activity-log', compact('activityLogs'));
     }
 }

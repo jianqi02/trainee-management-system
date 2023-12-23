@@ -10,6 +10,7 @@ use App\Models\AllTrainee;
 use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 
 class SeatingController extends Controller
@@ -300,9 +301,9 @@ class SeatingController extends Controller
         }
         $activityLog = new ActivityLog([
             'username' => Auth::user()->name,
-            'action' => 'Random Seating Assignment',
+            'action' => 'Seating Arrangement',
             'outcome' => 'success',
-            'details' => 'Random seating assignment is successfully for date from ' . $formattedStartDate . ' to ' . $formattedEndDate,
+            'details' => 'Random seating assignment is successful for week ' . $week,
         ]);
 
         $activityLog->save();
@@ -345,7 +346,7 @@ class SeatingController extends Controller
                 'username' => Auth::user()->name,
                 'action' => 'Seating Arrangement',
                 'outcome' => 'success',
-                'details' => 'Removed trainee ' . $traineeName . ' from seat ' . $seat,
+                'details' => 'Removed trainee ' . $traineeName . ' from seat ' . $seat. ' at week ' . $week,
             ]);
     
             $activityLog->save();
@@ -382,7 +383,7 @@ class SeatingController extends Controller
                     'username' => Auth::user()->name,
                     'action' => 'Seating Arrangement',
                     'outcome' => 'success',
-                    'details' => 'Changed the status of seat ' . $seat ,
+                    'details' => 'Changed the status of seat ' . $seat . ' at week ' . $week,
                 ]);
         
                 $activityLog->save();
@@ -409,7 +410,7 @@ class SeatingController extends Controller
                     'username' => Auth::user()->name,
                     'action' => 'Seating Arrangement',
                     'outcome' => 'failed',
-                    'details' => 'Trying to assign a trainee to a seat that is not available.',
+                    'details' => 'Trying to assign a trainee to a seat that is not available at week ' . $week,
                 ]);
         
                 $activityLog->save();
@@ -425,7 +426,7 @@ class SeatingController extends Controller
                 'username' => Auth::user()->name,
                 'action' => 'Seating Arrangement',
                 'outcome' => 'success',
-                'details' => 'Assigned trainee ' . $traineeName. ' to seat ' . $seat,
+                'details' => 'Assigned trainee ' . $traineeName. ' to seat ' . $seat . ' at week ' . $week,
             ]);
     
             $activityLog->save();

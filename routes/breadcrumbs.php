@@ -272,7 +272,7 @@ Breadcrumbs::for('admin-daily-task-detail', function ($trail, $name, $traineeID,
 
 // Dashboard > Create New Account
 Breadcrumbs::for('create-new-account', function ($trail) {
-    $trail->parent('dashboard');
+    $trail->parent('user-management');
     $trail->push('Create New Account', route('admin-create-account'));
 });
 

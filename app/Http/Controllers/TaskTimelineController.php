@@ -209,7 +209,7 @@ class TaskTimelineController extends Controller
             'username' => $user->name,
             'action' => 'Add New Task',
             'outcome' => 'success',
-            'details' => $task,
+            'details' => 'Added task: ' . $task->task_name,
         ]);
 
         $activityLog->save();
@@ -310,12 +310,15 @@ class TaskTimelineController extends Controller
         ];
         $task->task_detail = json_encode($taskDetail);
         $task->save();
+  
+        //get the trainee name
+        $traineeName = Trainee::where('id' , $traineeID)->pluck('name')->first();
 
         $activityLog = new ActivityLog([
             'username' => Auth::user()->name,
             'action' => 'Add New Task',
             'outcome' => 'success',
-            'details' => $task,
+            'details' => 'Added Task: ' . $task->task_name . ' to trainee ' . $traineeName,
         ]);
 
         $activityLog->save();
@@ -333,10 +336,6 @@ class TaskTimelineController extends Controller
 
         $startDate = new DateTime($request->input('startDate'));
         $endDate = new DateTime($request->input('endDate'));
-
-        $user = Auth::user();
-        $traineeName = Trainee::where('sains_email', $user->email)->pluck('name')->first();
-        $traineeID = AllTrainee::where('name', 'LIKE', $traineeName)->pluck('id')->first();
         
         $taskName = TaskTimeline::where('id', $taskID)->pluck('task_name')->first();
 
@@ -405,20 +404,26 @@ class TaskTimelineController extends Controller
 
         $task->save();
 
+        //get trainee name & task name for reference
+        $traineeName = Trainee::where('id', $task->trainee_id)->pluck('name')->first();
+        $taskName = $task->task_name;
         $activityLog = new ActivityLog([
             'username' => Auth::user()->name,
             'action' => 'Edit Task',
             'outcome' => 'success',
-            'details' => $task,
+            'details' => 'Edited Task: ' . $task->task_name . ', Trainee: ' . $traineeName,
         ]);
 
         $activityLog->save();
+
+        $ref = Trainee::where('id', $task->trainee_id)->pluck('name')->first();
+        $traineeID = AllTrainee::where('name', $ref)->pluck('id')->first();
 
         //use the id in list to search for the trainee's supervisor
         $assigned_supervisor_ids = TraineeAssign::where('trainee_id', $traineeID)
             ->pluck('assigned_supervisor_id');
 
-        $user_role = $user->role_id;
+        $user_role = Auth::user()->role_id;
 
         if($user_role == 3){
             //send a notification to this trainee's supervisor when the trainee mark his or her task as Completed. 
@@ -619,7 +624,7 @@ class TaskTimelineController extends Controller
                 'username' => Auth::user()->name,
                 'action' => 'Edit Daily Task',
                 'outcome' => 'success',
-                'details' => 'Date: ' . $date . ' , Task name: ' . $timeline[$date]['Name'] . ' , Task description: ' . $timeline[$date]['Description'] . ' , Task status: ' . $timeline[$date]['Status'],
+                'details' => 'Task: ' . $task->task_name . ', Date: ' . $date . ' , Daily task name: ' . $timeline[$date]['Name'] . ' , Daily task description: ' . $timeline[$date]['Description'] . ' , Daily task status: ' . $timeline[$date]['Status'],
             ]);
     
             $activityLog->save();
@@ -640,7 +645,7 @@ class TaskTimelineController extends Controller
                 'username' => Auth::user()->name,
                 'action' => 'Edit Daily Task',
                 'outcome' => 'success',
-                'details' => json_encode($timeline),
+                'details' => 'Task: ' . $task->task_name . ', Date: ' . $date . ' , Daily task name: ' . $timeline[$date]['Name'] . ' , Daily task description: ' . $timeline[$date]['Description'] . ' , Daily task status: ' . $timeline[$date]['Status'],
             ]);
     
             $activityLog->save();
