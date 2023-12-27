@@ -114,12 +114,10 @@
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                     <a class="dropdown-item" href="/admin-change-self-password">
                                         {{ __('Change Password') }}
-                                    </a> 
-                                    <a class="dropdown-item" href="{{ route('logout') }}"
-                                      >
+                                    </a>    
+                                    <a class="dropdown-item" href="{{ route('logout') }}">
                                         {{ __('Logout') }}
                                     </a>
-                                
                                     <form id="logout-form-dropdown" action="{{ route('logout') }}" method="POST" class="d-none">
                                         @csrf
                                     </form>
@@ -231,14 +229,14 @@
                             <img src="https://img.icons8.com/ios/50/log.png" alt="log"/>
                         </div>
                         <div class="label">Activity Log</div>
-                      </a>             
+                      </a>                  
                   </div>
               </div>
             </div>
         </nav>
 
         <main class="py-4">
-            <div style="width: 80%; margin-left: 150px;">
+            <div style="width: 80%; margin-left: 150px;" class="breadcrumbs">
                 @yield('breadcrumbs')
             </div>
             @yield('content')

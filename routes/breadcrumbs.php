@@ -212,7 +212,15 @@ Breadcrumbs::for('sv-assign', function ($trail) {
 
 // Dashboard > Supervisor Assignment > Assign
 Breadcrumbs::for('assign-sv-to-trainee', function ($trail, $name) {
-    $trail->parent('sv-assign');
+    $url = url()->previous();
+    $prevRoute = app('router')->getRoutes($url)->match(app('request')->create($url))->getName();
+    if ($prevRoute === 'all-trainee-list') {
+        $trail->parent('trainee-list');
+    }
+    else{
+        $trail->parent('sv-assign');
+    }
+
     $trail->push('Assign', route('admin-assign-supervisor-function', $name));
 });
 

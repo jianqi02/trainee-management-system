@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -14,6 +15,15 @@ class LogoutController extends Controller
         $user->session_id = null;
         $user->last_login = null;
         $user->save();
+
+        $activityLog = new ActivityLog([
+            'username' => $user->name,
+            'action' => 'Logout',
+            'outcome' => 'success',
+            'details' => '',
+        ]);
+
+        $activityLog->save();
 
         // Log out the user
         Auth::logout();

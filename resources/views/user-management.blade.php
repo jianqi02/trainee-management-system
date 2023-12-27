@@ -94,10 +94,10 @@
 
 </style>
 <body>
-    <div class="content">
-        <h1>User Management</h1>
+    <div class="content">     
     <main>
         <div class="container">
+            <h1>User Management</h1>
             @if(session('success'))
                 <div class="alert alert-success">{{ session('success') }}</div>
             @endif
@@ -112,7 +112,7 @@
                     <a class="nav-link" id="other-list-tab" data-bs-toggle="tab" href="#other-list" role="tab" aria-controls="other-list" aria-selected="false">Supervisor List</a>
                 </li>
                 <li class="nav-item ms-auto">
-                    <a href="/admin-create-account">+ Create Account</a>
+                    <a class="btn btn-secondary" href="/admin-create-account">Create Account</a>
                 </li>
             </ul>
             <div class="tab-content" id="myTabContent">

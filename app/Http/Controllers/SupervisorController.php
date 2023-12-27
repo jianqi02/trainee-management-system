@@ -291,7 +291,7 @@ class SupervisorController extends Controller
             'username' => $supervisor_name,
             'action' => 'Logbook Upload',
             'outcome' => 'success',
-            'details' => $logbook_path,
+            'details' => '',
         ]);
 
         $activityLog->save();
@@ -312,7 +312,7 @@ class SupervisorController extends Controller
             'username' => Auth::user()->name,
             'action' => 'Logbook Deletion',
             'outcome' => 'success',
-            'details' => 'Deleted ' . $logbook->logbook_path,
+            'details' => '',
         ]);
 
         $activityLog->save();

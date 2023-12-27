@@ -496,6 +496,7 @@ class AdminController extends Controller
             $activityLog->save();
         }
 
+        // Redirect to a success page or any other desired action
         return redirect()->back()->with('success', 'A new account successfully added.');
     }
 
@@ -725,9 +726,27 @@ class AdminController extends Controller
         if($trainee->acc_status === 'Active'){
             $trainee->acc_status = 'Inactive';
             $trainee->save();
+
+            $activityLog = new ActivityLog([
+                'username' => Auth::user()->name,
+                'action' => 'Change Account Status',
+                'outcome' => 'success',
+                'details' => 'Account status is changed to Inactive for trainee ' . $trainee->name,
+            ]);
+    
+            $activityLog->save();
         } else {
             $trainee->acc_status = 'Active';
             $trainee->save();
+
+            $activityLog = new ActivityLog([
+                'username' => Auth::user()->name,
+                'action' => 'Change Account Status',
+                'outcome' => 'success',
+                'details' => 'Account status is changed to Active for trainee ' . $trainee->name,
+            ]);
+    
+            $activityLog->save();
         }
 
         return redirect()->route('user-management');
@@ -819,10 +838,11 @@ class AdminController extends Controller
             'username' => Auth::user()->name,
             'action' => 'Logbook Upload',
             'outcome' => 'success',
-            'details' => $logbook_path,
+            'details' => '',
         ]);
 
         $activityLog->save();
+
 
         // Redirect the user to a success page
         return redirect()->route('view-and-upload-logbook', $name)->with('success', 'Logbook uploaded successfully');
@@ -840,7 +860,7 @@ class AdminController extends Controller
             'username' => Auth::user()->name,
             'action' => 'Logbook Deletion',
             'outcome' => 'success',
-            'details' => 'Deleted ' . $logbook->logbook_path,
+            'details' => '',
         ]);
 
         $activityLog->save();
@@ -926,7 +946,7 @@ class AdminController extends Controller
             'username' => Auth::user()->name,
             'action' => 'Resume Upload',
             'outcome' => 'success',
-            'details' => $trainee->resume_path ,
+            'details' => '' ,
         ]);
 
         $activityLog->save();
@@ -1260,4 +1280,46 @@ class AdminController extends Controller
         $activityLogs = ActivityLog::orderBy('id', 'desc')->get();
         return view('activity-log', compact('activityLogs'));
     }
+
+    //obtain the activity log according to the filter option
+    public function activityLogFilter(Request $request){
+        $username = $request->input('username');
+        $start_date_input = $request->input('fromDate');
+        $end_date_input = $request->input('toDate');
+        $outcome = $request->input('outcome');
+    
+        // Start the query
+        $query = ActivityLog::query();
+    
+        if($username){
+            $query->where('username', 'like', '%' . $username . '%');
+        }
+
+        if ($start_date_input && $end_date_input) {
+            // Filter between the start and end date inclusively
+            $query->whereBetween('created_at', [
+                $start_date_input . ' 00:00:00',
+                $end_date_input . ' 23:59:59'
+            ]);
+        } elseif ($start_date_input) {
+            // Only start date is provided
+            $query->where('created_at', '>=', $start_date_input . ' 00:00:00');
+        } elseif ($end_date_input) {
+            // Only end date is provided
+            $query->where('created_at', '<=', $end_date_input . ' 23:59:59');
+        }
+        
+    
+        if ($outcome) {
+            // Filter by outcome
+            $query->where('outcome', $outcome);
+        }
+    
+        // Get the results
+        $activityLogs = $query->orderBy('id', 'desc')->get();
+    
+        return view('activity-log', compact('activityLogs', 'username', 'start_date_input', 'end_date_input', 'outcome'));
+    }
+    
+    
 }

@@ -104,12 +104,9 @@
                                     <a class="dropdown-item" href="/trainee-change-password">
                                         {{ __('Change Password') }}
                                     </a>    
-                                    <a class="dropdown-item" href="{{ route('logout') }}"
-                                       onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
+                                    <a class="dropdown-item" href="{{ route('logout') }}">
                                         {{ __('Logout') }}
                                     </a>
-
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                                         @csrf
                                     </form>
@@ -220,7 +217,7 @@
                               <img src="https://img.icons8.com/ios/452/timeline.png" alt="Task Timeline Icon" class="w-6 h-6"/>
                           </div>
                           <div class="label">Task Timeline</div>
-                      </a>                    
+                      </a>
                   </div>
               </div>
               

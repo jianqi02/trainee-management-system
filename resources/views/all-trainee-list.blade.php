@@ -11,6 +11,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
     <link rel="stylesheet" href="css/admin.css">
+    <style>
+        .breadcrumb{
+            width: 1500px;
+        }
+    </style>
 </head>
 <body>
     @error('name')
@@ -35,11 +40,11 @@
             <div class="tab-content" id="myTabContent">
 
             <div class="row mb-3">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label for="search" class="form-label">Search:</label>
                     <input type="text" class="form-control" id="search" placeholder="Type to search...">
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label for="filterMonth" class="form-label">Filter by Start Date:</label>
                     <select id="filterMonth" class="form-select">
                         <option value="">All Months</option>
@@ -57,7 +62,7 @@
                         <option value="-12-">December</option>
                     </select>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label for="filterEndMonth" class="form-label">Filter by End Date:</label>
                     <select id="filterEndMonth" class="form-select">
                         <option value="">All Months</option>
@@ -75,9 +80,7 @@
                         <option value="-12-">December</option>
                     </select>
                 </div>
-            </div>
-            <div class="row mb-3">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label for="filterStatus" class="form-label">Filter by Status:</label>
                     <select id="filterStatus" class="form-select">
                         <option value="">All</option>
@@ -153,7 +156,7 @@
                                                 <span class="tooltip">View Profile</span>
                                             </a>
                                             @endif
-                                            <a class="icon-link" href="/admin-trainee-assign">
+                                            <a class="icon-link" href="{{ route('admin-assign-supervisor-function', ['selected_trainee' => urlencode($trainee->name)]) }}">
                                                 <i class="fas fa-user-plus action-btn"></i>
                                                 <span class="tooltip">Assign Supervisor</span>
                                             </a>

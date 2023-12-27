@@ -100,11 +100,6 @@
                     <a href="/sv-view-seat-plan" class="rectangular-button" style="text-decoration: none;">View Seat Plan</a>
                   </div>
               </div>
-              <div class="row">
-                <div class="col-md-12 order-md-2"  style="margin-left: 200px;">
-                    <a href="/sv-change-password" class="rectangular-button" style="text-decoration: none;">Change Password</a>
-                </div>
-              </div>
           </div>
       </div>
       

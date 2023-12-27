@@ -101,9 +101,7 @@
                                     <a class="dropdown-item" href="/sv-change-password">
                                         {{ __('Change Password') }}
                                     </a>    
-                                    <a class="dropdown-item" href="{{ route('logout') }}"
-                                       onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
+                                    <a class="dropdown-item" href="{{ route('logout') }}">
                                         {{ __('Logout') }}
                                     </a>
 

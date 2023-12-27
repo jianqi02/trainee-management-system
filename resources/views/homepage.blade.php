@@ -60,11 +60,6 @@
                       <a href="/trainee-task-timeline" class="rectangular-button" style="text-decoration: none;">Task Timeline</a>
                   </div>
               </div>
-              <div class="row">
-                <div class="col-md-12">
-                    <a href="/trainee-change-password" class="rectangular-button" style="text-decoration: none;">Change Password</a>
-                </div>
-            </div>
           </div>
       </div>
       

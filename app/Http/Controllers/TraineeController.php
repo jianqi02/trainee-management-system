@@ -209,7 +209,7 @@ class TraineeController extends Controller
             'username' => $trainee->name,
             'action' => 'Resume Upload',
             'outcome' => 'success',
-            'details' => $trainee->resume_path,
+            'details' => '',
         ]);
 
         $activityLog->save();
@@ -328,7 +328,7 @@ class TraineeController extends Controller
                 'username' => $trainee,
                 'action' => 'Logbook Upload',
                 'outcome' => 'success',
-                'details' => $logbook_path,
+                'details' => '',
             ]);
     
             $activityLog->save();
@@ -358,7 +358,7 @@ class TraineeController extends Controller
             'username' => $trainee->name,
             'action' => 'Resume Deletion',
             'outcome' => 'success',
-            'details' => 'Deleted ' . $trainee->resume_path,
+            'details' => '',
         ]);
 
         $activityLog->save();
@@ -383,7 +383,7 @@ class TraineeController extends Controller
             'username' => $name,
             'action' => 'Logbook Deletion',
             'outcome' => 'success',
-            'details' => 'Deleted ' . $logbook->logbook_path,
+            'details' => '',
         ]);
 
         $activityLog->save();

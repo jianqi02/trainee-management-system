@@ -129,6 +129,7 @@ Route::middleware(['role:1'])->group(function () {
     Route::post('/admin-change-password/{id}/{type}', [AdminController::class, 'adminChangePassword'])->name('admin-change-password');
     Route::post('admin-update-password', [AdminController::class, 'adminUpdatePassword'])->name('admin-update-password');
     Route::get('/activity-log', [AdminController::class, 'displayActivityLog'])->name('activity-log');
+    Route::post('/activity-log-filter', [AdminController::class, 'activityLogFilter'])->name('activity-log-filter');
 });
 
 

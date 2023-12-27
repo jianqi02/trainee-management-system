@@ -47,12 +47,13 @@
     }
 
     .homepage-container {
-      margin-top: 20px;
-      margin-left: 100px;
-      background: linear-gradient(to bottom, #ADD8E6, #FFFFF7);
-      padding: 20px; 
-      border-radius: 14px; 
-      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(to bottom, #ADD8E6, #FFFFF7);
+        padding: 20px; 
+        border-radius: 14px; 
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
     }
 
     table {

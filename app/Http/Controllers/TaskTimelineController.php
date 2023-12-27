@@ -310,7 +310,7 @@ class TaskTimelineController extends Controller
         ];
         $task->task_detail = json_encode($taskDetail);
         $task->save();
-  
+        
         //get the trainee name
         $traineeName = Trainee::where('id' , $traineeID)->pluck('name')->first();
 
@@ -336,8 +336,6 @@ class TaskTimelineController extends Controller
 
         $startDate = new DateTime($request->input('startDate'));
         $endDate = new DateTime($request->input('endDate'));
-        
-        $taskName = TaskTimeline::where('id', $taskID)->pluck('task_name')->first();
 
         //terminate the function when the user chooses invalid date (end date < start date)
         if($endDate < $startDate){
@@ -415,7 +413,7 @@ class TaskTimelineController extends Controller
         ]);
 
         $activityLog->save();
-
+        
         $ref = Trainee::where('id', $task->trainee_id)->pluck('name')->first();
         $traineeID = AllTrainee::where('name', $ref)->pluck('id')->first();
 

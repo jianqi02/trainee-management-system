@@ -6,6 +6,7 @@ use App\Models\User;
 use Ramsey\Uuid\Uuid;
 use App\Models\Trainee;
 use App\Models\Supervisor;
+use App\Models\ActivityLog;
 use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -171,6 +172,7 @@ class NotificationController extends Controller
     public function forgotPasswordNotification(Request $request){
         $email = $request->input('email');
         $userRecord = User::where('email', $email)->first();
+
         if($userRecord){
             //to check whether this is supervisor or trainee record. 
             $userRole = $userRecord->role_id;
@@ -191,6 +193,15 @@ class NotificationController extends Controller
                 $notification->save(); // Save the notification to the database
 
                 $notification->notify(new TelegramNotification('Password Reset Request', $supervisorName, '', 'Supervisor ' . $supervisorName . ' has requested to reset the password.'));
+
+                $activityLog = new ActivityLog([
+                    'username' => $supervisorName,
+                    'action' => 'Password Reset Request',
+                    'outcome' => 'success',
+                    'details' => 'Role: Supervisor',
+                ]);
+        
+                $activityLog->save();
             }
             elseif($userRole == 3){
                 $traineeName = Trainee::where('sains_email', $email)->pluck('name')->first();
@@ -207,11 +218,36 @@ class NotificationController extends Controller
                 $notification->save(); // Save the notification to the database
 
                 $notification->notify(new TelegramNotification('Password Reset Request', '', $traineeName, 'Trainee ' . $traineeName . ' has requested to reset the password.'));
+
+                $activityLog = new ActivityLog([
+                    'username' => $traineeName,
+                    'action' => 'Password Reset Request',
+                    'outcome' => 'success',
+                    'details' => 'Role: Trainee',
+                ]);
+        
+                $activityLog->save();
             }
             else{
+                $activityLog = new ActivityLog([
+                    'username' => $email,
+                    'action' => 'Password Reset Request',
+                    'outcome' => 'failed',
+                    'details' => 'It is an admin account.',
+                ]);
+        
+                $activityLog->save();
                 return redirect()->back()->with('status', 'If the email address submitted is valid, a notification will be sent to the admin to reset your password.');
             }
         }else{
+            $activityLog = new ActivityLog([
+                'username' => $email,
+                'action' => 'Password Reset Request',
+                'outcome' => 'failed',
+                'details' => 'Unknown email address.',
+            ]);
+    
+            $activityLog->save();
             return redirect()->back()->with('status', 'If the email address submitted is valid, a notification will be sent to the admin to reset your password.');
         }
 
