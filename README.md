@@ -54,8 +54,8 @@ You can refer to these documents for further information:
 
 **Admin**: [here](https://drive.sains.com.my/index.php/f/18675026)
 
-**Supervisor**:
+**Supervisor**: [here](https://drive.sains.com.my/index.php/f/18675100)
 
-**Trainee**:
+**Trainee**: [here](https://drive.sains.com.my/index.php/f/18675101)
 
 
