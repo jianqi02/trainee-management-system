@@ -39,13 +39,15 @@ Trainee Management System, or TMS, is a web application that allows:
 ## Installation
 1. Clone the project.
 
-2. Download the `.env` file at [here](https://drive.sains.com.my/index.php/f/18674969)
+2. Download the `env.zip` file at [here](https://drive.sains.com.my/index.php/f/18674969)
 
-3. Run `composer install` at the terminal.
+3. Extract the `.env` file and put it under the directory of the cloned project.
 
-4. Run `php artisan migrate` to create all the needed table.
+4. Run `composer install` at the terminal.
 
-5. Run `php artisan serve`.
+5. Run `php artisan migrate` to create all the needed table.
+
+6. Run `php artisan serve`.
 
 ## Get Started
 You can refer to these user manuals for further information:
