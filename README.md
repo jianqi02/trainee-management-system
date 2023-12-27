@@ -7,13 +7,34 @@ Trainee Management System, or TMS, is a web application that allows:
 - trainees to upload their logbooks to be signed.
 - trainees to keep track of the task given by their supervisors.
 
-## Learning Laravel
+## Features
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+**Admin**
+- view the statistics for a week and the current week seating plan via the **Dashboard**.
+- manage all user accounts.
+- create, edit and delete trainee records.
+- create and edit a seating plan for a desired week.
+- assign supervisors to a trainee or remove supervisors from a trainee.
+- view, add, edit and delete a trainee task.
+- view and upload trainee resume.
+- view, upload and delete a trainee logbook.
+- receive a Telegram notification when there are any important things.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+**Supervisors**
+- view all the trainees that are assigned to them.
+- view their trainees information.
+- view, add, edit and delete their trainee tasks.
+- view, upload and delete their trainee logbooks.
+- view trainee seating plans for the month.
+- recieve a Telegram notificatin when there are any important things.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+**Trainees**
+- view all the supervisors that are assigned to them.
+- view, add, edit tasks.
+- view, upload and delete logbooks.
+- view, upload and delete resumes.
+- view sating plans for the month.
+
 
 ## Laravel Sponsors
 
