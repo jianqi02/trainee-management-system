@@ -50,9 +50,9 @@ Trainee Management System, or TMS, is a web application that allows:
 6. Run `php artisan serve`.
 
 ## Get Started
-You can refer to these user manuals for further information:
+You can refer to these documents for further information:
 
-**Admin**: 
+**Admin**: [here](https://drive.sains.com.my/index.php/f/18675026)
 
 **Supervisor**:
 
