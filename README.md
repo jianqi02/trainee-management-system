@@ -39,7 +39,7 @@ Trainee Management System, or TMS, is a web application that allows:
 ## Installation
 1. Clone the project.
 
-2. Change the example value in the `.env.example` to your value and rename the file to `.env`. 
+2. Download the `.env` file at:  
 
 3. Run `composer install` at the terminal.
 
