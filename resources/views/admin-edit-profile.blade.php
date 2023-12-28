@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 @section('pageTitle', 'Edit Profile')
 
-@section('breadcrumbs', Breadcrumbs::render('admin-edit-trainee-profile', $user->name))
+
 
 @section('content')
 <head>
@@ -19,6 +19,7 @@
     <div class="content-edit-profile">
         <!-- Display trainee-specific fields if applicable -->
         @if($user->role_id === 3)
+        @section('breadcrumbs', Breadcrumbs::render('admin-edit-trainee-profile', $user->name))
         <div class="card card-edit-profile">
             <div class="card-header">{{ __('Edit profile for') }} {{ $user->name }}</div>
             <div class="card-body">
@@ -88,6 +89,7 @@
 
         <!-- Display supervisor-specific fields if applicable -->
         @if($user->role_id === 2)
+        @section('breadcrumbs', Breadcrumbs::render('admin-edit-sv-profile', $user->name))
         <div class="card">
             <div class="card-header">{{ __('Edit profile for') }} {{ $user->name }}</div>
             <div class="card-body">

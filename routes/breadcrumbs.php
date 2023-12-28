@@ -248,9 +248,15 @@ Breadcrumbs::for('admin-view-trainee-profile', function ($trail, $name) {
     $trail->push('Trainee Profile', route('admin-go-profile', $name));
 });
 
-// Dashboard > User Management > Trainee Profile > Edit Trainee Profile
+// Dashboard > User Management > Trainee Profile > Edit Profile
 Breadcrumbs::for('admin-edit-trainee-profile', function ($trail, $name) {
     $trail->parent('admin-view-trainee-profile', $name);
+    $trail->push('Edit Profile', route('admin-edit-profile', $name));
+});
+
+// Dashboard > User Management > Edit Profile
+Breadcrumbs::for('admin-edit-sv-profile', function ($trail, $name) {
+    $trail->parent('user-management', $name);
     $trail->push('Edit Profile', route('admin-edit-profile', $name));
 });
 

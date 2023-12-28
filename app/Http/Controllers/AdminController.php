@@ -661,17 +661,19 @@ class AdminController extends Controller
             $startDate = $request->input('startDate');
             $endDate = $request->input('endDate');
 
-            if($endDate <= $startDate){
-                $activityLog = new ActivityLog([
-                    'username' => Auth::user()->name,
-                    'action' => 'Edit Profile',
-                    'outcome' => 'failed',
-                    'details' => 'Invalid internship start or end date chosen.',
-                ]);
-
-                $activityLog->save();
-
-                return redirect()->back()->with('error', 'Invalid internship date!');
+            if($endDate != null && $startDate != null){
+                if($endDate <= $startDate){
+                    $activityLog = new ActivityLog([
+                        'username' => Auth::user()->name,
+                        'action' => 'Edit Profile',
+                        'outcome' => 'failed',
+                        'details' => 'Invalid internship start or end date chosen.',
+                    ]);
+    
+                    $activityLog->save();
+    
+                    return redirect()->back()->with('error', 'Invalid internship date!');
+                }
             }
     
             //Update the trainee basic information to table 'trainees'.
