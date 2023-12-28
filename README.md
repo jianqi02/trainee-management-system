@@ -49,6 +49,8 @@ Trainee Management System, or TMS, is a web application that allows:
 
 6. Run `php artisan serve` or use xampp to run the server.
 
+7. If you are using xampp to run the server, you need to import the sql files downloaded from `tms-db.zip` by own to the phpmyadmin.
+
 ## Get Started
 You can refer to these documents for further information:
 
