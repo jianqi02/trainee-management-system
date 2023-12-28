@@ -188,7 +188,7 @@ class AdminController extends Controller
                 $assign->delete();
             }
             $activityLog = new ActivityLog([
-                'username' => $supervisor_name,
+                'username' => Auth::user()->name,
                 'action' => 'Trainee Record Deletion',
                 'outcome' => 'success',
                 'details' => 'Trainee record deleted: ' . $record->name,
