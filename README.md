@@ -45,7 +45,7 @@ Trainee Management System, or TMS, is a web application that allows:
 
 4. Run `composer install` at the terminal.
 
-5. Run `php artisan migrate` to create all the needed table.
+5. Run `php artisan migrate` to create all the needed table or download the database `tms-db.zip` file [here](https://drive.sains.com.my/index.php/f/18674969)
 
 6. Run `php artisan serve` or use xampp to run the server.
 
