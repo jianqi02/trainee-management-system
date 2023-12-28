@@ -59,10 +59,10 @@ Trainee Management System, or TMS, is a web application that allows:
 ## User Manuals
 You can refer to these documents for further information:
 
-**Admin**: [here](https://drive.sains.com.my/index.php/f/18675026)
+**Admin**: [here](https://drive.sains.com.my/index.php/s/jxN3GyYrfNZ6BCn)
 
-**Supervisor**: [here](https://drive.sains.com.my/index.php/f/18675100)
+**Supervisor**: [here](https://drive.sains.com.my/index.php/s/zpJLnNJpYq6zTyc)
 
-**Trainee**: [here](https://drive.sains.com.my/index.php/f/18675101)
+**Trainee**: [here](https://drive.sains.com.my/index.php/s/YqxjkiR2fT3mCHX)
 
 
