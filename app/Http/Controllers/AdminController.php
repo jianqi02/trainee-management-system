@@ -621,7 +621,7 @@ class AdminController extends Controller
 
             $activityLog->save();
         
-            return redirect()->route('sv-profile');
+            return redirect()->route('user-management')->with('success', ' Profile updated.');
 
         } elseif ($target->role_id === 3) { //trainee
 

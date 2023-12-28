@@ -306,7 +306,7 @@
                                             </svg>
                                         </button>
                                     </th>
-                                    <th>Personal Email
+                                    <th>Phone Number
                                         <button class="sort-button-sv" data-column="3" style="border: none;">
                                             <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 320 512">
                                                 <path d="M137.4 41.4c12.5-12.5 32.8-12.5 45.3 0l128 128c9.2 9.2 11.9 22.9 6.9 34.9s-16.6 19.8-29.6 19.8H32c-12.9 0-24.6-7.8-29.6-19.8s-2.2-25.7 6.9-34.9l128-128zm0 429.3l-128-128c-9.2-9.2-11.9-22.9-6.9-34.9s16.6-19.8 29.6-19.8H288c12.9 0 24.6 7.8 29.6 19.8s2.2 25.7-6.9 34.9l-128 128c-12.5 12.5-32.8 12.5-45.3 0z"/>
@@ -329,7 +329,7 @@
                                         <td>{{ $supervisor->name }}</td>
                                         <td>{{ $supervisor->section }}</td>
                                         <td>{{ $supervisor->department }}</td>
-                                        <td>{{ $supervisor->personal_email }}</td>
+                                        <td>{{ $supervisor->phone_number }}</td>
                                         <td>{{ $supervisor->sains_email }}</td>
                                         <td style="width: 20%;">
                                             <a href="{{ route('admin-edit-profile', ['selected' => urlencode($supervisor->name)]) }}" style="text-decoration: none; color: grey; font-size: 24px; margin-left: 20px;" title="Edit Profile">
