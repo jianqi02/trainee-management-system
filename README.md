@@ -60,5 +60,7 @@ You can refer to these documents for further information:
 
 
 ## Requirements
-
+Laravel Version 10.34.2 and above 
+PHP Version 8.2.0 and above
+Composer Version 2.6.3 and above
 
