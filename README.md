@@ -36,6 +36,11 @@ Trainee Management System, or TMS, is a web application that allows:
 - view seating plans for the month.
 
 
+## Requirements
+- Laravel Version 10.34.2 and above 
+- PHP Version 8.2.0 and above
+- Composer Version 2.6.3 and above
+
 ## Installation
 1. Clone the project.
 
@@ -51,7 +56,7 @@ Trainee Management System, or TMS, is a web application that allows:
 
 7. If you are using xampp to run the server, you need to import the sql files downloaded from `tms-db.zip` by own to the phpmyadmin.
 
-## Get Started
+## User Manuals
 You can refer to these documents for further information:
 
 **Admin**: [here](https://drive.sains.com.my/index.php/f/18675026)
@@ -60,9 +65,4 @@ You can refer to these documents for further information:
 
 **Trainee**: [here](https://drive.sains.com.my/index.php/f/18675101)
 
-
-## Requirements
-- Laravel Version 10.34.2 and above 
-- PHP Version 8.2.0 and above
-- Composer Version 2.6.3 and above
 
