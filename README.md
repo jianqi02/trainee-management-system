@@ -47,7 +47,7 @@ Trainee Management System, or TMS, is a web application that allows:
 
 5. Run `php artisan migrate` to create all the needed table.
 
-6. Run `php artisan serve`.
+6. Run `php artisan serve` or use xampp to run the server.
 
 ## Get Started
 You can refer to these documents for further information:
