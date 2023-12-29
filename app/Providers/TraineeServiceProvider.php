@@ -23,7 +23,7 @@ class TraineeServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $traineesWithEndedInternship = AllTrainee::whereNotNull('internship_end')
-        ->whereDate('internship_end', '<=', Carbon::now()->toDateString())
+        ->whereDate('internship_end', '<', Carbon::now()->toDateString())
         ->get();
     
         foreach ($traineesWithEndedInternship as $data) {
