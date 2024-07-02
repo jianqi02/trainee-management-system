@@ -10,7 +10,6 @@ use App\Models\Supervisor;
 use App\Models\Notification;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use App\Notifications\TelegramNotification;
 
 class NotificationComposer
 {
@@ -142,7 +141,6 @@ class NotificationComposer
                     $notification->notifiable_id = 0; 
                     $notification->save();
 
-                    $notification->notify(new TelegramNotification('Trainee Internship Start', '', $intern->name, 'The internship of trainee ' . $intern->name . ' will start on ' . $intern->internship_start . '.'));
                 }        
             }
 
@@ -166,8 +164,6 @@ class NotificationComposer
                     $notification->data = $notifyData;
                     $notification->notifiable_id = 0; 
                     $notification->save();
-
-                    $notification->notify(new TelegramNotification('Trainee Internship End', '', $intern->name, 'The internship of trainee ' . $intern->name . ' will end on ' . $intern->internship_end . '.'));
                 }
             }
         }

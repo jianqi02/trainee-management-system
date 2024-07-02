@@ -24,7 +24,6 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\TraineeController;
-use App\Notifications\TelegramNotification;
 
 class TraineeController extends Controller
 {
@@ -322,7 +321,6 @@ class TraineeController extends Controller
             $notification->save(); // Save the notification to the database
 
             $supervisor_name = Supervisor::where('id', $assigned_supervisor_id)->pluck('name')->first();
-            $notification->notify(new TelegramNotification('Logbook Uploaded', $supervisor_name, $trainee, 'Your trainee has uploaded a logbook.'));
 
             $activityLog = new ActivityLog([
                 'username' => $trainee,

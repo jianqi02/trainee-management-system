@@ -17,7 +17,6 @@ use Illuminate\Http\Request;
 use App\Models\TraineeAssign;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-use App\Notifications\TelegramNotification;
 
 class TaskTimelineController extends Controller
 {
@@ -449,7 +448,6 @@ class TaskTimelineController extends Controller
                         $notification->save(); // Save the notification to the database
 
                         $supervisor_name = Supervisor::where('id', $assigned_supervisor_id)->pluck('name')->first();
-                        $notification->notify(new TelegramNotification('Task Completion', $supervisor_name , $traineeName , 'Your trainee has completed ' . $taskName . '.'));
                     }
                 }
             }

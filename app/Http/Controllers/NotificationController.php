@@ -11,7 +11,6 @@ use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use App\Notifications\TelegramNotification;
 use App\Http\Controllers\NotificationController;
 
 class NotificationController extends Controller
@@ -192,8 +191,6 @@ class NotificationController extends Controller
                 ]);
                 $notification->save(); // Save the notification to the database
 
-                $notification->notify(new TelegramNotification('Password Reset Request', $supervisorName, '', 'Supervisor ' . $supervisorName . ' has requested to reset the password.'));
-
                 $activityLog = new ActivityLog([
                     'username' => $supervisorName,
                     'action' => 'Password Reset Request',
@@ -216,8 +213,6 @@ class NotificationController extends Controller
                     'data' => 'Trainee ' . $traineeName . ' has requested to reset the password.',
                 ]);
                 $notification->save(); // Save the notification to the database
-
-                $notification->notify(new TelegramNotification('Password Reset Request', '', $traineeName, 'Trainee ' . $traineeName . ' has requested to reset the password.'));
 
                 $activityLog = new ActivityLog([
                     'username' => $traineeName,
