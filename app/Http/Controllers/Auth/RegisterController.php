@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Models\User;
 use Ramsey\Uuid\Uuid;
 use App\Models\Trainee;
+use App\Models\Settings;
 use App\Models\AllTrainee;
 use App\Models\Supervisor;
 use App\Models\ActivityLog;
@@ -47,6 +48,14 @@ class RegisterController extends Controller
     public function __construct()
     {
         $this->middleware('guest');
+
+        // Fetch the disable_registration setting
+        $settings = Settings::first();
+
+        // If registration is disabled, abort with a 403 error
+        if ($settings && $settings->disable_registration) {
+            abort(403, 'Account registration is currently disabled.');
+        }
     }
 
     /**
@@ -57,9 +66,10 @@ class RegisterController extends Controller
      */
     protected function validator(array $data)
     {
-        // the name should not contain any special character and number
-        // the email should follow "@sains.com.my" format
-        // the password should contain at least 8 characters, 1 uppercase character and 1 special character.
+        // Fetch the allowed email domains from the settings table
+        $settings = Settings::first(); 
+        $allowedDomains = explode(',', $settings->email_domain); // Get array of allowed domains set by admin
+    
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z\s]+$/'],
             'email' => [
@@ -68,17 +78,23 @@ class RegisterController extends Controller
                 'email',
                 'max:255',
                 'unique:users',
-                'regex:/^(?=.{1,64}@)[A-Za-z0-9_]+(\.[A-Za-z0-9_]+)*@[^-][A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*(\.[A-Za-z]{2,})$/',
-                'ends_with:@sains.com.my',
+                function ($attribute, $value, $fail) use ($allowedDomains) {
+                    $emailDomain = substr(strrchr($value, "@"), 1); // Extract the domain from the email
+    
+                    // Check if the email domain is in the allowed domains
+                    if (!in_array($emailDomain, $allowedDomains)) {
+                        $fail("The email domain must be one of the allowed domains. Please contact the admin for more information." );
+                    }
+                },
                 function ($attribute, $value, $fail) {
                     // Check if a special character is the first or last character
                     if (preg_match('/^[^A-Za-z0-9_]/', $value) || preg_match('/[^A-Za-z0-9_]$/', $value)) {
-                        $fail($attribute.' is invalid.');
+                        $fail($attribute . ' is invalid.');
                     }
-        
+    
                     // Check if special characters appear consecutively two or more times
                     if (preg_match('/[^A-Za-z0-9_]{2,}/', $value)) {
-                        $fail($attribute.' is invalid.');
+                        $fail($attribute . ' is invalid.');
                     }
                 },
             ],
@@ -92,12 +108,12 @@ class RegisterController extends Controller
             ],
         ], [
             'name.regex' => 'The name field should only contain letters and spaces.',
-            'email.regex' => 'The email field should be a valid SAINS email address.',
-            'email.ends_with' => 'The email field should end with @sains.com.my.',
+            'email.regex' => 'The email field should be a valid email address.',
             'role.in' => 'The role field should be either 2 or 3.',
             'password.regex' => 'The password field should contain at least one uppercase letter and one special character.',
-        ]);              
+        ]);
     }
+    
 
     /**
      * Create a new user instance after a valid registration.

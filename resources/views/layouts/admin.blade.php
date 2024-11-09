@@ -209,13 +209,13 @@
                           </div>
                           <div class="label">Supervisor Assignment</div>
                       </a>
-              
-                      <a href="/seating-arrange">
-                          <div class="icon">
-                            <img src="https://img.icons8.com/ios/50/aircraft-seat-middle.png" alt="Seating Arrangement Icon" class="w-6 h-6"/>
-                          </div>
-                          <div class="label">Seating Arrangement</div>
-                      </a>
+
+                      <a href="/seating-arrangement">
+                        <div class="icon">
+                          <img src="https://img.icons8.com/ios/50/aircraft-seat-middle.png" alt="Seating Arrangement Icon" class="w-6 h-6"/>
+                        </div>
+                        <div class="label">Seating Arrangement</div>
+                    </a>
               
                       <a href="/user-management">
                           <div class="icon">
@@ -229,7 +229,15 @@
                             <img src="https://img.icons8.com/ios/50/log.png" alt="log"/>
                         </div>
                         <div class="label">Activity Log</div>
-                      </a>                  
+                      </a>  
+                      
+                      <a href="/settings">
+                        <div class="icon">
+                            <img src="https://img.icons8.com/ios/50/settings.png" alt="settings"/>
+                        </div>
+                        <div class="label">Settings</div>
+                    </a>
+                    
                   </div>
               </div>
             </div>

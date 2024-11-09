@@ -9,6 +9,7 @@ use App\Models\Comment;
 use App\Models\Logbook;
 use App\Models\Seating;
 use App\Models\Trainee;
+use App\Models\Settings;
 use App\Models\AllTrainee;
 use App\Models\Supervisor;
 use App\Models\ActivityLog;
@@ -83,81 +84,42 @@ class AdminController extends Controller
         $emptySeatCount = 0;
         $occupiedSeatCount = 0;
         $totalSeatCount = 0;
+
         $seatDetail = json_decode($get_the_seat_detail, true);
-         // Check if $seatDetail is not null before using it
-         if ($seatDetail !== null) {
-             // Check if $seatDetail is not null and is an array before using it
-             if (is_array($seatDetail)) {
-                 //to get the total number of empty seats (trainee id = Not Assigned & seat status = Available)
-                 $emptySeatCount = count(
-                     array_filter($seatDetail, function ($seat) {
-                         return isset($seat['trainee_id']) && isset($seat['seat_status']) &&
-                             $seat['trainee_id'] === 'Not Assigned' && $seat['seat_status'] === 'Available';
-                     })
-                 );
-                 $occupiedSeatCount = count(
-                    array_filter($seatDetail, function ($seat) {
-                        return isset($seat['trainee_id']) && isset($seat['seat_status']) &&
-                            $seat['trainee_id'] !== 'Not Assigned' && $seat['seat_status'] === 'Available';
-                    })
-                );
-                $totalSeatCount = count(
-                    array_filter($seatDetail, function ($seat) {
-                        return isset($seat['seat_status']) &&
-                            $seat['seat_status'] === 'Available';
-                    })
-                );
-             } 
-         }
+
+        // Check if $seatDetail is not null before using it
+        if ($seatDetail !== null) {
+            // Check if $seatDetail is an array
+            if (is_array($seatDetail)) {
+                // Total seat count is the number of entries in $seatDetail
+                $totalSeatCount = count($seatDetail);
+
+                // Iterate over each seat code in $seatDetail
+                foreach ($seatDetail as $seatCode => $traineeName) {
+                    // If the seat is empty (i.e., the value is an empty string)
+                    if ($traineeName === "" || $traineeName === null) {
+                        $emptySeatCount++;
+                    } else {
+                        // If the seat is occupied (i.e., the value is not empty)
+                        $occupiedSeatCount++;
+                    }
+                }
+            }
+        }
+
 
         // Calculate the total available seat ,occupied seat number, total seat number and for that week
         $weeklyData = [];
         $weeklyData['empty_seat_count'] = $emptySeatCount;
         $weeklyData['occupied_seat_count'] = $occupiedSeatCount; 
         $weeklyData['total_seat_count'] = $totalSeatCount;
-
-        // Define an array of all possible seat names
-        $allSeatNames = [];
-        for ($i = 1; $i <= env('TOTAL_SEATS_1ST_FLOOR'); $i++) {
-            $seatNumber = str_pad($i, 2, '0', STR_PAD_LEFT); // Format as CSM01 to CSM20
-            $allSeatNames[] = 'CSM' . $seatNumber; 
-        }
-
-        $tSeatNames = [];
-        for ($i = 1; $i <= 17; $i++) {
-            $tSeatNumber = str_pad($i, 2, '0', STR_PAD_LEFT); // Format as T01 to T17
-            $tSeatNames[] = 'T' . $tSeatNumber;
-        }
         
-        // Check if a record doesn't exist with the specified conditions
-        //to check whether the seat information for that week is exist or not.
-        $exist = true;
-        if (Seating::where('week', $weekRequired)->doesntExist()) {
-           $exist = false;
-        }
+        $currentSeatingPlan = Seating::where('week', $weekRequired)->first(); // Get the first seating plan if it exists
+        $hasCurrentSeatingPlan = !is_null($currentSeatingPlan);
+        $currentSeatingDetails = $hasCurrentSeatingPlan ? json_decode($currentSeatingPlan->seat_detail, true) : [];
 
-        // Fetch trainee_id data from the seatings table for the selected week
-        $seatingData = Seating::where('week', $weekRequired)
-            ->first();
-
-        if ($seatingData) {
-            // Decode the seat_detail JSON
-            $seatDetail = json_decode($seatingData->seat_detail, true);
-        
-            // Replace the trainee_id with trainee name
-            foreach ($seatDetail as &$seatInfo) {
-                $trainee_name = AllTrainee::where('id',$seatInfo['trainee_id'])->pluck('name')->first();
-                $seatInfo['trainee_id'] = $trainee_name ?? 'Not Assigned';
-            }
-        
-            // Encode the updated seat_detail back to JSON
-            $seatingData = json_encode($seatDetail);
-
-            return view('admin-dashboard', compact('trainees','seatingData','count','totalTrainee','logbooks','weeksInMonth', 'weeklyData','weekRequired','start_date','end_date','exist'));
-        }
-        else{
-            return view('admin-dashboard', compact('trainees','seatingData','count','totalTrainee','logbooks','weeksInMonth', 'weeklyData','weekRequired','start_date','end_date','exist'));
-        }
+        return view('admin-dashboard', compact('trainees','count', 'currentSeatingPlan', 'currentSeatingDetails', 'totalTrainee','logbooks','weeksInMonth', 'weeklyData','weekRequired','start_date','end_date'));
+    
     }
 
     public function showAllTrainee()
@@ -1322,6 +1284,43 @@ class AdminController extends Controller
     
         return view('activity-log', compact('activityLogs', 'username', 'start_date_input', 'end_date_input', 'outcome'));
     }
+
+    public function showSettings()
+    {
+        // Get the first settings record or return an empty Settings instance if none exists
+        $settings = Settings::first() ?? new Settings();
     
+        return view('admin-settings', compact('settings'));
+    }
     
+
+    public function storeSettings(Request $request)
+    {    
+        // Validate the request
+        $request->validate([
+            'allowed_domains' => 'array',
+            'allowed_domains.*' => 'string|regex:/^[a-z0-9.-]+\.[a-z]{2,}$/', // Accept domain names
+        ]);        
+    
+        // Retrieve the settings or create a new instance if none exists
+        $settings = Settings::first() ?? new Settings();
+    
+        // Handle allowed domains
+        $allowedDomains = $request->input('allowed_domains', []);
+        $settings->email_domain = implode(',', $allowedDomains); // Save as comma-separated string
+    
+        // Handle disable registration checkbox
+        $settings->disable_registration = $request->input('disable_registration') === 'on';
+
+        // Handle comapny name
+        $settings->company_name = $request->input('company_name');
+    
+        // Save settings
+        $settings->save();
+    
+        // Redirect back with a success message
+        return redirect()->route('settings')->with('success', 'Settings updated successfully.');
+    }
 }
+    
+

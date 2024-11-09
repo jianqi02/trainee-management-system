@@ -130,17 +130,19 @@ Route::middleware(['role:1'])->group(function () {
     Route::post('admin-update-password', [AdminController::class, 'adminUpdatePassword'])->name('admin-update-password');
     Route::get('/activity-log', [AdminController::class, 'displayActivityLog'])->name('activity-log');
     Route::post('/activity-log-filter', [AdminController::class, 'activityLogFilter'])->name('activity-log-filter');
+    Route::get('/settings', [AdminController::class, 'showSettings'])->name('settings');
+    Route::post('/admin/settings', [AdminController::class, 'storeSettings'])->name('settings.store');
 });
 
 
 //seating-related function
 Route::middleware(['role:1'])->group(function () {
-    Route::get('/seating-arrange', [SeatingController::class, 'index'])->name('seating-arrange');
-    Route::get('/seating-arrange/random', [SeatingController::class, 'getRandomTrainee'])->name('seating-arrange.random');
-    Route::get('/get-seat-data/{seat}', [SeatingController::class, 'getSeatData'])->name('get-seat-data');
-    Route::get('/remove-seat/{seat}', [SeatingController::class, 'removeSeat'])->name('remove-seat');
-    Route::get('/change-ownership/{seat}', [SeatingController::class, 'changeOwnership'])->name('change-ownership');
-    Route::get('/assign-seat-for-trainee/{trainee_selected}/{seat}', [SeatingController::class, 'assignSeatForTrainee'])->name('assign-seat-for-trainee');
+    Route::get('/seating-arrangement', [SeatingController::class, 'seatingArrangement'])->name('seating-arrangement');
+    Route::get('/seating-arrangement/view-other-week', [SeatingController::class, 'seatingArrangement'])->name('seating-plan.view-other-weeks');
+    Route::get('/seating-plan/edit', [SeatingController::class, 'editWeeklySeatingPlan'])->name('seating-plan.edit');
+    Route::get('/seating-plan/create', [SeatingController::class, 'createWeeklySeatingPlan'])->name('seating-plan.create');
+    Route::post('/seating-plan/update', [SeatingController::class, 'updateWeeklySeatingPlan'])->name('seating-plan.update');
+    Route::post('/seating-plan/create-new', [SeatingController::class, 'createNewWeeklySeatingPlan'])->name('seating-plan.createNew');
     Route::get('/seating-arrange/get-weekly-data', [SeatingController::class, 'getWeeklyData'])->name('seating-arrange.get-weekly-data');
 });
 
