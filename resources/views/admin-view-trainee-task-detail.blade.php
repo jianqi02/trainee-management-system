@@ -13,10 +13,47 @@
         }
         
         .task-container{
-            margin-left: 200px;
-            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+            max-width: 1200px;
             overflow-x: hidden;
         }
+
+        .task-container .row {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .align-details-comments {
+            display: flex;
+            gap: 15px; /* Optional spacing between the columns */
+        }
+
+        .details-section,
+        .comments-section {
+            flex: 1; /* Equal width for both sections */
+            display: flex;
+            flex-direction: column; /* Align children vertically */
+            min-height: 400px; /* Set a minimum height for consistency */
+            max-height: 100%; /* Ensure height doesn't overflow */
+            overflow: hidden; /* Prevent content from overflowing */
+        }
+
+        .card {
+            flex: 1; /* Make the card take up available space */
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+            border-radius: 10px; /* Align card content */
+        }
+
+        .card-body {
+            flex: 1; /* Make the card content stretch equally */
+            overflow-wrap: break-word; /* Handle long text */
+            word-wrap: break-word; /* Fallback for older browsers */
+        }
+
 
         .btn-add-task {
             width: 100%;
@@ -126,38 +163,39 @@
 
         .timeline__date{
             font-size: 20px;
+            text-align: center;
         }
 
-            .timeline__component {
+        .timeline__component {
             margin: 0 20px 70px 20px;
-            }
+        }
 
-            .timeline__component--bg {
-                padding: 1.5em;
-                background: rgba(255, 255, 255, 0.2);
-                box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-                border-radius: 10px;
-                transition: background-color 0.3s ease;
-                text-decoration: none;
-                color: black;
-            }
+        .timeline__component--bg {
+            padding: 1.5em;
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+            color: black;
+        }
 
-            .timeline__component--bg:hover {
-                background-color: #f0f0f0;
-                cursor: pointer; /* Change cursor to pointer on hover to indicate interactivity */
-            }
+        .timeline__component--bg:hover {
+            background-color: #f0f0f0;
+            cursor: pointer; /* Change cursor to pointer on hover to indicate interactivity */
+        }
 
             /* LEAVE TILL LAST */
-            .timeline__component--bottom {
+        .timeline__component--bottom {
             margin-bottom: 0;
-            }
+        }
 
-            .timeline__middle {
+        .timeline__middle {
             position: relative;
             background: #000000;
-            }
+        }
 
-            .timeline__point {
+        .timeline__point {
             position: absolute;
             top: 0;
             left: 50%;
@@ -166,27 +204,55 @@
             height: 15px;
             background: #000000;
             border-radius: 50%;
-            }
+        }
 
-            /* LEAVE TILL LAST */
-            .timeline__point--bottom {
+        /* LEAVE TILL LAST */
+        .timeline__point--bottom {
             top: initial;
             bottom: 0;
-            }
+        }
 
-            .timeline__date--right {
+        .timeline__date--right {
             text-align: right;
-            }
+        }
 
-            .timeline__title {
+        .timeline__title {
             margin: 0;
             font-size: 1.15em;
             font-weight: bold;
-            }
+        }
 
-            .timeline__paragraph {
+        .timeline__paragraph {
             line-height: 1.5;
-            }
+        }
+        .status-capsule {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px; /* Rounded capsule shape */
+            font-size: 14px;
+            color: white; /* Text color */
+            font-weight: bold;
+            text-transform: capitalize; /* Capitalize text */
+        }
+        .status-capsule.not-started {
+            background-color: #ff4d4d; /* Red for Not Started */
+        }
+
+        .status-capsule.ongoing {
+            background-color: #87cefa; /* Light blue for Ongoing */
+        }
+
+        .status-capsule.completed {
+            background-color: #28a745; /* Green for Completed */
+        }
+
+        .status-capsule.postponed {
+            background-color: #6c757d; /* Grey for Postponed */
+        }
+        .status-capsule.unknown {
+            background-color: #d3d3d3; /* Fallback for unknown status */
+        }
+
     </style>
 </head>
 <body>
@@ -195,12 +261,12 @@
         $timeline = (array)json_decode($task->timeline);
     @endphp
     <div class="task-container">
-        <div class="row">
-            <h3>Detail</h3>
-            @if(session('warning'))
-                <div class="alert alert-warning" style="width: 64.3%; margin-left: 15px;">{{ session('warning') }}</div>
-            @endif
-            <div class="col-md-8">
+        @if(session('warning'))
+        <div class="alert alert-warning" style="width: 64.3%; margin-left: 15px;">{{ session('warning') }}</div>
+        @endif
+        <div class="row align-details-comments">
+            <div class="col details-section">
+                <h3>Detail</h3>
                 <div class="card mb-3">
                     <div class="card-body">
                         <h5 class="card-title">{{ $task->task_name }}</h5>
@@ -209,8 +275,11 @@
                             {!! nl2br(e($taskDetail->Description)) !!}
                             <br>
                             <br>
-                            <br>
-                            <strong>Status: </strong>{{ $task->task_status }}
+                            <strong>Status: </strong>
+                            <span 
+                                class="status-capsule {{ strtolower(str_replace(' ', '-', $task->task_status)) }}">
+                                {{ $task->task_status }}
+                            </span>
                             <br>
                             <strong>Priority: </strong>{{ $task->task_priority }}
                             <br>
@@ -265,54 +334,11 @@
                         </form>
                     </div>
                 </div>
+            </div>
 
-                <h3>Timeline</h3>
-
-                <div class="timeline">
-                    @foreach ($dateRange as $date)
-                        @php
-                           $strDate = $date->format('Y-m-d');
-                        @endphp
-                        @if ($loop->iteration % 2 == 0)
-                            <div class="timeline__component">
-                                <div class="timeline__date timeline__date--right">{{ $date->format('F d, Y') }}</div>
-                            </div>
-                            <div class="timeline__middle">
-                                <div class="timeline__point"></div>
-                            </div>
-                            <a href="{{ route('trainee-daily-task-detail', ['date' => $date->format('Y-m-d'), 'taskID' => $task->id]) }}" class="timeline__component timeline__component--bg" data-date="{{ $date->format('Y-m-d') }}" style="text-decoration:none; color: inherit;">
-                                <h2 class="timeline__title">
-                                    @if(!empty($timeline[$strDate]))
-                                        {{ $timeline[$strDate]->Name ?? 'Nothing' }}
-                                        <p style="font-size: 15px; margin-bottom: -10px; font-weight: normal;">Status: {{ $timeline[$strDate]->Status ?? '-'}}</p>
-                                    @else
-                                        Nothing
-                                    @endif
-                                </h2>
-                            </a>
-                        @else
-                            <a href="{{ route('trainee-daily-task-detail', ['date' => $date->format('Y-m-d'), 'taskID' => $task->id]) }}" class="timeline__component timeline__component--bg" data-date="{{ $date->format('Y-m-d') }}" style="text-decoration:none; color: inherit;">
-                                <h2 class="timeline__title">
-                                    @if(!empty($timeline[$strDate]))
-                                        {{ $timeline[$strDate]->Name ?? 'Nothing' }}
-                                        <p style="font-size: 15px; margin-bottom: -10px; font-weight: normal;">Status: {{ $timeline[$strDate]->Status ?? '-'}}</p>
-                                    @else
-                                        Nothing
-                                    @endif
-                                </h2>
-                            </a>
-                            <div class="timeline__middle">
-                                <div class="timeline__point"></div>
-                            </div>
-                            <div class="timeline__component">
-                                <div class="timeline__date">{{ $date->format('F d, Y') }}</div>
-                            </div>
-                        @endif
-                    @endforeach
-                </div>
-
-                <h3>Overall Note</h3>
-
+            <div class="col comments-section">
+                <!-- Overall Comment / Note -->
+                <h3>Overall Comment</h3>
                 <div class="card mb-3">
                     <div class="card-body">
                         <strong>Note from supervisor</strong>
@@ -347,7 +373,46 @@
                         </form>
                     </div>
                 </div>
-
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col">
+                <!-- Daily Task Timeline -->
+                <h3>Timeline</h3>
+                <div class="timeline">
+                    @foreach ($dateRange as $date)
+                        @php
+                            $strDate = $date->format('Y-m-d');
+                        @endphp
+                        <!-- Left Date, Right Content -->
+                        <div class="timeline__component">
+                            <div class="timeline__date">{{ $date->format('F d, Y') }}</div>
+                        </div>
+                        <div class="timeline__middle">
+                            <div class="timeline__point"></div>
+                        </div>
+                        <a href="{{ route('trainee-daily-task-detail', ['date' => $date->format('Y-m-d'), 'taskID' => $task->id]) }}" 
+                            class="timeline__component timeline__component--bg" 
+                            data-date="{{ $date->format('Y-m-d') }}" 
+                            style="text-decoration: none; color: inherit;">
+                             <h2 class="timeline__title">
+                                 @if (!empty($timeline[$strDate]))
+                                     {{ $timeline[$strDate]->Name ?? 'Nothing' }}
+                                     <p style="font-size: 15px; margin-bottom: -10px; font-weight: normal;">
+                                         Status: 
+                                         <span 
+                                             class="status-capsule {{ strtolower(str_replace(' ', '-', $timeline[$strDate]->Status ?? 'unknown')) }}">
+                                             {{ $timeline[$strDate]->Status ?? '-' }}
+                                         </span>
+                                     </p>
+                                 @else
+                                     Nothing
+                                 @endif
+                             </h2>
+                         </a>
+                    @endforeach
+                </div> 
             </div>
         </div>
     </div>

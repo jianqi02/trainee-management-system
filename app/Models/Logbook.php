@@ -12,6 +12,7 @@ class Logbook extends Model
     protected $table = 'logbooks';
     protected $fillable = [
         'logbook_path',
+        'name',
         'trainee_id',
         'status',
     ];

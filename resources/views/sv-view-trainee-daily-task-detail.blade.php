@@ -136,67 +136,97 @@
 
         .timeline__date{
             font-size: 20px;
+            text-align: center;
         }
 
-            .timeline__component {
-            margin: 0 20px 70px 20px;
-            }
+        .timeline__component {
+        margin: 0 20px 70px 20px;
+        }
 
-            .timeline__component--bg {
-                padding: 1.5em;
-                background: rgba(255, 255, 255, 0.2);
-                box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-                border-radius: 10px;
-                transition: background-color 0.3s ease;
-                text-decoration: none;
-                color: black;
-            }
+        .timeline__component--bg {
+            padding: 1.5em;
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+            color: black;
+        }
 
-            .timeline__component--bg:hover {
-                background-color: #f0f0f0;
-                cursor: pointer; /* Change cursor to pointer on hover to indicate interactivity */
-            }
-
-            /* LEAVE TILL LAST */
-            .timeline__component--bottom {
-            margin-bottom: 0;
-            }
-
-            .timeline__middle {
-            position: relative;
-            background: #000000;
-            }
-
-            .timeline__point {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 15px;
-            height: 15px;
-            background: #000000;
-            border-radius: 50%;
-            }
+        .timeline__component--bg:hover {
+            background-color: #f0f0f0;
+            cursor: pointer; /* Change cursor to pointer on hover to indicate interactivity */
+        }
 
             /* LEAVE TILL LAST */
-            .timeline__point--bottom {
-            top: initial;
-            bottom: 0;
-            }
+        .timeline__component--bottom {
+        margin-bottom: 0;
+        }
 
-            .timeline__date--right {
-            text-align: right;
-            }
+        .timeline__middle {
+        position: relative;
+        background: #000000;
+        }
 
-            .timeline__title {
-            margin: 0;
-            font-size: 1.15em;
+        .timeline__point {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 15px;
+        height: 15px;
+        background: #000000;
+        border-radius: 50%;
+        }
+
+        /* LEAVE TILL LAST */
+        .timeline__point--bottom {
+        top: initial;
+        bottom: 0;
+        }
+
+        .timeline__date--right {
+        text-align: right;
+        }
+
+        .timeline__title {
+        margin: 0;
+        font-size: 1.15em;
+        font-weight: bold;
+        }
+
+        .timeline__paragraph {
+        line-height: 1.5;
+        }
+        
+        .status-capsule {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px; /* Rounded capsule shape */
+            font-size: 14px;
+            color: white; /* Text color */
             font-weight: bold;
-            }
+            text-transform: capitalize; /* Capitalize text */
+        }
 
-            .timeline__paragraph {
-            line-height: 1.5;
-            }
+        .status-capsule.not-started {
+            background-color: #ff4d4d; /* Red for Not Started */
+        }
+
+        .status-capsule.ongoing {
+            background-color: #87cefa; /* Light blue for Ongoing */
+        }
+
+        .status-capsule.completed {
+            background-color: #28a745; /* Green for Completed */
+        }
+
+        .status-capsule.postponed {
+            background-color: #6c757d; /* Grey for Postponed */
+        }
+        .status-capsule.unknown {
+            background-color: #d3d3d3; /* Fallback for unknown status */
+        }  
     </style>
 </head>
 <body>
@@ -205,7 +235,7 @@
     @endphp
     <div class="task-container">
         <div class="row">
-            <p style="margin-left: 5px;"><small>You are currently viewing on the daily task for task <strong>{{ $taskName }}</strong>.</small></p>
+            <p style="margin-left: 5px;"><small>You are currently viewing on the daily task for task: <strong>{{ $taskName }}</strong>.</small></p>
             <h3>Daily Task Detail</h3>
             @if(session('warning'))
                 <div class="alert alert-warning" style="width: 64.3%; margin-left: 15px;">{{ session('warning') }}</div>
@@ -214,18 +244,20 @@
                 <div class="card mb-3">
                     <div class="card-body">
                         @if ($taskDetail)
-                        <h5 class="card-title">Date: {{ $date }} ({{ $dayOfWeek }})</h5>
-                        <br>
-                        <h5 class="card-title">{{ $taskDetail['Name'] ?? 'Task Name' }}</h5>
-                        <p class="card-text">
-                            <strong>Description: </strong><br>
-                            {!! nl2br(e($taskDetail['Description'] ?? 'Description')) !!}
+                            <h5 class="card-title">Date: {{ $date }} ({{ $dayOfWeek }})</h5>
                             <br>
-                            <br>
-                            <br>
-                            <strong>Status: </strong>{{ $taskDetail['Status'] ?? 'Not Started' }}
-                            <br>
-                        </p>
+                            <h5 class="card-title">{{ $taskDetail['Name'] ?? 'Task Name' }}</h5>
+                            <p class="card-text">
+                                <strong>Description: </strong><br>
+                                {!! nl2br(e($taskDetail['Description'] ?? 'Description')) !!}
+                                <br><br>
+                                <strong>Status: </strong>
+                                <span class="status-capsule 
+                                    {{ strtolower(str_replace(' ', '-', $taskDetail['Status'] ?? 'Not Started')) }}">
+                                    {{ $taskDetail['Status'] ?? 'Not Started' }}
+                                </span>
+                                <br>
+                            </p>
                         @else
                             <h5 class="card-title">Date: {{ $date }} ({{ $dayOfWeek }})</h5>
                             <br>

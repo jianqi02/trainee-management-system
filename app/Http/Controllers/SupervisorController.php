@@ -11,15 +11,17 @@ use App\Models\Trainee;
 use App\Models\AllTrainee;
 use App\Models\Supervisor;
 use App\Models\ActivityLog;
-use Illuminate\Support\Str;
 use App\Models\Notification;
 use App\Models\TaskTimeline;
-use Illuminate\Http\Request;
 use App\Models\TraineeAssign;
+use App\Notifications\TelegramNotification;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class SupervisorController extends Controller
 {
@@ -170,8 +172,13 @@ class SupervisorController extends Controller
 
         //get all the task for this trainee
         $tasks = TaskTimeline::where('trainee_id', $traineeID)->get();
+        $totalTasks = TaskTimeline::where('trainee_id', $traineeID)->count();
+        $completedTasks = TaskTimeline::where('trainee_id', $traineeID)
+                                       ->where('task_status', 'Completed')
+                                       ->count();
+        $pendingTasks = TaskTimeline::where('trainee_id', $traineeID) ->where('task_status', '!=', 'Completed') ->count();
 
-        return view('sv-view-trainee-task-timeline', compact('tasks', 'traineeID'));
+        return view('sv-view-trainee-task-timeline', compact('tasks', 'traineeID', 'traineeName', 'totalTasks', 'completedTasks', 'pendingTasks'));
     }
 
     public function svViewTraineeLogbook($traineeName)
@@ -202,15 +209,18 @@ class SupervisorController extends Controller
         $user = Auth::user();
         $supervisor_name = Supervisor::where('sains_email', $user->email)->pluck('name')->first();
 
-        //get the trainee id
+        // Get the trainee ID
         $trainee_id = Trainee::where('name', 'LIKE', $name)->pluck('id')->first();
 
-        //validate the uploaded logbook
+        // Validate the uploaded logbook
         $validator = Validator::make($request->all(), [
             'logbook' => 'required|mimes:pdf,doc,docx|max:2048',
+            'logbook_name' => 'required|string|max:255',
         ],[
             'logbook.max' => 'The logbook must not exceed 2MB in size.',
             'logbook.mimes' => 'Accepted logbook types are .pdf, .doc and .docx only.',
+            'logbook_name.required' => 'Please provide a name for the logbook.',
+            'logbook_name.max' => 'The logbook name must not exceed 255 characters.',
         ]);
         
         if ($validator->fails()) {
@@ -223,7 +233,7 @@ class SupervisorController extends Controller
                 'outcome' => 'failed',
                 'details' => $errorMessages,
             ]);
-    
+
             $activityLog->save();
             return redirect()->back()->withErrors($validator)->withInput();
         }
@@ -240,7 +250,7 @@ class SupervisorController extends Controller
                 'outcome' => 'failed',
                 'details' => 'Trying to upload more than 4 logbooks.',
             ]);
-    
+
             $activityLog->save();
             return redirect()->back()->with('error', 'You can only upload a maximum of 4 logbooks.');
         }
@@ -260,7 +270,7 @@ class SupervisorController extends Controller
         $logbook_path = 'storage/logbooks/' . $newFileName;
 
         if(Logbook::where('logbook_path', $logbook_path)->exists()){
-            // If the user upload a pdf with same name
+            // If the user uploads a pdf with the same name
             return redirect()->route('view-and-upload-logbook-sv', $name)->with('error', 'Cannot upload a file with an already existing name.');
         }
         else{
@@ -268,14 +278,15 @@ class SupervisorController extends Controller
             Logbook::create([
                 'trainee_id' => $trainee_id,
                 'logbook_path' => 'storage/logbooks/' . $newFileName,
+                'name' => $request->input('logbook_name'),
                 'status' => 'Signed',
             ]);
 
             // Store the file in the "public" disk
             $file->storeAs('public/logbooks/', $newFileName);
         }
-        
-        //send the notification about the signed logbook to the trainee.
+
+        // Send the notification about the signed logbook to the trainee.
         $notification = new Notification();
         $notification->id = Uuid::uuid4(); // Generate a UUID for the id
         $notification->type = 'signed_logbook';
@@ -287,6 +298,7 @@ class SupervisorController extends Controller
         ]);
         $notification->save(); // Save the notification to the database
 
+        // Log the activity
         $activityLog = new ActivityLog([
             'username' => $supervisor_name,
             'action' => 'Logbook Upload',
@@ -296,8 +308,102 @@ class SupervisorController extends Controller
 
         $activityLog->save();
 
+        // Create the Telegram Notification
+        $telegramNotification = new TelegramNotification(
+            "Logbook Upload Successful",
+            $supervisor_name,
+            $name,
+            "Your supervisor has uploaded and signed the logbook for trainee: $name."
+        );
+
+        // Send the Telegram notification to the private channel
+        $telegramNotification->toTelegram(null);  // This sends the notification directly to Telegram.
+
+    
         // Redirect the user to a success page
         return redirect()->route('view-and-upload-logbook-sv', $name)->with('success', 'Logbook uploaded successfully');
+    }
+
+    public function svGenerateLogbook(Request $request, $name) {
+        $name = urldecode($name); // Retrieve the trainee name from the query string
+    
+        // Retrieve the trainee's reference ID
+        $trainee_ref_id = AllTrainee::where('name', $name)->pluck('id')->first();
+    
+        // Retrieve the supervisor's reference ID
+        $sv_ref_id = Supervisor::where('sains_email', Auth::user()->email)->pluck('id')->first();
+    
+        // Check if the supervisor is assigned to the trainee
+        $assignment = TraineeAssign::where('trainee_id', $trainee_ref_id)
+                                   ->where('assigned_supervisor_id', $sv_ref_id)
+                                   ->first();
+    
+        if (!$assignment) {
+            // If the supervisor does not have access, return an error
+            return redirect()->back()->with('error', 'You do not have access to generate the logbook for this trainee.');
+        }
+    
+        // Retrieve the trainee's full data
+        $trainee = Trainee::where('name', 'LIKE', $name)->first();
+    
+        // Retrieve tasks for the trainee in the selected date range
+        $startMonth = $request->query('startMonth');
+        $endMonth = $request->query('endMonth');
+    
+        // Validate the date range
+        if (!$startMonth || !$endMonth) {
+            return redirect()->back()->withErrors('Please select both start and end periods.');
+        }
+    
+        $start = \Carbon\Carbon::parse($startMonth)->startOfMonth();
+        $end = \Carbon\Carbon::parse($endMonth)->endOfMonth();
+    
+        // Fetch tasks for the trainee within the specified range
+        $tasks = TaskTimeline::where('trainee_id', $trainee->id)
+                             ->where(function($query) use ($start, $end) {
+                                 $query->whereBetween('task_start_date', [$start, $end])
+                                       ->orWhereBetween('task_end_date', [$start, $end])
+                                       ->orWhere(function($query) use ($start, $end) {
+                                           $query->where('task_start_date', '<=', $start)
+                                                 ->where('task_end_date', '>=', $end);
+                                       });
+                             })
+                             ->get();
+    
+        // Decode task data
+        foreach ($tasks as $task) {
+            $task->timeline_data = json_decode($task->timeline, true);
+            $task->task_detail_data = json_decode($task->task_detail, true);
+            $task->task_overall_comment_data = json_decode($task->task_overall_comment, true);
+        }
+    
+        // Generate the current date to display as the generated date
+        $dateGenerated = now()->format('j F Y');
+        // Determine if the start and end periods are the same
+        $isSingleMonth = $start->equalTo($end->copy()->startOfMonth());
+
+        $fileName = $isSingleMonth
+        ? "{$trainee->name}_task_report_{$start->format('Y_m')}.pdf"
+        : "{$trainee->name}_task_report_{$start->format('Y_m')}_to_{$end->format('Y_m')}.pdf";
+    
+    
+        // Retrieve the AllTrainee record based on the trainee's name
+        $allTrainees = AllTrainee::where('name', $name)->first();
+        if (!$allTrainees) {
+            return redirect()->route('view-and-upload-logbook-sv')->with('error', 'Trainee not assigned to supervisor.');
+        }
+    
+        // Fetch associated supervisors
+        $supervisors = $allTrainees->supervisors;
+    
+        // Load the view and pass data to generate the PDF
+        $pdf = PDF::loadView('logbook-summary', compact('tasks', 'trainee', 'supervisors', 'dateGenerated', 'startMonth', 'endMonth', 'isSingleMonth'));
+    
+        // Optionally, set paper size and orientation
+        $pdf->setPaper('A4', 'portrait');
+    
+        // Return the PDF to be displayed in the browser
+        return $pdf->stream($fileName);
     }
 
     public function destroy(Logbook $logbook, $name)

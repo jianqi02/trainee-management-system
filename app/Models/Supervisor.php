@@ -32,4 +32,9 @@ class Supervisor extends Model
     {
         return $this->hasMany(Comment::class, 'supervisor_id');
     }
+
+    public function trainees()
+    {
+        return $this->belongsToMany(AllTrainee::class, 'trainee_supervisors', 'assigned_supervisor_id', 'trainee_id');
+    }
 }

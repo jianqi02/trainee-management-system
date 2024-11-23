@@ -29,4 +29,9 @@ class AllTrainee extends Model
     {
         return $this->hasMany(Seating::class, 'trainee_id');
     }
+
+    public function supervisors()
+    {
+        return $this->belongsToMany(Supervisor::class, 'trainee_supervisors', 'trainee_id', 'assigned_supervisor_id');
+    }
 }

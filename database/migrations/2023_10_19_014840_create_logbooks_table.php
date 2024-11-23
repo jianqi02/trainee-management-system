@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('logbooks', function (Blueprint $table) {
             $table->id();
             $table->string('logbook_path');
+            $table->string('name');
             $table->unsignedBigInteger('trainee_id')->nullable();
             $table->foreign('trainee_id')->references('id')->on('trainees');
             $table->string('status');

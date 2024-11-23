@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use Ramsey\Uuid\Uuid;
+use App\Models\User;
 use App\Models\Trainee;
 use App\Models\Supervisor;
 use App\Models\ActivityLog;
@@ -11,7 +11,8 @@ use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\NotificationController;
+use App\Notifications\TelegramNotification;
+
 
 class NotificationController extends Controller
 {
@@ -248,4 +249,6 @@ class NotificationController extends Controller
 
         return redirect()->back()->with('success', 'If the email address submitted is valid, a notification will be sent to the admin to reset your password.');
     }
+
+
 }

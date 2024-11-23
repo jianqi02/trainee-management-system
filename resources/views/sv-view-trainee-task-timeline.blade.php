@@ -46,6 +46,118 @@
             width: 100%;
         }
 
+        .button-container {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px; /* Space between buttons */
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+
+        .button-container-card {
+            display: flex;
+            justify-content: flex-end;
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            display: flex;
+            gap: 10px; /* Add space between the buttons */
+            margin-bottom: 5px;
+        }
+
+        .button-container-card .btn {
+            margin: 0px; /* Ensure no margin on buttons */
+        }
+
+        .card {
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card-body {
+            position: relative; /* Required for absolute positioning inside it */
+        }
+
+        .number-card {
+            width: 100%;
+            height: 100%;
+            margin-bottom: 10px; /* Space below each card */
+        }
+
+        .number-card-title {
+            color: #333;
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .number-card-text {
+            font-size: 2rem;
+            color: #333;
+            font-weight: 500;
+            margin-top: 15px;
+        }
+
+        .custom-filter-btn,
+        .custom-addtask-btn {
+            width: 150px; /* Set the same width */
+            height: 40px; /* Set the same height */
+            display: inline-block; /* Ensure they align consistently */
+            text-align: center;
+            font-size: 16px; /* Adjust as needed */
+            border-radius: 4px; /* Optional: for rounded corners */
+        }
+
+        .custom-filter-btn {
+            background-color: #337ab7;
+            color: #fff;
+            border-color: #337ab7;
+        }
+
+        .custom-filter-btn:hover {
+            background-color: #286090;
+            border-color: #204d74;
+        }
+
+        .custom-addtask-btn {
+            background-color: #4caf50;
+            color: #fff;
+            border-color: #4caf50;
+        }
+
+        .custom-addtask-btn:hover {
+            background-color: #45a049;
+            border-color: #3e8e41;
+        }
+
+        .status-capsule {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px; /* Rounded capsule shape */
+            font-size: 14px;
+            color: white; /* Text color */
+            font-weight: bold;
+            text-transform: capitalize; /* Capitalize text */
+        }
+
+        .status-capsule.not-started {
+            background-color: #ff4d4d; /* Red for Not Started */
+        }
+
+        .status-capsule.ongoing {
+            background-color: #87cefa; /* Light blue for Ongoing */
+        }
+
+        .status-capsule.completed {
+            background-color: #28a745; /* Green for Completed */
+        }
+
+        .status-capsule.postponed {
+            background-color: #6c757d; /* Grey for Postponed */
+        }
+
         .modal-add-task,
         .modal-delete {
             display: none;
@@ -123,16 +235,58 @@
 <div class="task-container">
     <div class="row">
         <div class="col-md-8">
-            <h2>Trainee Tasks</h2>
+            <h2>{{ $traineeName }}'s Tasks</h2>
             @if(session('success'))
                 <div class="alert alert-success">{{ session('success') }}</div>
             @endif
             @if(session('warning'))
                 <div class="alert alert-warning">{{ session('warning') }}</div>
             @endif
-            <button type="button" class="btn btn-primary btn-block" data-bs-toggle="modal" data-bs-target="#filterModal">
-                Filter
-            </button>
+            <div class="button-container">
+                <!-- Filter Task Button -->
+                <button type="button" class="btn custom-filter-btn" data-bs-toggle="modal" data-bs-target="#filterModal">
+                    Filter Task
+                </button>
+                <!-- Add New Task Button --> 
+                <button type="button" id="addTaskButton" class="btn custom-addtask-btn">
+                    + Add New Task
+                </button> 
+            </div>
+            
+              <!-- Task Statistic Cards -->
+              <div class="container mt-5">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="card number-card">
+                            <div class="card-body">
+                                <h5 class="number-card-title" style="font-size: 22px;">Total Tasks</h5>
+                                <h6 class="" style="font-size: 14px;">Total tasks assigned</h6>
+                                <p class="number-card-text">{{ $totalTasks }}</p>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <div class="col-md-4 mb-3">
+                        <div class="card number-card">
+                            <div class="card-body">
+                                <h5 class="number-card-title" style="font-size: 22px;">Completed Tasks</h5>
+                                <h6 class="" style="font-size: 14px;">Total tasks completed</h6>
+                                <p class="number-card-text">{{ $completedTasks }}</p>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <div class="col-md-4 mb-3">
+                        <div class="card number-card">
+                            <div class="card-body">
+                                <h5 class="number-card-title" style="font-size: 22px;">Pending Tasks</h5>
+                                <h6 class="" style="font-size: 14px;">Not started, Ongoing, Postponed</h6>
+                                <p class="number-card-text">{{ $pendingTasks  }}</p>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+
             <!-- Sorting Option -->
             <p>Sort by</p>
             <div class="row" style="margin-bottom: 20px;">
@@ -168,23 +322,32 @@
 
             <!-- List of Tasks -->
             @foreach ($tasks as $task)
-                <a href="{{ route('trainee-task-detail', ['taskID' => $task->id]) }}" class="task-card-link" style="text-decoration: none;">
-                    <div class="card mb-3 task-card">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ $task->task_name }}</h5>
-                            <p class="card-text">
-                                <strong>Status: </strong>{{ $task->task_status }}
-                                <br>
-                                <strong>Priority: </strong>{{ $task->task_priority }}
-                                <br>
-                                <strong>Start Date: </strong> {{ $task->task_start_date }}
-                                <br>
-                                <strong>End Date: </strong>{{ $task->task_end_date }}
-                            </p>
+                <div class="card mb-3 task-card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ $task->task_name }}</h5>
+                        <p class="card-text">
+                            <strong>Status: </strong>
+                                <span 
+                                    class="status-capsule {{ strtolower(str_replace(' ', '-', $task->task_status)) }}">
+                                    {{ $task->task_status }}
+                                </span>
+                            <br>
+                            <strong>Priority: </strong>{{ $task->task_priority }}
+                            <br>
+                            <strong>Start Date: </strong> {{ $task->task_start_date }}
+                            <br>
+                            <strong>End Date: </strong>{{ $task->task_end_date }}
+                        </p>
+                        
+                        <!-- Button Container with Flexbox -->
+                        <div class="button-container-card">
+                            <!-- View Details Button -->
+                            <a href="{{ route('trainee-task-detail', ['taskID' => $task->id]) }}" class="btn btn-info"">View Details</a>
+                            <!-- Delete Button -->
                             <button class="btn btn-danger delete-button" data-task-id="{{ $task->id }}">Delete</button>
                         </div>
                     </div>
-                </a>
+                </div>
             @endforeach
 
             <div class="modal modal-delete" id="confirmDeleteModal">
@@ -195,9 +358,6 @@
                     <button class="btn btn-danger" id="confirmDeleteButton">Yes, Delete</button>
                 </div>
             </div>
-
-            <button type="button" id="addTaskButton" class="btn btn-primary btn-add-task">+ Add New Task</button>
-
             <!-- The Modal -->
             <div id="taskModal" class="modal modal-add-task">
                 <div class="modal-content modal-content-add-task">

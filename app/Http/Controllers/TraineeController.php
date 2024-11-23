@@ -7,23 +7,25 @@ use Ramsey\Uuid\Uuid;
 use App\Models\Logbook;
 use App\Models\Seating;
 use App\Models\Trainee;
-use Illuminate\View\View;
 use App\Models\AllTrainee;
 use App\Models\Supervisor;
 use App\Models\ActivityLog;
-use Illuminate\Support\Str;
 use App\Models\Notification;
-use Illuminate\Http\Request;
+use App\Models\TaskTimeline;
 use App\Models\TraineeAssign;
-use Illuminate\Support\Facades\DB;
-use Spatie\Browsershot\Browsershot;
+use App\Notifications\TelegramNotification;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Controllers\TraineeController;
+use Spatie\Browsershot\Browsershot;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class TraineeController extends Controller
 {
@@ -144,7 +146,7 @@ class TraineeController extends Controller
         return redirect()->route('trainee-profile')->with('success', 'Profile updated successfully');
     }
 
-        public function uploadResume(Request $request)
+    public function uploadResume(Request $request)
     {
         $user = Auth::user();
         //validate the uploaded resume
@@ -224,22 +226,24 @@ class TraineeController extends Controller
         return view('trainee-upload-resume', compact('trainee'));
     }
 
-    public function uploadLogbook(Request $request)
-    {
+    public function uploadLogbook(Request $request){
         $user = Auth::user();
         $trainee = Trainee::where('sains_email', $user->email)->pluck('name')->first();
         $id = Trainee::where('sains_email', $user->email)->pluck('id')->first();
 
-        //validate the uploaded logbook
+        // Validate the uploaded logbook
         $validator = Validator::make($request->all(), [
             'logbook' => 'required|mimes:pdf,doc,docx|max:2048',
-        ],[
+            'logbook_name' => 'required|string|max:255',
+        ], [
             'logbook.max' => 'The logbook must not exceed 2MB in size.',
             'logbook.mimes' => 'Accepted logbook types are .pdf, .doc and .docx only.',
+            'logbook_name.required' => 'Please provide a name for the logbook.',
+            'logbook_name.max' => 'The logbook name must not exceed 255 characters.',
         ]);
-        
+
         if ($validator->fails()) {
-            // Extract error messages
+            // Log failed validation attempt
             $errorMessages = implode(' ', $validator->errors()->all());
 
             $activityLog = new ActivityLog([
@@ -248,13 +252,13 @@ class TraineeController extends Controller
                 'outcome' => 'failed',
                 'details' => $errorMessages,
             ]);
-    
+
             $activityLog->save();
 
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        // The unsigned logbook (uploaded by trainee) cannot be more than 4.
+        // Check if the trainee has reached the maximum number of unsigned logbooks
         $logbookCount = Logbook::where('trainee_id', $id)
             ->where('status', 'Unsigned')
             ->count();
@@ -266,50 +270,40 @@ class TraineeController extends Controller
                 'outcome' => 'failed',
                 'details' => 'Trying to upload more than 4 logbooks',
             ]);
-    
+
             $activityLog->save();
-            return redirect()->route('trainee-upload-logbook')->with('error', 'You can only upload a maximum of 4 logbooks.');
+            return redirect()->back()->with('error', 'You can only upload a maximum of 4 logbooks.');
         }
 
-        // Get the uploaded file
+        // Process file upload
         $file = $request->file('logbook');
-
-        // Get the random filename
         $randomFileName = Str::random(32);
-
-        // Get the original extension of the file
         $extension = $file->getClientOriginalExtension();
-
-        // Concatenate the random filename and the original extension
         $newFileName = $randomFileName . '.' . $extension;
-
         $logbook_path = 'storage/logbooks/' . $newFileName;
 
-        if(Logbook::where('logbook_path', $logbook_path)->exists()){
-            // If the user upload a pdf with same name
-            return redirect()->route('trainee-upload-logbook')->with('error', 'Cannot upload a file with an already existing name.');
-        }
-        else{
-            // Save the file path in the database for the user
+        // Check if a file with the same path already exists
+        if (Logbook::where('logbook_path', $logbook_path)->exists()) {
+            return redirect()->back()->with('error', 'Cannot upload a file with an already existing name.');
+        } else {
+            // Save the file path and details in the database
             Logbook::create([
                 'trainee_id' => $id,
                 'logbook_path' => 'storage/logbooks/' . $newFileName,
                 'status' => 'Unsigned',
+                'name' => $request->input('logbook_name'),
             ]);
 
             // Store the file in the "public" disk
             $file->storeAs('public/logbooks/', $newFileName);
         }
 
-        //get the id of the trainee in the list (all trainee list)
+        // Find the trainee's supervisors and send notifications
         $id_in_list = AllTrainee::where('name', 'LIKE', $trainee)->pluck('id');
-
-        //use the id in list to search for the trainee's supervisor
         $assigned_supervisor_ids = TraineeAssign::whereIn('trainee_id', $id_in_list)
             ->pluck('assigned_supervisor_id');
-        
-        //send the notification about the updated logbook to the trainee's supervisor(s).
-        foreach($assigned_supervisor_ids as $assigned_supervisor_id){
+
+        foreach ($assigned_supervisor_ids as $assigned_supervisor_id) {
             $notification = new Notification();
             $notification->id = Uuid::uuid4(); // Generate a UUID for the id
             $notification->type = 'logbook';
@@ -322,18 +316,98 @@ class TraineeController extends Controller
 
             $supervisor_name = Supervisor::where('id', $assigned_supervisor_id)->pluck('name')->first();
 
+            // Log successful upload
             $activityLog = new ActivityLog([
                 'username' => $trainee,
                 'action' => 'Logbook Upload',
                 'outcome' => 'success',
                 'details' => '',
             ]);
-    
+
             $activityLog->save();
+
+            // Create and send the Telegram notification to the private channel
+            $telegramNotification = new TelegramNotification(
+                "Logbook Upload Successful",
+                $supervisor_name,
+                $trainee,
+                "Your trainee has uploaded the logbook for supervisor: $supervisor_name."
+            );
+            $telegramNotification->toTelegram(null);
         }
 
-        // Redirect the user to a success page
-        return redirect()->route('trainee-upload-logbook')->with('success', 'Logbook uploaded successfully');
+        // Redirect back to the previous page with a success message
+        return redirect()->back()->with('success', 'Logbook uploaded successfully');
+    }
+
+    public function generateLogbook(Request $request) {
+        // Retrieve startMonth and endMonth from the query parameters
+        $startMonth = $request->query('startMonth');
+        $endMonth = $request->query('endMonth');
+    
+        // Check if both startMonth and endMonth are provided; if not, redirect back with an error message
+        if (!$startMonth || !$endMonth) {
+            return redirect()->back()->withErrors('Please select both start and end periods.');
+        }
+    
+        // Convert startMonth and endMonth to Carbon instances for the start and end of the selected months
+        $start = \Carbon\Carbon::parse($startMonth)->startOfMonth();
+        $end = \Carbon\Carbon::parse($endMonth)->endOfMonth();
+    
+        // Retrieve the authenticated user
+        $user = Auth::user();
+    
+        // Find the trainee associated with this user
+        $trainee = Trainee::where('sains_email', $user->email)->first();
+        if (!$trainee) {
+            return redirect()->route('trainee-upload-logbook')->with('error', 'Trainee not found');
+        }
+    
+        // Fetch tasks for this trainee within the specified month/year range
+        $tasks = TaskTimeline::where('trainee_id', $trainee->id)
+                    ->where(function($query) use ($start, $end) {
+                        $query->whereBetween('task_start_date', [$start, $end])
+                              ->orWhereBetween('task_end_date', [$start, $end])
+                              ->orWhere(function($query) use ($start, $end) {
+                                  $query->where('task_start_date', '<=', $start)
+                                        ->where('task_end_date', '>=', $end);
+                              });
+                    })
+                    ->get();
+    
+        // Decode JSON data for each task
+        foreach ($tasks as $task) {
+            $task->timeline_data = json_decode($task->timeline, true);
+            $task->task_detail_data = json_decode($task->task_detail, true);
+            $task->task_overall_comment_data = json_decode($task->task_overall_comment, true);
+        }
+    
+        // Generate the current date to display as the generated date
+        $dateGenerated = now()->format('j F Y');
+        // Determine if the start and end periods are the same
+        $isSingleMonth = $start->equalTo($end->copy()->startOfMonth());
+
+        $fileName = $isSingleMonth
+        ? "{$trainee->name}_task_report_{$start->format('Y_m')}.pdf"
+        : "{$trainee->name}_task_report_{$start->format('Y_m')}_to_{$end->format('Y_m')}.pdf";
+    
+        // Retrieve the AllTrainee record based on the trainee's name
+        $allTrainees = AllTrainee::where('name', $trainee->name)->first();
+        if (!$allTrainees) {
+            return redirect()->route('trainee-upload-logbook')->with('error', 'Trainee not assigned to supervisor.');
+        }
+    
+        // Fetch associated supervisors
+        $supervisors = $allTrainees->supervisors;
+    
+        // Load the view file and pass tasks, trainee, supervisors, dateGenerated, startMonth, and endMonth data
+        $pdf = PDF::loadView('logbook-summary', compact('tasks', 'trainee', 'supervisors', 'dateGenerated', 'startMonth', 'endMonth', 'isSingleMonth'));
+    
+        // Optionally, set paper size and orientation
+        $pdf->setPaper('A4', 'portrait');
+    
+        // Return the PDF to be displayed in the browser
+        return $pdf->stream($fileName);
     }
 
     public function traineeLogbook()
@@ -391,7 +465,6 @@ class TraineeController extends Controller
 
         return redirect()->route('trainee-upload-logbook')->with('success', 'Logbook deleted successfully');
     }
-
     public function viewSeatPlan()
     {
         $user = Auth::user();
@@ -448,7 +521,6 @@ class TraineeController extends Controller
         }
         return view('trainee-view-seating', compact('weeksInMonth', 'seatingData', 'name'));
     }
-
     public function traineeUpdatePassword(Request $request){
         $user = Auth::user();
         $validator = Validator::make($request->all(), [
@@ -529,7 +601,6 @@ class TraineeController extends Controller
         $activityLog->save();
         return redirect()->back()->with('success', 'Password successfully changed!');
     }
-    
     public function mySupervisorPage(){
         //get the current login trainee information
         $user = Auth::user();
