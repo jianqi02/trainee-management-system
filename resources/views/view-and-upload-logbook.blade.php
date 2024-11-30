@@ -327,11 +327,18 @@
                                 <div class="mb-3">
                                     <label for="startMonth" class="form-label">Start Month and Year</label>
                                     <input type="month" id="startMonth" name="startMonth" class="form-control" required>
+                                    @error('startMonth')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
                                 </div>
                                 <div class="mb-3">
                                     <label for="endMonth" class="form-label">End Month and Year</label>
                                     <input type="month" id="endMonth" name="endMonth" class="form-control" required>
+                                    @error('endMonth')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
                                 </div>
+                                <div class="error-container text-danger d-none"></div>
                             </form>
                         </div>
                         <div class="modal-footer">
@@ -537,8 +544,24 @@
 
     function openReportInNewTab(event) {
         event.preventDefault();
-        // Open the report in a new tab
+
         const form = event.target;
+        const startMonthInput = form.querySelector('#startMonth');
+        const endMonthInput = form.querySelector('#endMonth');
+        const errorContainer = form.querySelector('.error-container');
+
+        errorContainer.textContent = '';
+        errorContainer.classList.add('d-none');
+
+        const startMonth = new Date(startMonthInput.value);
+        const endMonth = new Date(endMonthInput.value);
+
+        if (startMonth > endMonth) {
+            errorContainer.innerHTML = "<span style='font-weight: bold; color: red;'>The start date must be earlier than or equal to the end date.</span>";
+            errorContainer.classList.remove('d-none');
+            return;
+        }
+
         const formData = new FormData(form);
         const url = form.action + '?' + new URLSearchParams(formData).toString();
         window.open(url, '_blank');

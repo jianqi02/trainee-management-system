@@ -322,12 +322,19 @@
                                 @csrf
                                 <div class="mb-3">
                                     <label for="startMonth" class="form-label">Start Month and Year</label>
-                                    <input type="month" id="startMonth" name="startMonth" class="form-control" required>
+                                    <input type="month" id="startMonth" name="startMonth" class="form-control" value="{{ old('startMonth') }}" required>
+                                    @error('startMonth')
+                                        <small class="text-danger"><strong>{{ $message }}</strong></small>
+                                    @enderror
                                 </div>
                                 <div class="mb-3">
                                     <label for="endMonth" class="form-label">End Month and Year</label>
-                                    <input type="month" id="endMonth" name="endMonth" class="form-control" required>
+                                    <input type="month" id="endMonth" name="endMonth" class="form-control" value="{{ old('endMonth') }}" required>
+                                    @error('endMonth')
+                                        <small class="text-danger"><strong>{{ $message }}</strong></small>
+                                    @enderror
                                 </div>
+                                <div class="error-container text-danger d-none"></div>
                             </form>
                         </div>
                         <div class="modal-footer">
@@ -337,6 +344,7 @@
                     </div>
                 </div>
             </div>
+            
             
             <!-- Tabs Navigation -->
             <ul class="nav nav-tabs" id="logbookTabs" role="tablist">
@@ -533,12 +541,33 @@
 
     function openReportInNewTab(event) {
         event.preventDefault();
-        // Open the report in a new tab
+
+        // Get the form and its input fields
         const form = event.target;
+        const startMonthInput = form.querySelector('#startMonth');
+        const endMonthInput = form.querySelector('#endMonth');
+        const errorContainer = form.querySelector('.error-container');
+
+        // Clear any previous error messages
+        errorContainer.textContent = '';
+        errorContainer.classList.add('d-none');
+
+        // Parse the input values into dates
+        const startMonth = new Date(startMonthInput.value);
+        const endMonth = new Date(endMonthInput.value);
+
+        // Validate the date range
+        if (startMonth > endMonth) {
+            // Display an error message
+            errorContainer.innerHTML = "<span style='font-weight: bold; color: red;'>The start date must be earlier than or equal to the end date.</span>";
+            errorContainer.classList.remove('d-none');
+            return;
+        }
+
+        // If validation passes, open the report in a new tab
         const formData = new FormData(form);
         const url = form.action + '?' + new URLSearchParams(formData).toString();
         window.open(url, '_blank');
     }
-
 </script>
 @endsection

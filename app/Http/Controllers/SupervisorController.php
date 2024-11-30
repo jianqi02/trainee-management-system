@@ -357,6 +357,10 @@ class SupervisorController extends Controller
     
         $start = \Carbon\Carbon::parse($startMonth)->startOfMonth();
         $end = \Carbon\Carbon::parse($endMonth)->endOfMonth();
+
+        if ($end->lt($start)) {
+            return redirect()->back()->withErrors(['endMonth' => 'The end date must be the same or later than the start date.'])->withInput();
+        }
     
         // Fetch tasks for the trainee within the specified range
         $tasks = TaskTimeline::where('trainee_id', $trainee->id)

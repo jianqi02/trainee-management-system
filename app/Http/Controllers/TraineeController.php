@@ -340,75 +340,83 @@ class TraineeController extends Controller
         return redirect()->back()->with('success', 'Logbook uploaded successfully');
     }
 
-    public function generateLogbook(Request $request) {
+    public function generateLogbook(Request $request)
+    {
         // Retrieve startMonth and endMonth from the query parameters
         $startMonth = $request->query('startMonth');
         $endMonth = $request->query('endMonth');
-    
+
         // Check if both startMonth and endMonth are provided; if not, redirect back with an error message
         if (!$startMonth || !$endMonth) {
-            return redirect()->back()->withErrors('Please select both start and end periods.');
+            return redirect()->back()->withErrors(['startMonth' => 'Please select both start and end periods.']);
         }
-    
-        // Convert startMonth and endMonth to Carbon instances for the start and end of the selected months
+
+        // Convert startMonth and endMonth to Carbon instances
         $start = \Carbon\Carbon::parse($startMonth)->startOfMonth();
         $end = \Carbon\Carbon::parse($endMonth)->endOfMonth();
-    
+
+        // Validate that the end date is not earlier than the start date
+        if ($end->lt($start)) {
+            return redirect()->back()->withErrors(['endMonth' => 'The end date must be the same or later than the start date.'])->withInput();
+        }
+
         // Retrieve the authenticated user
         $user = Auth::user();
-    
+
         // Find the trainee associated with this user
         $trainee = Trainee::where('sains_email', $user->email)->first();
         if (!$trainee) {
             return redirect()->route('trainee-upload-logbook')->with('error', 'Trainee not found');
         }
-    
+
         // Fetch tasks for this trainee within the specified month/year range
         $tasks = TaskTimeline::where('trainee_id', $trainee->id)
-                    ->where(function($query) use ($start, $end) {
-                        $query->whereBetween('task_start_date', [$start, $end])
-                              ->orWhereBetween('task_end_date', [$start, $end])
-                              ->orWhere(function($query) use ($start, $end) {
-                                  $query->where('task_start_date', '<=', $start)
-                                        ->where('task_end_date', '>=', $end);
-                              });
-                    })
-                    ->get();
-    
+            ->where(function ($query) use ($start, $end) {
+                $query->whereBetween('task_start_date', [$start, $end])
+                    ->orWhereBetween('task_end_date', [$start, $end])
+                    ->orWhere(function ($query) use ($start, $end) {
+                        $query->where('task_start_date', '<=', $start)
+                            ->where('task_end_date', '>=', $end);
+                    });
+            })
+            ->get();
+
         // Decode JSON data for each task
         foreach ($tasks as $task) {
             $task->timeline_data = json_decode($task->timeline, true);
             $task->task_detail_data = json_decode($task->task_detail, true);
             $task->task_overall_comment_data = json_decode($task->task_overall_comment, true);
         }
-    
+
         // Generate the current date to display as the generated date
         $dateGenerated = now()->format('j F Y');
+
         // Determine if the start and end periods are the same
         $isSingleMonth = $start->equalTo($end->copy()->startOfMonth());
 
         $fileName = $isSingleMonth
-        ? "{$trainee->name}_task_report_{$start->format('Y_m')}.pdf"
-        : "{$trainee->name}_task_report_{$start->format('Y_m')}_to_{$end->format('Y_m')}.pdf";
-    
+            ? "{$trainee->name}_task_report_{$start->format('Y_m')}.pdf"
+            : "{$trainee->name}_task_report_{$start->format('Y_m')}_to_{$end->format('Y_m')}.pdf";
+
         // Retrieve the AllTrainee record based on the trainee's name
         $allTrainees = AllTrainee::where('name', $trainee->name)->first();
         if (!$allTrainees) {
             return redirect()->route('trainee-upload-logbook')->with('error', 'Trainee not assigned to supervisor.');
         }
-    
+
         // Fetch associated supervisors
         $supervisors = $allTrainees->supervisors;
-    
+
         // Load the view file and pass tasks, trainee, supervisors, dateGenerated, startMonth, and endMonth data
         $pdf = PDF::loadView('logbook-summary', compact('tasks', 'trainee', 'supervisors', 'dateGenerated', 'startMonth', 'endMonth', 'isSingleMonth'));
-    
+
         // Optionally, set paper size and orientation
         $pdf->setPaper('A4', 'portrait');
-    
+
         // Return the PDF to be displayed in the browser
         return $pdf->stream($fileName);
     }
+
 
     public function traineeLogbook()
     {
