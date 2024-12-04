@@ -52,13 +52,18 @@
                         <label for="expertise" class="form-label">Expertise</label>
                         <select class="form-select" id="expertise" name="expertise">
                             <option value="Not Specified" {{ $trainee->expertise === 'Not Specified' ? 'selected' : '' }}>Not Specified</option>
-                            <option value="Programming" {{ $trainee->expertise === 'Programming' ? 'selected' : '' }}>Programming</option>
-                            <option value="Networking" {{ $trainee->expertise === 'Networking' ? 'selected' : '' }}>Networking</option>
-                            <option value="Multimedia Design" {{ $trainee->expertise === 'Multimedia Design' ? 'selected' : '' }}>Multimedia Design</option>
-                            <option value="Computer Security" {{ $trainee->expertise === 'Computer Security' ? 'selected' : '' }}>Computer Security</option>
+
+                            @foreach($expertises as $expertise)
+                                <option value="{{ $expertise }}" {{ $trainee->expertise === $expertise ? 'selected' : '' }}>
+                                    {{ $expertise }}
+                                </option>
+                            @endforeach
+                    
                             <option value="Others" {{ $trainee->expertise === 'Others' ? 'selected' : '' }}>Others</option>
                         </select>
+                        <a href="/settings" style="font-size: 14px;">add or remove expertises...</a>
                     </div>
+                    
                     <div class="mb-3">
                         <label for="personalEmail" class="form-label">Personal Email</label>
                         <input type="email" class="form-control" id="personalEmail" name="personalEmail" value="{{ $trainee->personal_email }}">
@@ -101,15 +106,38 @@
                         <input type="text" class="form-control" id="fullName" name="fullName" value="{{ $supervisor->name }}">
                     </div>
                     <div class="mb-3">
-                        <label for="phoneNum" class="form-label">Phone Number</label>
-                        <input type="text" class="form-control" id="phoneNum" name="phoneNum" placeholder="Example: 0171234567 / 60171234567 / +60171234567" value="{{ $supervisor->phone_number }}">
+                        <label for="expertise" class="form-label">Expertise</label>
+                        <select class="form-select" id="expertise" name="expertise">
+                            <option value="Not Specified" {{ $supervisor->expertise === 'Not Specified' ? 'selected' : '' }}>Not Specified</option>
+
+                            @foreach($expertises as $expertise)
+                                <option value="{{ $expertise }}" {{ $supervisor->expertise === $expertise ? 'selected' : '' }}>
+                                    {{ $expertise }}
+                                </option>
+                            @endforeach
+                    
+                            <option value="Others" {{ $supervisor->expertise === 'Others' ? 'selected' : '' }}>Others</option>
+                        </select>
+                        <a href="/settings" style="font-size: 14px;">add or remove expertises...</a>
                     </div>
                     <div class="mb-3">
-                        <label for="expertise" class="form-label">Section</label>
+                        <label for="department" class="form-label">Department</label>
+                        <select class="form-select" id="department" name="department">
+                            @foreach($departments as $department)
+                                <option value="{{ $department }}" {{ $supervisor->department === $department ? 'selected' : '' }}>
+                                    {{ $department }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="section" class="form-label">Section</label>
                         <select class="form-select" id="section" name="section">
-                            <option value="PSS" {{ $supervisor->section === 'PSS' ? 'selected' : '' }}>Professional Security Services (PSS)</option>
-                            <option value="MSS" {{ $supervisor->section === 'MSS' ? 'selected' : '' }}>Managed Security Services (MSS)</option>
-                            <option value="SPD" {{ $supervisor->section === 'SPD' ? 'selected' : '' }}>Security Product Development (SPD)</option>
+                            @foreach($sections as $section)
+                                <option value="{{ $section }}" {{ $supervisor->section === $section ? 'selected' : '' }}>
+                                    {{ $section }}
+                                </option>
+                            @endforeach
                         </select>
                     </div>
                     <button type="submit" class="btn btn-primary">Save Changes</button>

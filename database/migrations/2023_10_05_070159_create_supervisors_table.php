@@ -16,11 +16,10 @@ return new class extends Migration
             $table->string('name')->unique();
             $table->string('section')->nullable();
             $table->string('department')->nullable();
-            $table->string('personal_email')->nullable()->unique();
+            $table->string('expertise')->nullable();
             $table->string('sains_email')->unique();
-            $table->string('phone_number')->nullable();
-            $table->string('password');
             $table->string('trainee_status')->nullable();
+            $table->integer('trainee_count')->nullable();
             $table->timestamps();
         });
     }

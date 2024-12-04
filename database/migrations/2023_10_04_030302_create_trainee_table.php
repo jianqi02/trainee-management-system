@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('personal_email')->nullable()->unique();
             $table->string('sains_email')->unique();
             $table->string('phone_number')->nullable();
-            $table->string('password');
             $table->string('graduate_date')->nullable();
             $table->string('expertise')->nullable();
             $table->string('profile_image')->nullable();

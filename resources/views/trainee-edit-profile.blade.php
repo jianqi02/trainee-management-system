@@ -56,16 +56,19 @@
                         <label for="expertise" class="form-label">Expertise</label>
                         <select class="form-select" id="expertise" name="expertise">
                             <option value="Not Specified" {{ $trainee->expertise === 'Not Specified' ? 'selected' : '' }}>Not Specified</option>
-                            <option value="Programming" {{ $trainee->expertise === 'Programming' ? 'selected' : '' }}>Programming</option>
-                            <option value="Networking" {{ $trainee->expertise === 'Networking' ? 'selected' : '' }}>Networking</option>
-                            <option value="Multimedia Design" {{ $trainee->expertise === 'Multimedia Design' ? 'selected' : '' }}>Multimedia Design</option>
-                            <option value="Computer Security" {{ $trainee->expertise === 'Computer Security' ? 'selected' : '' }}>Computer Security</option>
+
+                            @foreach($expertises as $expertise)
+                                <option value="{{ $expertise }}" {{ $trainee->expertise === $expertise ? 'selected' : '' }}>
+                                    {{ $expertise }}
+                                </option>
+                            @endforeach
+                    
                             <option value="Others" {{ $trainee->expertise === 'Others' ? 'selected' : '' }}>Others</option>
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="personalEmail" class="form-label">Personal Email*</label>
-                        <input type="email" class="form-control" id="personalEmail" name="personalEmail" value="{{ $trainee->personal_email }} " required>
+                        <label for="personalEmail" class="form-label">Personal Email</label>
+                        <input type="email" class="form-control" id="personalEmail" name="personalEmail" value="{{ $trainee->personal_email }} ">
                     </div>
                     <div class="mb-3">
                         <label for="graduateDate" class="form-label">Graduation Date</label>

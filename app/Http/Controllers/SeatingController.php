@@ -4,437 +4,23 @@ namespace App\Http\Controllers;
 
 use DateTime;
 use Carbon\Carbon;
+use App\Models\User;
 use App\Models\Seating;
 use App\Models\Trainee;
 use App\Models\AllTrainee;
 use App\Models\ActivityLog;
+use App\Models\SeatingImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 
 class SeatingController extends Controller
 {
     public function index(Request $request)
     {
-        $week = $request->input('week', date('o-\WW')); // Default to 1 if 'week' is not provided in the query parameters.
-        $dateTime = new DateTime($week);
-
-        //get the start date and end date from the selected week
-        $dateTime->setISODate($dateTime->format('o'), $dateTime->format('W'), 1);
-        $startDate = $dateTime->format('d/m/Y');  // Start of the week
-        $dateTime->setISODate($dateTime->format('o'), $dateTime->format('W'), 7);
-        $endDate = $dateTime->format('d/m/Y');  // End of the week 
-
-        $currentDate = date("Y-m-d");
-        $formattedEndDate = Carbon::createFromFormat('d/m/Y', $endDate)->format('Y-m-d');
-        $formattedStartDate = Carbon::createFromFormat('d/m/Y', $startDate)->format('Y-m-d');
-
-        //to get the assigned trainee id list
-        $assignedTraineeIds = Seating::where('week', $week)
-        ->pluck('seat_detail')
-        ->map(function ($seatDetail) {
-            $seatDetailArray = json_decode($seatDetail, true);
-            return collect($seatDetailArray)->pluck('trainee_id')->toArray();
-        })
-        ->flatten()
-        ->filter(function ($traineeId) {
-            return $traineeId !== 'Not Assigned';
-        })
-        ->toArray();
-
-        $trainees = AllTrainee::leftJoin('seatings', function ($join) use ($week) {
-            $join->on('alltrainees.id', '=', \DB::raw("JSON_UNQUOTE(JSON_EXTRACT(seatings.seat_detail, '$.*.trainee_id'))"))
-                ->where('seatings.week', '=', $week);
-        })
-        // the trainee internship start date should be earlier than this end date.
-        ->whereDate('alltrainees.internship_start', '<=', $formattedEndDate)
-        // exclude the trainees that already ended their internship.
-        // ex. The trainee internship ends at 10 Nov, the current date is 11 Nov
-        ->whereDate('alltrainees.internship_end', '>=', $currentDate)
-        ->whereDate('alltrainees.internship_end', '>=', $formattedStartDate)
-        //get the trainee id which is not yet assigned.
-        ->whereNotIn('alltrainees.id', $assignedTraineeIds)
-        ->get();
-    
-         $traineeInfo = AllTrainee::all();
-
-         $emptySeatCount = 0;
- 
-         $get_the_seat_detail = Seating::where('week', $week)->pluck('seat_detail')->first();
-         $seatDetail = json_decode($get_the_seat_detail, true);
-
-         // Check if $seatDetail is not null before using it
-         if ($seatDetail !== null) {
-             // Check if $seatDetail is not null and is an array before using it
-             if (is_array($seatDetail)) {
-                 //to get the total number of empty seats (trainee id = Not Assigned & seat status = Available)
-                 $emptySeatCount = count(
-                     array_filter($seatDetail, function ($seat) {
-                         return isset($seat['trainee_id']) && isset($seat['seat_status']) &&
-                             $seat['trainee_id'] === 'Not Assigned' && $seat['seat_status'] === 'Available';
-                     })
-                 );
-             } 
-         }
-        // Define an array of all possible seat names
-        $allSeatNames = [];
-        for ($i = 1; $i <= env('TOTAL_SEATS_1ST_FLOOR'); $i++) {
-            $seatNumber = str_pad($i, 2, '0', STR_PAD_LEFT); // Format as CSM01 to CSM20
-            $allSeatNames[] = 'CSM' . $seatNumber; 
-        }
-
-        $tSeatNames = [];
-        for ($i = 1; $i <= 17; $i++) {
-            $tSeatNumber = str_pad($i, 2, '0', STR_PAD_LEFT); // Format as T01 to T17
-            $tSeatNames[] = 'T' . $tSeatNumber;
-        }
         
-        // Check if a record doesn't exist with the specified conditions
-        if (Seating::where('week', $week)->doesntExist()) {
-            // If the record doesn't exist, create a new one
-            Seating::create([
-                'seat_detail' => null,
-                'week' => $week,
-                'start_date' => $startDate,
-                'end_date' => $endDate,
-            ]);
-
-            foreach ($allSeatNames as $allSeatName) {
-                // Fetch the existing seat inside the loop
-                $existingSeat = Seating::where('week', $week)->first();
-            
-                // If the seat doesn't exist, set the seat_detail values
-                if (!$existingSeat || !data_get($existingSeat->seat_detail, $allSeatName)) {
-                    // If $existingSeat is null or $allSeatName doesn't exist in seat_detail
-                    $seatDetail = $existingSeat ? json_decode($existingSeat->seat_detail, true) : [];
-            
-                    $seatDetail[$allSeatName] = [
-                        'trainee_id' => 'Not Assigned',
-                        'seat_status' => 'Not Available',
-                    ];
-            
-                    $existingSeat->seat_detail = json_encode($seatDetail);
-                    $existingSeat->save();
-                }
-            }
-            
-            foreach ($tSeatNames as $tSeatName) {
-                // Fetch the existing seat inside the loop
-                $existingSeat = Seating::where('week', $week)->first();
-            
-                // If the seat doesn't exist, set the seat_detail values
-                if (!$existingSeat || !data_get($existingSeat->seat_detail, $tSeatName)) {
-                    // If $existingSeat is null or $tSeatName doesn't exist in seat_detail
-                    $seatDetail = $existingSeat ? json_decode($existingSeat->seat_detail, true) : [];
-            
-                    $seatDetail[$tSeatName] = [
-                        'trainee_id' => 'Not Assigned',
-                        'seat_status' => 'Available',
-                    ];
-            
-                    $existingSeat->seat_detail = json_encode($seatDetail);
-                    $existingSeat->save();
-                }
-            }
-
-            //hardcoded seat that is not available for second floor (Level 3), add or remove if needed
-            $seatDetail['T11'] = [
-                'trainee_id' => 'Not Assigned',
-                'seat_status' => 'Not Available',
-            ];
-
-            $seatDetail['T12'] = [
-                'trainee_id' => 'Not Assigned',
-                'seat_status' => 'Not Available',
-            ];
-
-            $seatDetail['T13'] = [
-                'trainee_id' => 'Not Assigned',
-                'seat_status' => 'Not Available',
-            ];
-            $seatDetail['T14'] = [
-                'trainee_id' => 'Not Assigned',
-                'seat_status' => 'Not Available',
-            ];
-
-            $existingSeat->seat_detail = json_encode($seatDetail);
-            $existingSeat->save();
-    
-    
-            $roundTableSeatNames = ['Round-Table'];
-    
-            foreach ($roundTableSeatNames as $roundTableSeatName) {
-                $existingSeat = Seating::where('week', $week)->first();
-            
-                // If the seat doesn't exist, set the seat_detail values
-                if (!$existingSeat || !data_get($existingSeat->seat_detail, $roundTableSeatName)) {
-                    // If $existingSeat is null or $roundTableSeatName doesn't exist in seat_detail
-                    $seatDetail = $existingSeat ? json_decode($existingSeat->seat_detail, true) : [];
-            
-                    $seatDetail[$roundTableSeatName] = [
-                        'trainee_id' => 'Not Assigned',
-                        'seat_status' => 'Available',
-                    ];
-            
-                    $existingSeat->seat_detail = json_encode($seatDetail);
-                    $existingSeat->save();
-                }
-            }
-        }
-
-        // Fetch trainee_id data from the seatings table for the selected week
-        $seatingData = Seating::where('week', $week)
-            ->first();
-
-        if ($seatingData) {
-            // Decode the seat_detail JSON
-            $seatDetail = json_decode($seatingData->seat_detail, true);
-        
-            // Replace the trainee_id with trainee name
-            foreach ($seatDetail as &$seatInfo) {
-                $trainee_name = AllTrainee::where('id',$seatInfo['trainee_id'])->pluck('name')->first();
-                $seatInfo['trainee_id'] = $trainee_name ?? 'Not Assigned';
-            }
-        
-            // Encode the updated seat_detail back to JSON
-            $seatingData = json_encode($seatDetail);
-        
-            return view('seating-arrange', compact('seatingData','trainees','emptySeatCount', 'week', 'startDate', 'endDate'));
-        }
-    }
-
-    public function getRandomTrainee(Request $request)
-    {
-
-        $week = $request->query('week');
-        $dateTime = new DateTime($week);
-
-        //get the start date and end date from the selected week
-        $dateTime->setISODate($dateTime->format('o'), $dateTime->format('W'), 1);
-        $startDate = $dateTime->format('d/m/Y');  // Start of the week
-        $dateTime->setISODate($dateTime->format('o'), $dateTime->format('W'), 7);
-        $endDate = $dateTime->format('d/m/Y');  // End of the week 
-
-        $currentDate = date("Y-m-d");
-        $formattedEndDate = Carbon::createFromFormat('d/m/Y', $endDate)->format('Y-m-d');
-        $formattedStartDate = Carbon::createFromFormat('d/m/Y', $startDate)->format('Y-m-d');
-
-        //Clear all the record before perform the random assign method.
-        $newTraineeId = 'Not Assigned';
-        $seatData = Seating::where('week', $week)->first();
-
-        if ($seatData) {
-            // Decode the seat_detail JSON
-            $seat = json_decode($seatData->seat_detail, true);
-
-            // Loop over each seat and update trainee_id to "Not Assigned"
-            foreach ($seat as $seatName => &$seatInfo) {
-                $seatInfo['trainee_id'] = 'Not Assigned';
-            }
-        
-            // Update the seat_detail in the database
-            $seatData->update(['seat_detail' => json_encode($seat)]);
-        }
-
-        // Define the predefined tiers
-        $firstTierSeats = [];
-        $secondTierSeats = [];
-        $thirdTierSeats = [];
-
-        // Loop over each seat and categorize it into the tiers
-        foreach ($seat as $seatName => $seatInfo) {
-            if (preg_match('/^T/', $seatName)) {
-                $firstTierSeats[] = $seatName;
-            } elseif (preg_match('/^CSM[0-9]+/', $seatName)) {
-                $secondTierSeats[] = $seatName;
-            } elseif ($seatName === 'Round-Table') {
-                $thirdTierSeats[] = $seatName;
-            }
-        }
-
-        // Sort the seats within each tier
-        sort($firstTierSeats);
-        sort($secondTierSeats);
-        sort($thirdTierSeats);
-
-        // Combine the seats from all tiers (first -> second -> third tier)
-        $orderedSeats = array_merge($firstTierSeats, $secondTierSeats, $thirdTierSeats);
-
-        //shuffle all the trainee for generating a random trainee list to perform the random assign.
-        $trainees = AllTrainee::whereDate('internship_start', '<=', $formattedEndDate)
-            ->whereDate('internship_end', '>=', $currentDate)
-            ->whereDate('internship_end', '>=', $formattedStartDate)
-            ->get(['id']);
-        $shuffledIDs = $trainees->pluck('id')->shuffle();
-        $assignedTrainees = [];
-        $index = 0;
-
-        $seat = json_decode($seatData->seat_detail, true);
-
-        //perform random assign function
-        foreach($orderedSeats as $seatName){
-            //only can assign to a seat that is available
-            if($seat[$seatName]['seat_status'] == 'Available'){
-                if ($index < count($shuffledIDs)) {
-                    //assign the trainee to the seat and udpate the record.
-                    $seat[$seatName]['trainee_id'] = $shuffledIDs[$index];
-    
-                    //add the trainee into another array ( for assigned only )
-                    $assignedTrainees[] = $shuffledIDs[$index];
-    
-                    $index++;
-                }
-            }
-        }
-
-        // Encode the updated $seat array back to JSON and save it
-        $updatedSeatDetail = json_encode($seat);
-        Seating::where('week', $week)
-        ->update(['seat_detail' => $updatedSeatDetail]);
-
-        if (count($assignedTrainees) < count($shuffledIDs)) {
-            $unassignedTrainee = array_diff($shuffledIDs->toArray(), $assignedTrainees);
-            return redirect()
-                ->route('seating-arrange', ['week' => $week])
-                ->with('warning', count($unassignedTrainee) . ' trainees are not assigned to any seats. Please assign them manually.');
-        }
-        $activityLog = new ActivityLog([
-            'username' => Auth::user()->name,
-            'action' => 'Seating Arrangement',
-            'outcome' => 'success',
-            'details' => 'Random seating assignment is successful for week ' . $week,
-        ]);
-
-        $activityLog->save();
-        return redirect()->route('seating-arrange', ['week' => $week])->with('success', 'Seats random-assigned successfully');
-    }
-
-    public function getSeatData($seat, Request $request)
-    {
-        $week = $request->query('week');
-        // Retrieve seat data from the "seatings" table based on the seat identifier
-        $seatData = Seating::where('week', $week)->pluck('seat_detail')->first();
-        $seatDetail = json_decode($seatData, true);
-
-        if($seatDetail[$seat] == null){
-            return response()->json(['trainee_id' => 'Not Assigned']);
-        }
-
-        $trainee = AllTrainee::find($seatDetail[$seat]['trainee_id']);
-        $traineeName = $trainee ? $trainee->name : 'Not Assigned';
-
-        return response()->json(['trainee_id' => $traineeName]);
-    }
-
-    public function removeSeat($seat, Request $request)
-    {
-        $week = $request->query('week');
-        // Find the seat data in the "seatings" table
-        $seatData = Seating::where('week', $week)->pluck('seat_detail')->first();
-        $seatDetail = json_decode($seatData, true);
-    
-        if ($seatDetail[$seat]) {
-            //get the trainee name
-            $traineeName = AllTrainee::where('id', $seatDetail[$seat]['trainee_id'])->pluck('name')->first();
-            
-            // Clear the seat by setting the trainee_id column to an empty string
-            $seatDetail[$seat]['trainee_id'] = 'Not Assigned';
-            Seating::where('week', $week)->update(['seat_detail' => json_encode($seatDetail)]);
-    
-            $activityLog = new ActivityLog([
-                'username' => Auth::user()->name,
-                'action' => 'Seating Arrangement',
-                'outcome' => 'success',
-                'details' => 'Removed trainee ' . $traineeName . ' from seat ' . $seat. ' at week ' . $week,
-            ]);
-    
-            $activityLog->save();
-
-            return redirect()->back()->with('success', 'Trainee removed successfully');
-        }
-    
-        return redirect()->back()->with('error', 'Seat not found');
-    }
-
-    public function changeOwnership($seat, Request $request)
-    {
-        $week = $request->query('week');
-        $dateTime = new DateTime($week);
-        $dateTime->setISODate($dateTime->format('o'), $dateTime->format('W'), 1);
-        $startDate = $dateTime->format('d/m/Y');  // Start of the week
-        // Retrieve seat data from the "seatings" table based on the seat identifier
-        $seatData = Seating::where('week', $week)->pluck('seat_detail')->first();
-        if ($seatData) {
-            $seatDetail = json_decode($seatData, true);
-    
-            if (isset($seatDetail[$seat])) { // Check if the key exists in the array
-                if ($seatDetail[$seat]['seat_status'] == 'Available') {
-                    $seatDetail[$seat]['trainee_id'] = 'Not Assigned';
-                    $seatDetail[$seat]['seat_status'] = 'Not Available';
-                } else {
-                    $seatDetail[$seat]['seat_status'] = 'Available';
-                }
-    
-                // Update the seat_detail column in the database
-                Seating::where('week', $week)->update(['seat_detail' => json_encode($seatDetail)]);
-    
-                $activityLog = new ActivityLog([
-                    'username' => Auth::user()->name,
-                    'action' => 'Seating Arrangement',
-                    'outcome' => 'success',
-                    'details' => 'Changed the status of seat ' . $seat . ' at week ' . $week,
-                ]);
-        
-                $activityLog->save();
-
-                return redirect()->back()->with('success', 'Seat changed successfully');
-            }
-        }
-    
-        return redirect()->back()->with('error', 'Seat not found');
-    }
-
-    public function assignSeatForTrainee($trainee_selected, $seat, Request $request)
-    {
-        // Find the seat data in the "seatings" table
-        $week = $request->query('week');
-        $seatData = Seating::where('week', $week)->pluck('seat_detail')->first();
-        $seatDetail = json_decode($seatData, true);
-        
-        $id = AllTrainee::where('name', $trainee_selected)->first()->id;
-    
-        if ($seatDetail[$seat]) {
-            if($seatDetail[$seat]['seat_status'] == 'Not Available'){
-                $activityLog = new ActivityLog([
-                    'username' => Auth::user()->name,
-                    'action' => 'Seating Arrangement',
-                    'outcome' => 'failed',
-                    'details' => 'Trying to assign a trainee to a seat that is not available at week ' . $week,
-                ]);
-        
-                $activityLog->save();
-                return redirect()->back()->with('error', 'You cannot assign a trainee to a seat that is not available.');
-            }
-            
-            // Assign the seat to the trainee by setting the trainee_id column to the trainee's name
-            $seatDetail[$seat]['trainee_id'] = $id;
-            Seating::where('week', $week)->update(['seat_detail' => json_encode($seatDetail)]);
-
-            $traineeName = AllTrainee::where('id', $id)->pluck('name')->first();
-            $activityLog = new ActivityLog([
-                'username' => Auth::user()->name,
-                'action' => 'Seating Arrangement',
-                'outcome' => 'success',
-                'details' => 'Assigned trainee ' . $traineeName. ' to seat ' . $seat . ' at week ' . $week,
-            ]);
-    
-            $activityLog->save();
-    
-            return redirect()->back()->with('success', 'Seat assigned successfully');
-        }
-    
-        return redirect()->back()->with('error', 'Seat not found');
     }
 
     public function getWeeklyData(Request $request) {
@@ -446,4 +32,394 @@ class SeatingController extends Controller
         // You can return the data as JSON (or any other format you prefer)
         return response()->json($seatingData);
     }
+
+    public function seatingArrangement(Request $request)
+    {
+        // Get the current week data (for initial page load)
+        $currentWeek = now()->format('Y-\WW');  // Get current week in YYYY-WW format
+        $currentSeatingPlan = Seating::where('week', $currentWeek)->first(); // Get the first seating plan if it exists
+    
+        // Get the selected week from the request (default to current week)
+        $selectedWeek = $request->input('week', $currentWeek);  // Default to the current week if no selection
+        $selectedSeatingPlan = Seating::where('week', $selectedWeek)->first(); // Get the first seating plan if it exists
+
+        $dateTime = new DateTime($currentWeek);
+        $dateTime->setISODate($dateTime->format('o'), $dateTime->format('W'), 7);
+        $current_end_date = $dateTime->format('d/m/Y');  // End of the week for display at the top
+        $dateTime->setISODate($dateTime->format('o'), $dateTime->format('W'), 1);
+        $current_start_date = $dateTime->format('d/m/Y');  // Start of the week for display at the top
+        $dateTime = new DateTime($selectedWeek);
+        $dateTime->setISODate($dateTime->format('o'), $dateTime->format('W'), 7);
+        $selected_end_date = $dateTime->format('d/m/Y');  // End of the week for display at the top
+        $dateTime->setISODate($dateTime->format('o'), $dateTime->format('W'), 1);
+        $selected_start_date = $dateTime->format('d/m/Y');  // Start of the week for display at the top
+    
+        // Check if the selected week has a seating plan
+        $hasSeatingPlan = !is_null($selectedSeatingPlan);
+        $hasCurrentSeatingPlan = !is_null($currentSeatingPlan);
+    
+        // Decode the seat_detail only if the plans exist
+        $currentSeatingDetails = $hasCurrentSeatingPlan ? json_decode($currentSeatingPlan->seat_detail, true) : [];
+        $selectedSeatingDetails = $hasSeatingPlan ? json_decode($selectedSeatingPlan->seat_detail, true) : [];
+
+        // Fetch all seating images of the current week if they exist
+        $currentSeatingImages = SeatingImage::where('week', $currentWeek)->first();
+        $currentImagePaths = $currentSeatingImages ? json_decode($currentSeatingImages->image_path, true) : [];
+
+        // Fetch all seating images of the selected week if they exist
+        $selectedSeatingImages = SeatingImage::where('week', $selectedWeek)->first();
+        $selectedImagePaths = $selectedSeatingImages ? json_decode($selectedSeatingImages->image_path, true) : [];
+
+
+        return view('seating-arrangement', [
+            'currentSeatingPlan' => $currentSeatingPlan,
+            'currentSeatingDetails' => $currentSeatingDetails,
+            'currentWeek' => $currentWeek,
+            'selectedSeatingPlan' => $selectedSeatingPlan,
+            'selectedSeatingDetails' => $selectedSeatingDetails,
+            'selectedWeek' => $selectedWeek,
+            'hasSeatingPlan' => $hasSeatingPlan,
+            'currentSeatingImages' => $currentImagePaths,
+            'selectedSeatingImages' => $selectedImagePaths,
+            'currentStartDate' => $current_start_date,
+            'currentEndDate' => $current_end_date,
+            'selectedStartDate' => $selected_start_date,
+            'selectedEndDate' => $selected_end_date,
+        ]);
+    }
+
+    public function traineeSVViewSeatingPlan(Request $request)
+    {
+        $role_id = Auth::user()->role_id;
+        $user_name = Auth::user()->name;
+
+        // Get the current week data (for initial page load)
+        $currentWeek = now()->format('Y-\WW');  // Get current week in YYYY-WW format
+    
+        // Get the selected week from the request (default to current week)
+        $selectedWeek = $request->input('week', $currentWeek);  // Default to the current week if no selection
+        $selectedSeatingPlan = Seating::where('week', $selectedWeek)->first(); // Get the first seating plan if it exists
+
+        $dateTime = new DateTime($selectedWeek);
+        $dateTime->setISODate($dateTime->format('o'), $dateTime->format('W'), 7);
+        $end_date = $dateTime->format('d/m/Y');  // End of the week for display at the top
+        $dateTime->setISODate($dateTime->format('o'), $dateTime->format('W'), 1);
+        $start_date = $dateTime->format('d/m/Y');  // Start of the week for display at the top
+    
+        // Check if the selected week has a seating plan
+        $hasSeatingPlan = !is_null($selectedSeatingPlan);
+    
+        // Decode the seat_detail only if the plans exist
+        $selectedSeatingDetails = $hasSeatingPlan ? json_decode($selectedSeatingPlan->seat_detail, true) : [];
+
+        // Fetch all seating images of the selected week if they exist
+        $selectedSeatingImages = SeatingImage::where('week', $selectedWeek)->first();
+        $selectedImagePaths = $selectedSeatingImages ? json_decode($selectedSeatingImages->image_path, true) : [];
+
+        if($role_id == 2){
+            return view('sv-view-seating-plan', [
+                'currentWeek' => $currentWeek,
+                'selectedSeatingPlan' => $selectedSeatingPlan,
+                'selectedSeatingDetails' => $selectedSeatingDetails,
+                'selectedWeek' => $selectedWeek,
+                'hasSeatingPlan' => $hasSeatingPlan,
+                'selectedSeatingImages' => $selectedImagePaths,
+                'selectedStartDate' => $start_date,
+                'selectedEndDate' => $end_date,
+            ]);
+        }
+        elseif($role_id ==3 ){
+            return view('trainee-view-seating-plan', [
+                'traineeName' => $user_name,
+                'currentWeek' => $currentWeek,
+                'selectedSeatingPlan' => $selectedSeatingPlan,
+                'selectedSeatingDetails' => $selectedSeatingDetails,
+                'selectedWeek' => $selectedWeek,
+                'hasSeatingPlan' => $hasSeatingPlan,
+                'selectedSeatingImages' => $selectedImagePaths,
+                'selectedStartDate' => $start_date,
+                'selectedEndDate' => $end_date,
+            ]);
+        }
+
+    }
+    
+    public function editWeeklySeatingPlan(Request $request)
+    {
+        // Check if a specific week is provided, otherwise use the current week
+        $selectedWeek = $request->query('week', now()->format('Y-\WW')); // If no 'week' is provided, use the current week
+        
+        // Convert the selected week into a date for comparison
+        $selectedWeekDate = Carbon::now()->startOfWeek()->setISODate(Carbon::now()->year, substr($selectedWeek, -2)); // Extract week number and use it
+    
+        // Fetch the seating plan for the selected week
+        $currentSeatingPlan = Seating::where('week', $selectedWeek)->first();
+        
+        // Fetch trainees whose internship starts before or on the selected week and ends after today
+        $trainees = AllTrainee::where('internship_start', '<=', $selectedWeekDate->format('Y-m-d'))
+                    ->where(function($query) {
+                        $query->whereNull('internship_end') // If no end date is specified
+                            ->orWhere('internship_end', '>=', now()->format('Y-m-d')); // or internship has not ended yet
+                    })
+                    ->get();
+
+        // Fetch all seating images of the selected week if they exist
+        $selectedSeatingImages = SeatingImage::where('week', $selectedWeek)->first();
+        $selectedImagePaths = $selectedSeatingImages ? json_decode($selectedSeatingImages->image_path, true) : [];
+    
+        // Pass the seating plan, selected week, and filtered trainees to the view
+        return view('edit-current-week-seating-plan', [
+            'currentSeatingPlan' => $currentSeatingPlan,
+            'selectedWeek' => $selectedWeek,
+            'trainees' => $trainees, 
+            'existingImages' => $selectedImagePaths,
+        ]);
+    }
+    
+
+    public function updateWeeklySeatingPlan(Request $request)
+    {
+        // Get the week
+        $week = $request->input('selected_week', now()->format('Y-\WW'));
+
+        // Fetch the selected week's seating plan
+        $seatingPlan = Seating::where('week', $week)->first();
+    
+        // Validate the form input
+        $request->validate([
+            'seat_detail' => 'required|array',
+            'existing_images' => 'nullable|array', 
+            'new_images' => 'nullable|array', 
+            'new_images.*' => 'image|mimes:jpeg,png,jpg|max:5120',
+        ]);
+
+        $currentSeatingImage = SeatingImage::where('week', $week)->first();
+        $currentImagePaths = $currentSeatingImage ? json_decode($currentSeatingImage->image_path, true) : [];
+
+        // Get the array of existing images from the request
+        $existingImages = $request->input('existing_images', []);
+
+        // Find images that are in the database but not in the update request (i.e., removed by the user)
+        $removedImages = array_diff($currentImagePaths, $existingImages);
+
+        // Remove the images from storage
+        foreach ($removedImages as $removedImage) {
+            if (Storage::disk('public')->exists($removedImage)) {
+                Storage::disk('public')->delete($removedImage); // Delete the image from storage
+            }
+        }
+
+        $imagePathDetail = [];
+
+        // Handle image upload if provided
+        if ($request->hasFile('new_images')) {
+            foreach ($request->file('new_images') as $file) {
+                if ($file->isValid()) {
+                    // Upload the image and store the path
+                    $imagePath = $file->store('seating_images', 'public'); // Store in 'storage/app/public/seating_images'
+                    $imagePathDetail[] = $imagePath;  // Append each new image path to the array
+                }
+            }
+        }
+
+        // If there are existing images, add them to the array
+        if ($request->has('existing_images')) {
+            $existingImages = $request->input('existing_images'); // Retrieve existing image links
+            $imagePathDetail = array_merge($imagePathDetail, $existingImages); // Merge existing images with new ones
+        }
+
+        $seatingImage = SeatingImage::firstOrCreate(
+            ['week' => $request->selected_week],  // Find record by week
+            ['image_path' => json_encode([])]     // Default to an empty array if not found
+        );
+        
+        // Update the record with the merged image paths as a JSON array
+        $seatingImage->image_path = json_encode($imagePathDetail, JSON_UNESCAPED_SLASHES); // Store image paths as JSON
+        $seatingImage->save();
+    
+        // Get the seating details from the database
+        $existingSeatDetails = json_decode($seatingPlan->seat_detail, true) ?? [];
+    
+        // Initialize an array to hold updated seat details
+        $updatedSeatDetails = [];
+    
+        // Iterate through the seat details provided in the form
+        foreach ($request->input('seat_detail') as $key => $value) {
+            // Check if the key represents a new seat entry
+            if (strpos($key, 'new_') !== false && strpos($key, 'col_0') !== false) {
+                // This is a new seat code
+                $seatCode = $value; // This is the new seat code (like "A2")
+                $assignedToKey = str_replace('col_0', 'col_1', $key); // Find the matching assigned name key
+                $assignedTo = $request->input("seat_detail.$assignedToKey", null); // Get the assigned person's name
+    
+                // Only include the seat in the final seating plan if seat code and assignedTo are not empty
+                if (!empty($seatCode) && !empty($assignedTo)) {
+                    $updatedSeatDetails[$seatCode] = $assignedTo; // Map new seat code to assigned person
+                }
+            } elseif (strpos($key, 'new_') === false) {
+                // This is an existing seat (not starting with 'new_')
+                $updatedSeatDetails[$key] = $value; // Keep existing seat code and its value
+            }
+        }
+    
+        // Update the seating plan details with only the updated data
+        $seatingPlan->seat_detail = json_encode($updatedSeatDetails);
+        $seatingPlan->save();
+    
+        // Redirect with success message
+        return redirect()->route('seating-arrangement')->with('success', 'Seating plan updated successfully.');
+    }  
+    
+    public function createWeeklySeatingPlan(Request $request)
+    {
+        // Retrieve the selected week from the query parameters, default to the current week if not provided
+        $selectedWeek = $request->input('week', now()->format('Y-\WW'));
+
+        // Convert the selected week into a date for comparison
+        $selectedWeekDate = Carbon::now()->startOfWeek()->setISODate(Carbon::now()->year, substr($selectedWeek, -2)); // Extract week number and use it
+
+        $dateTime = new DateTime($selectedWeek);
+
+        //get the start date and end date from the selected week
+        $dateTime->setISODate($dateTime->format('o'), $dateTime->format('W'), 1);
+        $startDate = $dateTime->format('d/m/Y');  // Start of the week
+        $dateTime->setISODate($dateTime->format('o'), $dateTime->format('W'), 7);
+        $endDate = $dateTime->format('d/m/Y');  // End of the week 
+
+        // Fetch trainees whose internship starts before or on the selected week and ends after today
+        $trainees = AllTrainee::where('internship_start', '<=', $selectedWeekDate->format('Y-m-d'))
+        ->where(function($query) {
+            $query->whereNull('internship_end') // If no end date is specified
+                ->orWhere('internship_end', '>=', now()->format('Y-m-d')); // or internship has not ended yet
+        })
+        ->get();
+    
+        // Pass the selected week to the view
+        return view('create-weekly-seating-plan', compact('selectedWeek', 'startDate', 'endDate', 'trainees'));
+    }
+
+    public function removeWeeklySeatingPlan(Request $request)
+    {
+        // Retrieve the selected week from the query parameters, default to the current week if not provided
+        $selectedWeek = $request->input('week', now()->format('Y-\WW'));
+    
+        // Find the seating plan for the selected week
+        $seating = Seating::where('week', $selectedWeek)->first();
+        $seatingImage = SeatingImage::where('week', $selectedWeek)->first();
+       
+        if ($seating) {
+            // If seating plan exists, delete it
+            $seating->delete();
+            if($seatingImage){
+                $currentImagePaths = json_decode($seatingImage->image_path, true);
+                foreach ($currentImagePaths as $image) {
+                    if (Storage::disk('public')->exists($image)) {
+                        Storage::disk('public')->delete($image); // Delete the image from storage
+                    }
+                }
+            }
+            SeatingImage::where('week', $selectedWeek)->delete();
+            
+            // Redirect back to the seating arrangement view with a success message
+            return redirect()->route('seating-arrangement')
+                ->with('success', 'Seating plan for the selected week has been successfully removed.');
+        } else {
+            // If no seating plan exists for the selected week, return with an error message
+            return redirect()->route('seating-arrangement')
+                ->with('error', 'No seating plan found for the selected week.');
+        }
+    }
+
+    public function createNewWeeklySeatingPlan(Request $request)
+    {
+        // Validate the form input
+        $request->validate([
+            'seat_detail' => 'required|array',
+            'selected_week' => 'required', // Ensure the week is also provided
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg|max:5120'
+        ]);
+    
+        // Initialize an array to hold the new seat details
+        $newSeatDetails = [];
+        $imagePaths = [];
+
+        // Handle multiple image uploads if provided
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                if ($image->isValid()) {
+                    // Store each image in 'seating_images' directory
+                    $imagePath = $image->store('seating_images', 'public');
+                    // Add image path to the array
+                    $imagePaths[] = $imagePath;
+                }
+            }
+        }
+
+        // Retrieve existing record for the selected week or create a new one
+        $seatingImage = SeatingImage::firstOrCreate(
+            ['week' => $request->selected_week],  // Find record by week
+            ['image_path' => json_encode([])]    // Default empty array if not found
+        );
+
+        // Update the record with the merged image paths as a JSON array
+        $seatingImage->image_path = json_encode($imagePaths);
+        $seatingImage->save();
+    
+        // Iterate through the seat details provided in the form
+        foreach ($request->input('seat_detail') as $key => $value) {
+            // Check if the key is related to seat code or assigned trainee ID
+            if (strpos($key, 'new_') !== false) {
+                // Extract the index number from the key (e.g., 0, 1)
+                preg_match('/new_(\d+)_/', $key, $matches);
+                $index = $matches[1];
+
+                // Check if this key is for seat code or assigned trainee ID
+                if (strpos($key, 'seat_code') !== false) {
+                    // This is a seat code (like "B1")
+                    $seatCode = $value;
+
+                    // Find the corresponding assigned trainee ID (e.g., 'new_0_assigned_to')
+                    $assignedToKey = "new_{$index}_assigned_to";
+                    $assignedToId = $request->input("seat_detail.$assignedToKey");
+
+                    // Check if the seat has a code (not empty)
+                    if (!empty($seatCode)) {
+                        // If assignedToId is empty, assign an empty string to the seat
+                        if (empty($assignedToId)) {
+                            $newSeatDetails[$seatCode] = ""; // No trainee assigned
+                        } else {
+                            // Find the trainee by ID and get the name
+                            $trainee = AllTrainee::find($assignedToId);
+                            if ($trainee) {
+                                // Store trainee name instead of ID
+                                $newSeatDetails[$seatCode] = $trainee->name;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    
+        // Get the selected week and format start and end dates
+        $dateTime = new DateTime($request->input('selected_week'));
+        $dateTime->setISODate($dateTime->format('o'), $dateTime->format('W'), 1);
+        $startDate = $dateTime->format('d/m/Y');  // Start of the week
+        $dateTime->setISODate($dateTime->format('o'), $dateTime->format('W'), 7);
+        $endDate = $dateTime->format('d/m/Y');  // End of the week 
+    
+        // Create a new instance of the Seating model
+        $seatingPlan = new Seating();
+        $seatingPlan->week = $request->input('selected_week'); // Store the selected week
+        $seatingPlan->seat_detail = json_encode($newSeatDetails); // Store the seat details as JSON (trainee names)
+        $seatingPlan->start_date = $startDate;
+        $seatingPlan->end_date = $endDate;
+    
+        // Save the new seating plan to the database
+        $seatingPlan->save();
+    
+        // Redirect with success message
+        return redirect()->route('seating-arrangement')->with('success', 'Seating plan created successfully.');
+    }
+      
 }

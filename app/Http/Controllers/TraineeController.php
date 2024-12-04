@@ -7,6 +7,8 @@ use Ramsey\Uuid\Uuid;
 use App\Models\Logbook;
 use App\Models\Seating;
 use App\Models\Trainee;
+use App\Models\Expertise;
+use Illuminate\View\View;
 use App\Models\AllTrainee;
 use App\Models\Supervisor;
 use App\Models\ActivityLog;
@@ -65,6 +67,7 @@ class TraineeController extends Controller
     public function placeholderProfile(){
         // Get the currently logged-in user
         $user = Auth::user();
+        $expertises = Expertise::pluck('expertise');
             
         // Check if the user is a trainee
         if ($user->role_id == 3) {
@@ -76,7 +79,7 @@ class TraineeController extends Controller
                 return redirect()->back()->with('error', 'Trainee not found');
             }
 
-            return view('trainee-edit-profile', compact('trainee'));
+            return view('trainee-edit-profile', compact('trainee', 'expertises'));
         } else {
             // Handle the case where the user is not a trainee (e.g., supervisor or other role)
             return redirect()->back()->with('error', 'User is not a trainee');
@@ -88,7 +91,7 @@ class TraineeController extends Controller
             'phoneNum' => ['required', 'string', 'regex:/^(\+?6?01)[02-46-9][0-9]{7}$|^(\+?6?01)[1][0-9]{8}$/'],
             'expertise' => 'nullable|string',
             'personalEmail' => [
-                'required',
+                'nullable',
                 'string',
                 'email',
                 'max:255',

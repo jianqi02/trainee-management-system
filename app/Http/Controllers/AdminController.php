@@ -8,8 +8,12 @@ use Ramsey\Uuid\Uuid;
 use App\Models\Comment;
 use App\Models\Logbook;
 use App\Models\Seating;
+use App\Models\Section;
 use App\Models\Trainee;
+use App\Models\Settings;
+use App\Models\Expertise;
 use App\Models\AllTrainee;
+use App\Models\Department;
 use App\Models\Supervisor;
 use App\Models\ActivityLog;
 use App\Models\Notification;
@@ -84,81 +88,42 @@ class AdminController extends Controller
         $emptySeatCount = 0;
         $occupiedSeatCount = 0;
         $totalSeatCount = 0;
+
         $seatDetail = json_decode($get_the_seat_detail, true);
-         // Check if $seatDetail is not null before using it
-         if ($seatDetail !== null) {
-             // Check if $seatDetail is not null and is an array before using it
-             if (is_array($seatDetail)) {
-                 //to get the total number of empty seats (trainee id = Not Assigned & seat status = Available)
-                 $emptySeatCount = count(
-                     array_filter($seatDetail, function ($seat) {
-                         return isset($seat['trainee_id']) && isset($seat['seat_status']) &&
-                             $seat['trainee_id'] === 'Not Assigned' && $seat['seat_status'] === 'Available';
-                     })
-                 );
-                 $occupiedSeatCount = count(
-                    array_filter($seatDetail, function ($seat) {
-                        return isset($seat['trainee_id']) && isset($seat['seat_status']) &&
-                            $seat['trainee_id'] !== 'Not Assigned' && $seat['seat_status'] === 'Available';
-                    })
-                );
-                $totalSeatCount = count(
-                    array_filter($seatDetail, function ($seat) {
-                        return isset($seat['seat_status']) &&
-                            $seat['seat_status'] === 'Available';
-                    })
-                );
-             } 
-         }
+
+        // Check if $seatDetail is not null before using it
+        if ($seatDetail !== null) {
+            // Check if $seatDetail is an array
+            if (is_array($seatDetail)) {
+                // Total seat count is the number of entries in $seatDetail
+                $totalSeatCount = count($seatDetail);
+
+                // Iterate over each seat code in $seatDetail
+                foreach ($seatDetail as $seatCode => $traineeName) {
+                    // If the seat is empty (i.e., the value is an empty string)
+                    if ($traineeName === "" || $traineeName === null) {
+                        $emptySeatCount++;
+                    } else {
+                        // If the seat is occupied (i.e., the value is not empty)
+                        $occupiedSeatCount++;
+                    }
+                }
+            }
+        }
+
 
         // Calculate the total available seat ,occupied seat number, total seat number and for that week
         $weeklyData = [];
         $weeklyData['empty_seat_count'] = $emptySeatCount;
         $weeklyData['occupied_seat_count'] = $occupiedSeatCount; 
         $weeklyData['total_seat_count'] = $totalSeatCount;
-
-        // Define an array of all possible seat names
-        $allSeatNames = [];
-        for ($i = 1; $i <= env('TOTAL_SEATS_1ST_FLOOR'); $i++) {
-            $seatNumber = str_pad($i, 2, '0', STR_PAD_LEFT); // Format as CSM01 to CSM20
-            $allSeatNames[] = 'CSM' . $seatNumber; 
-        }
-
-        $tSeatNames = [];
-        for ($i = 1; $i <= 17; $i++) {
-            $tSeatNumber = str_pad($i, 2, '0', STR_PAD_LEFT); // Format as T01 to T17
-            $tSeatNames[] = 'T' . $tSeatNumber;
-        }
         
-        // Check if a record doesn't exist with the specified conditions
-        //to check whether the seat information for that week is exist or not.
-        $exist = true;
-        if (Seating::where('week', $weekRequired)->doesntExist()) {
-           $exist = false;
-        }
+        $currentSeatingPlan = Seating::where('week', $weekRequired)->first(); // Get the first seating plan if it exists
+        $hasCurrentSeatingPlan = !is_null($currentSeatingPlan);
+        $currentSeatingDetails = $hasCurrentSeatingPlan ? json_decode($currentSeatingPlan->seat_detail, true) : [];
 
-        // Fetch trainee_id data from the seatings table for the selected week
-        $seatingData = Seating::where('week', $weekRequired)
-            ->first();
-
-        if ($seatingData) {
-            // Decode the seat_detail JSON
-            $seatDetail = json_decode($seatingData->seat_detail, true);
-        
-            // Replace the trainee_id with trainee name
-            foreach ($seatDetail as &$seatInfo) {
-                $trainee_name = AllTrainee::where('id',$seatInfo['trainee_id'])->pluck('name')->first();
-                $seatInfo['trainee_id'] = $trainee_name ?? 'Not Assigned';
-            }
-        
-            // Encode the updated seat_detail back to JSON
-            $seatingData = json_encode($seatDetail);
-
-            return view('admin-dashboard', compact('trainees','seatingData','count','totalTrainee','logbooks','weeksInMonth', 'weeklyData','weekRequired','start_date','end_date','exist'));
-        }
-        else{
-            return view('admin-dashboard', compact('trainees','seatingData','count','totalTrainee','logbooks','weeksInMonth', 'weeklyData','weekRequired','start_date','end_date','exist'));
-        }
+        return view('admin-dashboard', compact('trainees','count', 'currentSeatingPlan', 'currentSeatingDetails', 'totalTrainee','logbooks','weeksInMonth', 'weeklyData','weekRequired','start_date','end_date'));
+    
     }
 
     public function showAllTrainee()
@@ -279,15 +244,84 @@ class AdminController extends Controller
 
     public function assignSupervisorToTrainee($selected_trainee)
     {
+        // Get trainee details
         $traineeName = urldecode($selected_trainee);
         $trainee = AllTrainee::where('name', $traineeName)->first();
-        $traineeID = AllTrainee::where('name', $traineeName)
-            ->value('id');
-        
+        $traineeID = $trainee->id;
+    
+        // Get trainee's expertise
+        $traineeExpertises = $trainee->expertise;
+    
+        // Get supervisors who are not already assigned to this trainee
         $assignedSupervisorList = TraineeAssign::where('trainee_id', $traineeID)->pluck('assigned_supervisor_id')->toArray();
-        $filteredSupervisors = Supervisor::whereNotIn('id', $assignedSupervisorList)->get();
+        $supervisors = Supervisor::whereNotIn('id', $assignedSupervisorList)->get();
+    
+        // Supervisor Recommendation Algorithm
+        // If the supervisor does not have any trainee will get 2 points.
+        // If the supervisor has same expertise with the selected trainee will get 2 points.
+        // When every supervisors in the list have at least 1 supervisor, the supervisor with the least number of supervisor will gain 1 points.
+        // The supervisor with highest points will be marked as "recommended"
+        // If there is more than 1 supervisor with same highest points, all of them will be marked as "recommended"
 
-        return view('admin-assign-trainee-function', compact('trainee','filteredSupervisors'));
+        // Initialize a list to store supervisors with their calculated points
+        $supervisorScores = [];
+
+        // Check is the condition "all supervisors in the list have at least one supervisor"
+        $leastTraineeCount = Supervisor::min('trainee_count');
+    
+        foreach ($supervisors as $supervisor) {
+            $points = 0;
+    
+            // 1. Supervisors without any trainee
+            $traineeCount = $supervisor->trainee_count;
+            if ($traineeCount === 0) {
+                $points += 2;
+            }
+    
+            // 2. Supervisors sharing the same expertise with the trainee
+            $supervisorExpertises = $supervisor->expertise;
+            if ($traineeExpertises == $supervisorExpertises) {
+                $points += 2;
+            }
+    
+            // 3. Supervisors with the least number of trainees (when all have at least 1)
+            if($leastTraineeCount >= 1){
+                $traineeCount = $supervisor->trainee_count;
+                if ($totalTraineeCount == $leastTraineeCount) {
+                    $points += 1;
+                }
+            }
+    
+            // Add supervisor and their points to the list
+            $supervisorScores[] = [
+                'supervisor' => $supervisor,
+                'points' => $points
+            ];
+        }
+    
+        // Sort supervisors by points in descending order
+        usort($supervisorScores, function ($a, $b) {
+            return $b['points'] - $a['points'];
+        });
+    
+        // Filter out the highest point supervisors for recommendation
+        $highestPoints = $supervisorScores[0]['points'] ?? 0;
+        $recommendedSupervisors = array_filter($supervisorScores, function ($supervisor) use ($highestPoints) {
+            return $supervisor['points'] == $highestPoints;
+        });
+    
+        // Only extract supervisor names for the recommendation
+        $recommendedSupervisorNames = array_map(function($supervisorScore) {
+            return $supervisorScore['supervisor']->name;
+        }, $recommendedSupervisors);
+    
+        return view('admin-assign-trainee-function', [
+            'trainee' => $trainee,
+            'supervisorScores' => $supervisorScores,
+            'supervisors' => $supervisors,
+            'recommendedSupervisors' => $recommendedSupervisorNames,
+            'leastTraineeCount' => $leastTraineeCount
+        ]);
     }
 
     public function removeAssignedSupervisor($selected_trainee)
@@ -334,6 +368,8 @@ class AdminController extends Controller
                         Trainee::where('id', $selectedTraineeID)->update(['supervisor_status' => 'Assigned']);
                     }
                 }
+                $traineeCount = TraineeAssign::where('assigned_supervisor_id', $supervisorID)->count();
+                Supervisor::where('id', $supervisorID)->update(['trainee_count' => $traineeCount]);
             }
         }
 
@@ -569,19 +605,22 @@ class AdminController extends Controller
     {
         $targetName = urldecode($selected);
         $user = User::where('name', $targetName)->first();
+        $expertises = Expertise::pluck('expertise');
+        $departments = Department::pluck('department_name');
+        $sections = Section::pluck('section_name');
 
         if($user == null){
             return redirect()->route('user-management');
         }
         if ($user->role_id === 2) { //supervisor
             $supervisor = Supervisor::where('name', $user->name)->first();
-            return view('admin-edit-profile', compact('user', 'supervisor'));
+            return view('admin-edit-profile', compact('user', 'supervisor', 'expertises', 'sections', 'departments'));
         } elseif ($user->role_id === 3) { //trainee
             $trainee = Trainee::where('name', $user->name)->first();
             $internship_date = AllTrainee::where('name', 'LIKE', $user->name)
                 ->select('internship_start', 'internship_end')
                 ->first();
-            return view('admin-edit-profile', compact('user', 'trainee', 'internship_date'));
+            return view('admin-edit-profile', compact('user', 'trainee', 'internship_date', 'expertises'));
         } 
     }
 
@@ -598,9 +637,9 @@ class AdminController extends Controller
 
             $validatedData = $request->validate([
                 'fullName' => 'required|regex:/^[A-Za-z\s]+$/',
-                'phoneNum' => ['nullable', 'string', 'regex:/^(\+?6?01)[02-46-9][0-9]{7}$|^(\+?6?01)[1][0-9]{8}$/'],
+                'expertise' => 'nullable|string',
+                'department' => 'nullable|string',
                 'section' => 'nullable|string',
-                'profilePicture' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
         
             $target->name = $request->input('fullName');
@@ -609,7 +648,8 @@ class AdminController extends Controller
             Supervisor::where('sains_email', $target->email)
             ->update([
                 'name' => $request->input('fullName'),
-                'phone_number' => $request->input('phoneNum'),
+                'expertise' => $request->input('expertise'),
+                'department' => $request->input('department'),
                 'section' => $request->input('section'),
             ]);
 
@@ -1397,5 +1437,67 @@ class AdminController extends Controller
     
         return view('activity-log', compact('activityLogs', 'username', 'start_date_input', 'end_date_input', 'outcome'));
     }
+
+    public function showSettings()
+    {
+        // Get the first settings record or return an empty Settings instance if none exists
+        $settings = Settings::first() ?? new Settings();
+        $expertises = Expertise::pluck('expertise');
+        $departments = Department::pluck('department_name');
+        $sections = Section::pluck('section_name');
+        return view('admin-settings', compact('settings', 'expertises', 'departments', 'sections'));
+    }
     
+
+    public function storeSettings(Request $request)
+    {    
+        // Validate the request
+        $request->validate([
+            'allowed_domains' => 'array',
+            'allowed_domains.*' => 'string|regex:/^[a-z0-9.-]+\.[a-z]{2,}$/', // Accept domain names
+            'expertises' => 'array', // Validate expertises input
+            'expertises.*' => 'string|max:255', 
+            'departments' => 'array', // Validate departments input
+            'departments.*' => 'string|max:255', 
+        ]);        
+    
+        // Retrieve the settings or create a new instance if none exists
+        $settings = Settings::first() ?? new Settings();
+    
+        // Handle allowed domains
+        $allowedDomains = $request->input('allowed_domains', []);
+        $settings->email_domain = implode(',', $allowedDomains); // Save as comma-separated string
+    
+        // Handle disable registration checkbox
+        $settings->disable_registration = $request->input('disable_registration') === 'on';
+
+        // Handle comapny name
+        $settings->company_name = $request->input('company_name');
+    
+        // Save settings
+        $settings->save();
+
+        Expertise::truncate();  // clear all existing records in the 'expertises' table, so that no need to compare two arrays (database vs input)
+        $expertises = $request->input('expertises', []); 
+        foreach ($expertises as $expertiseName) {
+            Expertise::create(['expertise' => $expertiseName]);  // Create new expertise entries
+        }
+
+        Department::truncate();  // clear all existing records in the 'departments' table, so that no need to compare two arrays (database vs input)
+        $departments = $request->input('departments', []); 
+        foreach ($departments as $departmentName) {
+            Department::create(['department_name' => $departmentName]);  // Create new department entries
+        }
+
+        Section::truncate();  // clear all existing records in the 'sections' table, so that no need to compare two arrays (database vs input)
+        $sections = $request->input('sections', []); 
+        foreach ($sections as $sectionName) {
+            Section::create(['section_name' => $sectionName]);  // Create new section entries
+        }
+
+        // Redirect back with a success message
+        return redirect()->route('settings')->with('success', 'Settings updated successfully.');
+    }
 }
+    
+

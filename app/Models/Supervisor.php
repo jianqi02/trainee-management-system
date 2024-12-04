@@ -17,10 +17,10 @@ class Supervisor extends Model
         'name',
         'section',
         'department',
-        'personal_email',
+        'expertise',
         'sains_email',
-        'phone_number',
         'trainee_status',
+        'trainee_count',
     ];
 
     public function traineeSupervisor()

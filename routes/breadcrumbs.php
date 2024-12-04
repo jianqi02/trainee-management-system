@@ -90,10 +90,10 @@ Breadcrumbs::for('daily-task-detail', function ($trail, $date, $taskID) {
     $trail->push('Daily Task Detail', route('trainee-daily-task-detail', ['date' => $date, 'taskID' => $taskID]));
 });
 
-// Home > Seat Plan
-Breadcrumbs::for('seat-plan', function ($trail) {
+// Home > View Seating Plan
+Breadcrumbs::for('view-seating-plan', function ($trail) {
     $trail->parent('homepage');
-    $trail->push('Seat Plan', route('view-seat-plan'));
+    $trail->push('View Seating Plan', route('trainee-view-seating-plan'));
 });
 
 // Home > My Supervisor
@@ -124,10 +124,10 @@ Breadcrumbs::for('sv-edit-profile', function ($trail) {
     $trail->push('Edit Profile', route('sv-edit-profile'));
 });
 
-// Home > Seat Plan
-Breadcrumbs::for('sv-seat-plan', function ($trail) {
+// Home > View Seating Plan
+Breadcrumbs::for('sv-view-seating-plan', function ($trail) {
     $trail->parent('sv-homepage');
-    $trail->push('Seat Plan', route('sv-view-seat-plan'));
+    $trail->push('View Seating Plan', route('sv-view-seating-plan'));
 });
 
 // Home > Change Password
@@ -233,7 +233,7 @@ Breadcrumbs::for('remove-sv-from-trainee', function ($trail, $name) {
 // Dashboard > Seating Arrangement
 Breadcrumbs::for('seating-arrangement', function ($trail) {
     $trail->parent('dashboard');
-    $trail->push('Seating Arrangement', route('seating-arrange'));
+    $trail->push('Seating Arrangement', route('seating-arrangement'));
 });
 
 // Dashboard > User Management
@@ -300,5 +300,23 @@ Breadcrumbs::for('admin-change-password', function ($trail) {
 Breadcrumbs::for('activity-log', function ($trail) {
     $trail->parent('dashboard');
     $trail->push('Activity Log', route('activity-log'));
+});
+
+// Dashboard > Settings
+Breadcrumbs::for('settings', function ($trail) {
+    $trail->parent('dashboard');
+    $trail->push('Settings', route('settings'));
+});
+
+// Dashboard > Seating Arrangement > Edit Seating Plan
+Breadcrumbs::for('seating-plan.edit', function ($trail) {
+    $trail->parent('seating-arrangement');
+    $trail->push('Edit Seating Plan', route('seating-plan.edit'));
+});
+
+// Dashboard > Seating Arrangement > Create Seating Plan
+Breadcrumbs::for('seating-plan.create', function ($trail) {
+    $trail->parent('seating-arrangement');
+    $trail->push('Create Seating Plan', route('seating-plan.create'));
 });
 /* breadcrumbs for admin ends */

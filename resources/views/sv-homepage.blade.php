@@ -97,7 +97,7 @@
               </div>
               <div class="row">
                   <div class="col-md-12">
-                    <a href="/sv-view-seat-plan" class="rectangular-button" style="text-decoration: none;">View Seat Plan</a>
+                    <a href="/sv-view-seating-plan" class="rectangular-button" style="text-decoration: none;">View Seating Plan</a>
                   </div>
               </div>
           </div>
