@@ -7,27 +7,27 @@ use Ramsey\Uuid\Uuid;
 use App\Models\Logbook;
 use App\Models\Seating;
 use App\Models\Trainee;
+use App\Models\Settings;
 use App\Models\Expertise;
 use Illuminate\View\View;
 use App\Models\AllTrainee;
 use App\Models\Supervisor;
 use App\Models\ActivityLog;
+use Illuminate\Support\Str;
 use App\Models\Notification;
 use App\Models\TaskTimeline;
-use App\Models\TraineeAssign;
-use App\Notifications\TelegramNotification;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Auth;
+use App\Models\TraineeAssign;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
+use Spatie\Browsershot\Browsershot;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use Spatie\Browsershot\Browsershot;
-use Barryvdh\DomPDF\Facade\Pdf;
+use App\Notifications\TelegramNotification;
 
 class TraineeController extends Controller
 {
@@ -410,8 +410,11 @@ class TraineeController extends Controller
         // Fetch associated supervisors
         $supervisors = $allTrainees->supervisors;
 
+        // Fetch company name
+        $company_name = Settings::pluck('company_name')->first();
+
         // Load the view file and pass tasks, trainee, supervisors, dateGenerated, startMonth, and endMonth data
-        $pdf = PDF::loadView('logbook-summary', compact('tasks', 'trainee', 'supervisors', 'dateGenerated', 'startMonth', 'endMonth', 'isSingleMonth'));
+        $pdf = PDF::loadView('logbook-summary', compact('tasks', 'trainee', 'supervisors', 'dateGenerated', 'startMonth', 'endMonth', 'isSingleMonth', 'company_name'));
 
         // Optionally, set paper size and orientation
         $pdf->setPaper('A4', 'portrait');

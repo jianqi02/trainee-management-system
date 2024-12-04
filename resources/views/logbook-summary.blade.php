@@ -63,7 +63,7 @@
     <h1>LOGBOOK SUMMARY REPORT</h1>
 
     <div class="info-section">
-        <p><strong>Company:</strong> SARAWAK INFORMATION SYSTEM SDN. BHD.</p>
+        <p><strong>Company:</strong> {{ $company_name }}</p>
         <p><strong>Trainee Name:</strong> {{ $trainee->name }}</p>
         <p><strong>Position:</strong> TRAINEE</p>
         <p><strong>Company email:</strong> {{ $trainee->sains_email }}</p>
