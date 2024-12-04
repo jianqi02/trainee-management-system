@@ -27,8 +27,7 @@
                 <div class="col-sm-6 mb-3 mb-sm-0">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title" style="font-size: 22px;">Current Number of Trainee(s)</h5>
-                            <h6 class="card-title" style="font-size: 14px;">Number of trainees that are still undergo their internship</h6>
+                            <h5 class="card-title" style="font-size: 22px;">Active Trainee(s)</h5>
                             <p class="card-text">{{ $count }}</p>
                         </div>
                     </div>
@@ -38,7 +37,7 @@
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title" style="font-size: 22px;">Total Trainee(s)</h5>
-                            <h6 class="card-title" style="font-size: 14px;">How many trainees are interning in our company</h6>
+                            <h6 class="card-title" style="font-size: 14px;">Total records of trainee(s)</h6>
                             <p class="card-text">{{ $totalTrainee }}</p>
                         </div>
                     </div>

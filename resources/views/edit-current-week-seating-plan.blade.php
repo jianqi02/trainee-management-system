@@ -19,6 +19,7 @@
             <div class="mb-3" style="margin-top: 15px; margin-left: 20px;">
                 <button type="button" id="create-table" class="btn btn-primary">Create Table</button>
                 <button type="button" id="add-row" class="btn btn-secondary">Add Row</button>
+                <button type="button" id="random-assign" class="btn btn-secondary" style="background-color:green;">Random Assign</button>
             </div>
             <div class="card-body">
                 <table class="table table-bordered" id="seating-plan-table">
@@ -53,14 +54,65 @@
 
         <div class="form-group">
             <label for="image">Upload Floor Plan or Real Image</label>
-            <input type="file" name="image" id="image" class="form-control" accept=".jpg, .jpeg, .png">
+            <input type="file" name="new_images[]" id="image" class="form-control" accept=".jpg, .jpeg, .png" multiple>
         </div>
         
+        <!-- Display existing images -->
+        <div id="image-preview">
+            <h5>Uploaded Images</h5>
+            <ul id="uploaded-image-list">
+                @foreach ($existingImages as $image)
+                    <li data-filename="{{ $image }}">
+                        <img src="{{ asset('storage/' . $image) }}" alt="Uploaded Image" style="width: 150px;">
+                        <button type="button" class="btn btn-danger btn-sm remove-image">Remove</button>
+        
+                        <!-- Hidden input for existing images but named differently -->
+                        <input type="hidden" name="existing_images[]" value="{{ $image }}">
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+
         <button type="submit" class="btn btn-success mt-3">Update Seating Plan</button>
     </form>
 </div>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+
+        // Handle image uploads
+        const imageInput = document.getElementById('image');
+        const uploadedImageList = document.getElementById('uploaded-image-list');
+
+        // Event listener for new image uploads
+        imageInput.addEventListener('change', function(event) {
+            const files = event.target.files;
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <img src="${e.target.result}" alt="Uploaded Image" style="width: 150px;">
+                        <button type="button" class="btn btn-danger btn-sm remove-image">Remove</button>
+                    `;
+                    li.dataset.filename = file.name;  // Store the filename for later
+                    uploadedImageList.appendChild(li);
+                };
+
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Handle removing images
+        uploadedImageList.addEventListener('click', function(event) {
+            if (event.target.classList.contains('remove-image')) {
+                const li = event.target.closest('li');
+                li.remove();
+            }
+        });
+
     // Create Table button click
     document.getElementById('create-table').addEventListener('click', function() {
         let rows = prompt("Enter number of rows:", "5");
@@ -97,6 +149,46 @@
             }
         }
     });
+
+        // Random Assign button click
+document.getElementById('random-assign').addEventListener('click', function() {
+    let trainees = @json($trainees); // This is the list of trainees
+
+    // Get all the rows in the seating plan table
+    let rows = document.querySelectorAll('#seating-plan-table tbody tr');
+
+    // Shuffle the trainees array to get a random order
+    let shuffledTrainees = shuffleArray(trainees);
+
+    // Loop through each row and assign a random trainee
+    rows.forEach(function(row, index) {
+        let traineeSelect = row.querySelector('select');
+
+        // Assign a trainee from the shuffled array, if there are more trainees than rows
+        if (shuffledTrainees[index]) {
+            // Find the option in the dropdown that matches the trainee's name and set it as selected
+            let traineeName = shuffledTrainees[index].name;
+            Array.from(traineeSelect.options).forEach(function(option) {
+                if (option.value === traineeName) {
+                    option.selected = true;
+                }
+            });
+        } else {
+            // If no more trainees available, set the dropdown to the default (unassigned)
+            traineeSelect.value = ''; // Set to empty if no trainee
+        }
+    });
+});
+
+// Utility function to shuffle the trainees array
+function shuffleArray(array) {
+    let shuffledArray = array.slice(); // Create a copy of the array
+    for (let i = shuffledArray.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1));
+        [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
+    }
+    return shuffledArray;
+}
 
     // Add Row button click
     document.getElementById('add-row').addEventListener('click', function() {

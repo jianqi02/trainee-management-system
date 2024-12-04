@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('seating_images', function (Blueprint $table) {
             $table->id(); // Primary key
             $table->string('week')->nullable(); //2024-W00, The date format 
-            $table->string('image_path'); // Image file path
+            $table->json('image_path')->nullable(); // Image file path
             $table->timestamps(); // Created at and updated at
         });
     }

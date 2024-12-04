@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use DateTime;
 use Carbon\Carbon;
+use App\Models\User;
 use App\Models\Seating;
 use App\Models\Trainee;
 use App\Models\AllTrainee;
@@ -12,6 +13,7 @@ use App\Models\SeatingImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 
 class SeatingController extends Controller
@@ -40,6 +42,17 @@ class SeatingController extends Controller
         // Get the selected week from the request (default to current week)
         $selectedWeek = $request->input('week', $currentWeek);  // Default to the current week if no selection
         $selectedSeatingPlan = Seating::where('week', $selectedWeek)->first(); // Get the first seating plan if it exists
+
+        $dateTime = new DateTime($currentWeek);
+        $dateTime->setISODate($dateTime->format('o'), $dateTime->format('W'), 7);
+        $current_end_date = $dateTime->format('d/m/Y');  // End of the week for display at the top
+        $dateTime->setISODate($dateTime->format('o'), $dateTime->format('W'), 1);
+        $current_start_date = $dateTime->format('d/m/Y');  // Start of the week for display at the top
+        $dateTime = new DateTime($selectedWeek);
+        $dateTime->setISODate($dateTime->format('o'), $dateTime->format('W'), 7);
+        $selected_end_date = $dateTime->format('d/m/Y');  // End of the week for display at the top
+        $dateTime->setISODate($dateTime->format('o'), $dateTime->format('W'), 1);
+        $selected_start_date = $dateTime->format('d/m/Y');  // Start of the week for display at the top
     
         // Check if the selected week has a seating plan
         $hasSeatingPlan = !is_null($selectedSeatingPlan);
@@ -49,9 +62,14 @@ class SeatingController extends Controller
         $currentSeatingDetails = $hasCurrentSeatingPlan ? json_decode($currentSeatingPlan->seat_detail, true) : [];
         $selectedSeatingDetails = $hasSeatingPlan ? json_decode($selectedSeatingPlan->seat_detail, true) : [];
 
-        // Fetch the seating image if it exists
-        $currentSeatingImage = $currentSeatingPlan ? SeatingImage::where('week', $currentWeek)->first() : null;
-        $selectedSeatingImage = $selectedSeatingPlan ? SeatingImage::where('week', $selectedWeek)->first() : null;
+        // Fetch all seating images of the current week if they exist
+        $currentSeatingImages = SeatingImage::where('week', $currentWeek)->first();
+        $currentImagePaths = $currentSeatingImages ? json_decode($currentSeatingImages->image_path, true) : [];
+
+        // Fetch all seating images of the selected week if they exist
+        $selectedSeatingImages = SeatingImage::where('week', $selectedWeek)->first();
+        $selectedImagePaths = $selectedSeatingImages ? json_decode($selectedSeatingImages->image_path, true) : [];
+
 
         return view('seating-arrangement', [
             'currentSeatingPlan' => $currentSeatingPlan,
@@ -61,9 +79,69 @@ class SeatingController extends Controller
             'selectedSeatingDetails' => $selectedSeatingDetails,
             'selectedWeek' => $selectedWeek,
             'hasSeatingPlan' => $hasSeatingPlan,
-            'currentSeatingImage' => $currentSeatingImage,
-            'selectedSeatingImage' => $selectedSeatingImage,
+            'currentSeatingImages' => $currentImagePaths,
+            'selectedSeatingImages' => $selectedImagePaths,
+            'currentStartDate' => $current_start_date,
+            'currentEndDate' => $current_end_date,
+            'selectedStartDate' => $selected_start_date,
+            'selectedEndDate' => $selected_end_date,
         ]);
+    }
+
+    public function traineeSVViewSeatingPlan(Request $request)
+    {
+        $role_id = Auth::user()->role_id;
+        $user_name = Auth::user()->name;
+
+        // Get the current week data (for initial page load)
+        $currentWeek = now()->format('Y-\WW');  // Get current week in YYYY-WW format
+    
+        // Get the selected week from the request (default to current week)
+        $selectedWeek = $request->input('week', $currentWeek);  // Default to the current week if no selection
+        $selectedSeatingPlan = Seating::where('week', $selectedWeek)->first(); // Get the first seating plan if it exists
+
+        $dateTime = new DateTime($selectedWeek);
+        $dateTime->setISODate($dateTime->format('o'), $dateTime->format('W'), 7);
+        $end_date = $dateTime->format('d/m/Y');  // End of the week for display at the top
+        $dateTime->setISODate($dateTime->format('o'), $dateTime->format('W'), 1);
+        $start_date = $dateTime->format('d/m/Y');  // Start of the week for display at the top
+    
+        // Check if the selected week has a seating plan
+        $hasSeatingPlan = !is_null($selectedSeatingPlan);
+    
+        // Decode the seat_detail only if the plans exist
+        $selectedSeatingDetails = $hasSeatingPlan ? json_decode($selectedSeatingPlan->seat_detail, true) : [];
+
+        // Fetch all seating images of the selected week if they exist
+        $selectedSeatingImages = SeatingImage::where('week', $selectedWeek)->first();
+        $selectedImagePaths = $selectedSeatingImages ? json_decode($selectedSeatingImages->image_path, true) : [];
+
+        if($role_id == 2){
+            return view('sv-view-seating-plan', [
+                'currentWeek' => $currentWeek,
+                'selectedSeatingPlan' => $selectedSeatingPlan,
+                'selectedSeatingDetails' => $selectedSeatingDetails,
+                'selectedWeek' => $selectedWeek,
+                'hasSeatingPlan' => $hasSeatingPlan,
+                'selectedSeatingImages' => $selectedImagePaths,
+                'selectedStartDate' => $start_date,
+                'selectedEndDate' => $end_date,
+            ]);
+        }
+        elseif($role_id ==3 ){
+            return view('trainee-view-seating-plan', [
+                'traineeName' => $user_name,
+                'currentWeek' => $currentWeek,
+                'selectedSeatingPlan' => $selectedSeatingPlan,
+                'selectedSeatingDetails' => $selectedSeatingDetails,
+                'selectedWeek' => $selectedWeek,
+                'hasSeatingPlan' => $hasSeatingPlan,
+                'selectedSeatingImages' => $selectedImagePaths,
+                'selectedStartDate' => $start_date,
+                'selectedEndDate' => $end_date,
+            ]);
+        }
+
     }
     
     public function editWeeklySeatingPlan(Request $request)
@@ -84,12 +162,17 @@ class SeatingController extends Controller
                             ->orWhere('internship_end', '>=', now()->format('Y-m-d')); // or internship has not ended yet
                     })
                     ->get();
+
+        // Fetch all seating images of the selected week if they exist
+        $selectedSeatingImages = SeatingImage::where('week', $selectedWeek)->first();
+        $selectedImagePaths = $selectedSeatingImages ? json_decode($selectedSeatingImages->image_path, true) : [];
     
         // Pass the seating plan, selected week, and filtered trainees to the view
         return view('edit-current-week-seating-plan', [
             'currentSeatingPlan' => $currentSeatingPlan,
             'selectedWeek' => $selectedWeek,
-            'trainees' => $trainees, // Pass the trainees to the view
+            'trainees' => $trainees, 
+            'existingImages' => $selectedImagePaths,
         ]);
     }
     
@@ -105,24 +188,54 @@ class SeatingController extends Controller
         // Validate the form input
         $request->validate([
             'seat_detail' => 'required|array',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:5120'
+            'existing_images' => 'nullable|array', 
+            'new_images' => 'nullable|array', 
+            'new_images.*' => 'image|mimes:jpeg,png,jpg|max:5120',
         ]);
 
-        // Handle image upload if provided
-        if ($request->hasFile('image')) {
-            if ($request->file('image')->isValid()) {
-                // Upload the image and store the path
-                $imagePath = $request->file('image')->store('seating_images', 'public'); // Store in 'storage/app/public/seating_images'
+        $currentSeatingImage = SeatingImage::where('week', $week)->first();
+        $currentImagePaths = $currentSeatingImage ? json_decode($currentSeatingImage->image_path, true) : [];
 
-                // Save the image path to the 'seating_images' table
-                SeatingImage::updateOrCreate(
-                    ['week' => $week], // Match the current week
-                    ['image_path' => $imagePath] // Update the image path
-                );
-            } else {
-                return redirect()->back()->withErrors('Invalid image file.');
+        // Get the array of existing images from the request
+        $existingImages = $request->input('existing_images', []);
+
+        // Find images that are in the database but not in the update request (i.e., removed by the user)
+        $removedImages = array_diff($currentImagePaths, $existingImages);
+
+        // Remove the images from storage
+        foreach ($removedImages as $removedImage) {
+            if (Storage::disk('public')->exists($removedImage)) {
+                Storage::disk('public')->delete($removedImage); // Delete the image from storage
             }
         }
+
+        $imagePathDetail = [];
+
+        // Handle image upload if provided
+        if ($request->hasFile('new_images')) {
+            foreach ($request->file('new_images') as $file) {
+                if ($file->isValid()) {
+                    // Upload the image and store the path
+                    $imagePath = $file->store('seating_images', 'public'); // Store in 'storage/app/public/seating_images'
+                    $imagePathDetail[] = $imagePath;  // Append each new image path to the array
+                }
+            }
+        }
+
+        // If there are existing images, add them to the array
+        if ($request->has('existing_images')) {
+            $existingImages = $request->input('existing_images'); // Retrieve existing image links
+            $imagePathDetail = array_merge($imagePathDetail, $existingImages); // Merge existing images with new ones
+        }
+
+        $seatingImage = SeatingImage::firstOrCreate(
+            ['week' => $request->selected_week],  // Find record by week
+            ['image_path' => json_encode([])]     // Default to an empty array if not found
+        );
+        
+        // Update the record with the merged image paths as a JSON array
+        $seatingImage->image_path = json_encode($imagePathDetail, JSON_UNESCAPED_SLASHES); // Store image paths as JSON
+        $seatingImage->save();
     
         // Get the seating details from the database
         $existingSeatDetails = json_decode($seatingPlan->seat_detail, true) ?? [];
@@ -185,33 +298,72 @@ class SeatingController extends Controller
         return view('create-weekly-seating-plan', compact('selectedWeek', 'startDate', 'endDate', 'trainees'));
     }
 
+    public function removeWeeklySeatingPlan(Request $request)
+    {
+        // Retrieve the selected week from the query parameters, default to the current week if not provided
+        $selectedWeek = $request->input('week', now()->format('Y-\WW'));
+    
+        // Find the seating plan for the selected week
+        $seating = Seating::where('week', $selectedWeek)->first();
+        $seatingImage = SeatingImage::where('week', $selectedWeek)->first();
+       
+        if ($seating) {
+            // If seating plan exists, delete it
+            $seating->delete();
+            if($seatingImage){
+                $currentImagePaths = json_decode($seatingImage->image_path, true);
+                foreach ($currentImagePaths as $image) {
+                    if (Storage::disk('public')->exists($image)) {
+                        Storage::disk('public')->delete($image); // Delete the image from storage
+                    }
+                }
+            }
+            SeatingImage::where('week', $selectedWeek)->delete();
+            
+            // Redirect back to the seating arrangement view with a success message
+            return redirect()->route('seating-arrangement')
+                ->with('success', 'Seating plan for the selected week has been successfully removed.');
+        } else {
+            // If no seating plan exists for the selected week, return with an error message
+            return redirect()->route('seating-arrangement')
+                ->with('error', 'No seating plan found for the selected week.');
+        }
+    }
+
     public function createNewWeeklySeatingPlan(Request $request)
     {
         // Validate the form input
         $request->validate([
             'seat_detail' => 'required|array',
             'selected_week' => 'required', // Ensure the week is also provided
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:5120'
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg|max:5120'
         ]);
     
         // Initialize an array to hold the new seat details
         $newSeatDetails = [];
+        $imagePaths = [];
 
-        // Handle image upload if provided
-        if ($request->hasFile('image')) {
-            if ($request->file('image')->isValid()) {
-                // Upload the image and store the path
-                $imagePath = $request->file('image')->store('seating_images', 'public'); // Store in 'storage/app/public/seating_images'
-
-                // Save the image path to the 'seating_images' table
-                SeatingImage::updateOrCreate(
-                    ['week' => $request->selected_week], // Match the current week
-                    ['image_path' => $imagePath] // Update the image path
-                );
-            } else {
-                return redirect()->back()->withErrors('Invalid image file.');
+        // Handle multiple image uploads if provided
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                if ($image->isValid()) {
+                    // Store each image in 'seating_images' directory
+                    $imagePath = $image->store('seating_images', 'public');
+                    // Add image path to the array
+                    $imagePaths[] = $imagePath;
+                }
             }
         }
+
+        // Retrieve existing record for the selected week or create a new one
+        $seatingImage = SeatingImage::firstOrCreate(
+            ['week' => $request->selected_week],  // Find record by week
+            ['image_path' => json_encode([])]    // Default empty array if not found
+        );
+
+        // Update the record with the merged image paths as a JSON array
+        $seatingImage->image_path = json_encode($imagePaths);
+        $seatingImage->save();
     
         // Iterate through the seat details provided in the form
         foreach ($request->input('seat_detail') as $key => $value) {

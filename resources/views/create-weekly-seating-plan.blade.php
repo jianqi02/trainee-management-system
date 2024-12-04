@@ -20,6 +20,7 @@
             <div class="mb-3" style="margin-top: 15px; margin-left: 20px;">
                 <button type="button" id="create-table" class="btn btn-primary">Create Table</button>
                 <button type="button" id="add-row" class="btn btn-secondary">Add Row</button>
+                <button type="button" id="random-assign" class="btn btn-secondary" style="background-color:green;">Random Assign</button>
             </div>
 
             <div class="card-body">
@@ -39,8 +40,12 @@
         </div>
 
         <div class="form-group">
-            <label for="image">Upload Floor Plan or Real Image</label>
-            <input type="file" name="image" id="image" class="form-control" accept=".jpg, .jpeg, .png">
+            <label for="images">Upload Floor Plan or Real Images</label>
+            <input type="file" name="images[]" id="images" class="form-control" accept=".jpg, .jpeg, .png" multiple>
+        </div>
+        
+        <div id="image-preview-container" class="mt-3">
+            <!-- Preview uploaded images here -->
         </div>
 
         <button type="submit" class="btn btn-success mt-3">Create Seating Plan</button>
@@ -51,6 +56,37 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Trainees data passed from Blade to JavaScript
     const trainees = @json($trainees);
+
+    // Random Assign button click
+    document.getElementById('random-assign').addEventListener('click', function() {
+        // Get all the rows in the seating plan table
+        let rows = document.querySelectorAll('#seating-plan-table tbody tr');
+
+        // Shuffle the trainees array to get a random order
+        let shuffledTrainees = shuffleArray(trainees);
+
+        // Loop through each row and assign a random trainee
+        rows.forEach(function(row, index) {
+            let traineeSelect = row.querySelector('select');
+
+            // Assign a trainee from the shuffled array, if there are more trainees than rows
+            if (shuffledTrainees[index]) {
+                traineeSelect.value = shuffledTrainees[index].id;
+            } else {
+                traineeSelect.value = ''; // If no trainee available, set to empty
+            }
+        });
+    });
+
+    // Utility function to shuffle the trainees array
+    function shuffleArray(array) {
+        let shuffledArray = array.slice(); // Create a copy of the array
+        for (let i = shuffledArray.length - 1; i > 0; i--) {
+            let j = Math.floor(Math.random() * (i + 1));
+            [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
+        }
+        return shuffledArray;
+    }
 
     // Create Table button click
     document.getElementById('create-table').addEventListener('click', function() {
@@ -169,6 +205,53 @@ document.addEventListener('DOMContentLoaded', function() {
             row.remove();
         }
     });
+
+    document.getElementById('images').addEventListener('change', function(event) {
+        const files = event.target.files;
+        const previewContainer = document.getElementById('image-preview-container');
+
+        // Iterate through all the uploaded files
+        Array.from(files).forEach((file, index) => {
+            const reader = new FileReader();
+
+            // Once file is loaded, show the preview
+            reader.onload = function(e) {
+                // Create image element
+                const imgElement = document.createElement('img');
+                imgElement.src = e.target.result;
+                imgElement.classList.add('img-thumbnail');
+                imgElement.style.width = '150px';
+                imgElement.style.height = 'auto'; // maintain aspect ratio
+                imgElement.style.marginRight = '10px';
+
+                // Create a remove button for each image
+                const removeButton = document.createElement('button');
+                removeButton.innerText = 'Remove';
+                removeButton.classList.add('btn', 'btn-danger', 'btn-sm');
+                removeButton.style.marginLeft = '10px';
+
+                // Remove image on clicking the remove button
+                removeButton.addEventListener('click', function() {
+                    previewContainer.removeChild(imageWrapper);
+                });
+
+                // Create a wrapper div for each image and remove button
+                const imageWrapper = document.createElement('div');
+                imageWrapper.style.display = 'flex';
+                imageWrapper.style.alignItems = 'center';
+                imageWrapper.style.marginBottom = '15px';
+                imageWrapper.appendChild(imgElement);
+                imageWrapper.appendChild(removeButton);
+
+                // Add the image wrapper to the preview container
+                previewContainer.appendChild(imageWrapper);
+            };
+
+            // Read the file as data URL
+            reader.readAsDataURL(file);
+        });
+    });
+    
 });
 
 </script>

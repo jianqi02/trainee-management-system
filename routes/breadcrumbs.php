@@ -90,10 +90,10 @@ Breadcrumbs::for('daily-task-detail', function ($trail, $date, $taskID) {
     $trail->push('Daily Task Detail', route('trainee-daily-task-detail', ['date' => $date, 'taskID' => $taskID]));
 });
 
-// Home > Seat Plan
-Breadcrumbs::for('seat-plan', function ($trail) {
+// Home > View Seating Plan
+Breadcrumbs::for('view-seating-plan', function ($trail) {
     $trail->parent('homepage');
-    $trail->push('Seat Plan', route('view-seat-plan'));
+    $trail->push('View Seating Plan', route('trainee-view-seating-plan'));
 });
 
 // Home > My Supervisor
@@ -124,10 +124,10 @@ Breadcrumbs::for('sv-edit-profile', function ($trail) {
     $trail->push('Edit Profile', route('sv-edit-profile'));
 });
 
-// Home > Seat Plan
-Breadcrumbs::for('sv-seat-plan', function ($trail) {
+// Home > View Seating Plan
+Breadcrumbs::for('sv-view-seating-plan', function ($trail) {
     $trail->parent('sv-homepage');
-    $trail->push('Seat Plan', route('sv-view-seat-plan'));
+    $trail->push('View Seating Plan', route('sv-view-seating-plan'));
 });
 
 // Home > Change Password

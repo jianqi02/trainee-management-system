@@ -75,7 +75,7 @@ Route::middleware(['role:3'])->group(function () {
     Route::delete('/logbooks/{logbook}', [TraineeController::class, 'destroy'])->name('logbooks.destroy');
     Route::delete('/resumes/{trainee}', [TraineeController::class, 'destroyResume'])->name('resumes.destroyResume');
     Route::get('/my-supervisor', [TraineeController::class, 'mySupervisorPage'])->name('my-supervisor');
-
+    Route::get('/trainee-view-seating-plan', [SeatingController::class, 'traineeSVViewSeatingPlan'])->name('trainee-view-seating-plan');
 });
 //supervisor-related function
 Route::middleware(['role:2'])->group(function () {
@@ -93,7 +93,7 @@ Route::middleware(['role:2'])->group(function () {
     Route::get('/sv-view-resume/{traineeName}', [SupervisorController::class, 'svViewTraineeResume'])->name('sv-view-resume');
     Route::get('/sv-comment/{traineeName}', [SupervisorController::class, 'svCommentPage'])->name('sv-comment');
     Route::post('/sv-submit-comment', [SupervisorController::class, 'svSubmitComment'])->name('sv-submit-comment');
-    Route::get('/sv-view-seat-plan', [SupervisorController::class, 'viewSeatPlan'])->name('sv-view-seat-plan');
+    Route::get('/sv-view-seating-plan', [SeatingController::class, 'traineeSVViewSeatingPlan'])->name('sv-view-seating-plan');
 });
 
 //admin-related function
@@ -140,6 +140,7 @@ Route::middleware(['role:1'])->group(function () {
     Route::get('/seating-arrangement', [SeatingController::class, 'seatingArrangement'])->name('seating-arrangement');
     Route::get('/seating-arrangement/view-other-week', [SeatingController::class, 'seatingArrangement'])->name('seating-plan.view-other-weeks');
     Route::get('/seating-plan/edit', [SeatingController::class, 'editWeeklySeatingPlan'])->name('seating-plan.edit');
+    Route::delete('/seating-plan/remove', [SeatingController::class, 'removeWeeklySeatingPlan'])->name('seating-plan.remove');
     Route::get('/seating-plan/create', [SeatingController::class, 'createWeeklySeatingPlan'])->name('seating-plan.create');
     Route::post('/seating-plan/update', [SeatingController::class, 'updateWeeklySeatingPlan'])->name('seating-plan.update');
     Route::post('/seating-plan/create-new', [SeatingController::class, 'createNewWeeklySeatingPlan'])->name('seating-plan.createNew');
