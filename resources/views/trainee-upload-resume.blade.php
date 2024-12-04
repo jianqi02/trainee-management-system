@@ -33,6 +33,14 @@
             border-radius: 10px;
         }
 
+        .button-container {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px; /* Space between buttons */
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+
         .small-text {
             font-size: 12px;
             color: #808080;
@@ -57,9 +65,10 @@
         }
 
         .card {
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
         .card-body {
@@ -77,20 +86,33 @@
         }
 
         .delete-resume-button {
-        background: none;
-        border: none;
-        cursor: pointer;
+            background: none;
+            border: none;
+            cursor: pointer;
+            bottom: 10px;
+            right: 10px;
         }
 
         .delete-resume-button i {
-            color: #f44336; /* Red color for the bin icon */
+            color: #f44336; 
         }
 
         .upload-resume-form {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .custom-upload-btn {
+            background-color: #337ab7;
+            color: #fff;
+            border-color: #337ab7;
+        }
+
+        .custom-upload-btn:hover {
+            background-color: #286090;
+            border-color: #204d74;
         }
 
         /* Style for the "Choose a resume" input */
@@ -107,6 +129,7 @@
             border-radius: 5px;
             cursor: pointer;
             transition: background 0.3s, color 0.3s;
+            margin-right: 10px;
         }
 
         .custom-file-upload:hover {
@@ -127,6 +150,28 @@
         .upload-button:hover {
             background: #45a049; 
         }
+        .modal-content {
+            border-radius: 10px;
+            box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-header {
+            border-bottom: none;
+            background-color: #f8f9fa;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .modal-body iframe {
+            border: none;
+            border-radius: 10px;
+        }
+
+        .modal-footer {
+            border-top: none;
+            background-color: #f8f9fa;
+            border-radius: 0 0 8px 8px;
+            justify-content: flex-end;
+        }
     </style>
 </head>
 <body>
@@ -143,6 +188,37 @@
             @error('resume')
                 <div class="alert alert-warning">{{ $message }}</div>
             @enderror
+
+            <!-- Upload Resume Button -->
+            <div class="button-container">
+                <button type="button" class="btn custom-upload-btn" data-bs-toggle="modal" data-bs-target="#uploadResumeModal">
+                    Upload Resume
+                </button>
+            </div>
+           
+            <!-- Upload Resume Modal -->
+            <div class="modal fade" id="uploadResumeModal" tabindex="-1" aria-labelledby="uploadResumeModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="uploadResumeModalLabel">Upload Resume</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="/upload" method="POST" enctype="multipart/form-data" class="upload-resume-form">
+                                @csrf
+                                <input type="file" name="resume" id="resume" accept=".pdf" class="file-input" onchange="updateFileName()">
+                                <div class="resume-info">
+                                    <label for="resume" class="custom-file-upload" style="margin-right: 30px;">Choose a resume</label>
+                                    <span id="file-name" class="file-name" style="margin-top: 10px;">No file selected</span>
+                                </div>
+                                <button type="submit" class="upload-button" style="margin-top: 30px;">Upload resume</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <ul>
                 @if ($trainee->resume_path == null)
                     <p>No resume uploaded yet.</p>
@@ -152,19 +228,40 @@
                         <div class="card">
                             <div class="card-body">
                                 <h5 class="card-title">
-                                    <a href="{{ asset($trainee->resume_path) }}" target="_blank" class="resume-link" style="color: blue;">
+                                    <a href="#" class="preview-resume-link" data-toggle="modal" data-target="#previewModal" style="color: blue; text-decoration: none;">
                                         {{ pathinfo($trainee->resume_path, PATHINFO_BASENAME) }}
                                     </a>
                                 </h5>
-                                    <button type="submit" class="delete-resume-button" data-toggle="modal" data-target="#confirmationModal">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
-
-                                <div class="modal" tabindex="-1" role="dialog" id="confirmationModal">
+                                <button type="submit" class="delete-resume-button" data-toggle="modal" data-target="#confirmationModal">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+            
+                                <!-- Preview Modal -->
+                                <div class="modal fade" id="previewModal" tabindex="-1" role="dialog" aria-labelledby="previewModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="previewModalLabel">Resume Preview</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <iframe src="{{ asset($trainee->resume_path) }}" frameborder="0" width="100%" height="500px"></iframe>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+            
+                                <!-- Delete Confirmation Modal -->
+                                <div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true">
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title">Confirmation</h5>
+                                                <h5 class="modal-title" id="confirmationModalLabel">Confirmation</h5>
                                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
@@ -183,22 +280,14 @@
                                         </div>
                                     </div>
                                 </div>
-
+            
                             </div>
                         </div>
                     </li>
-                </ul>          
+                </ul>
                 @endif
-                <form action="/upload" method="POST" enctype="multipart/form-data" class="upload-resume-form">
-                    @csrf
-                    <input type="file" name="resume" id="resume" accept=".pdf" class="file-input" onchange="updateFileName()">
-                    <div class="resume-info">
-                        <label for="resume" class="custom-file-upload" style="margin-right: 30px;">Choose a resume</label>
-                        <span id="file-name" class="file-name" style="margin-top: 10px;">No file selected</span>
-                    </div>
-                    <button type="submit" class="upload-button" style="margin-top: 30px;">Upload resume</button>
-                </form>
             </ul>
+            
         </div>
     </div>
 </body>

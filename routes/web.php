@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AdminController;
@@ -72,6 +73,7 @@ Route::middleware(['role:3'])->group(function () {
     Route::post('/update-profile', [TraineeController::class, 'updateProfile'])->name('update-profile');
     Route::post('/upload', [TraineeController::class, 'uploadResume'])->name('upload');
     Route::post('/upload-logbook', [TraineeController::class, 'uploadLogbook'])->name('upload-logbook');
+    Route::get('/generate-logbook', [TraineeController::class, 'generateLogbook'])->name('generate-logbook');
     Route::delete('/logbooks/{logbook}', [TraineeController::class, 'destroy'])->name('logbooks.destroy');
     Route::delete('/resumes/{trainee}', [TraineeController::class, 'destroyResume'])->name('resumes.destroyResume');
     Route::get('/my-supervisor', [TraineeController::class, 'mySupervisorPage'])->name('my-supervisor');
@@ -89,6 +91,7 @@ Route::middleware(['role:2'])->group(function () {
     Route::get('/go-task-timeline/{traineeName}', [SupervisorController::class, 'goToTraineeTaskTimeline'])->name('go-task-timeline');
     Route::get('/sv-view-and-upload-logbook/{traineeName}', [SupervisorController::class, 'svViewTraineeLogbook'])->name('sv-view-and-upload-logbook');
     Route::post('/sv-upload-logbook/{name}', [SupervisorController::class, 'svUploadLogbook'])->name('sv-upload-logbook');
+    Route::get('/sv-generate-logbook/{traineeName}', [SupervisorController::class, 'svGenerateLogbook'])->name('sv-generate-logbook');
     Route::delete('/remove-logbooks-sv/{logbook}/{name}', [SupervisorController::class, 'destroy'])->name('remove-logbooks-sv.destroy');
     Route::get('/sv-view-resume/{traineeName}', [SupervisorController::class, 'svViewTraineeResume'])->name('sv-view-resume');
     Route::get('/sv-comment/{traineeName}', [SupervisorController::class, 'svCommentPage'])->name('sv-comment');
@@ -119,6 +122,7 @@ Route::middleware(['role:1'])->group(function () {
     Route::post('/admin-update-profile/{selected}', [AdminController::class, 'updateProfile'])->name('admin-update-profile');
     Route::get('/change-account-status/{selected}', [AdminController::class, 'changeAccountStatus'])->name('change-account-status');
     Route::get('/view-and-upload-logbook/{traineeName}', [AdminController::class, 'viewTraineeLogbook'])->name('view-and-upload-logbook');
+    Route::get('/admin-generate-logbook/{traineeName}', [AdminController::class, 'adminGenerateLogbook'])->name('admin-generate-logbook');
     Route::delete('/remove-logbooks/{logbook}/{name}', [AdminController::class, 'destroy'])->name('remove-logbooks.destroy');
     Route::post('/admin-upload-logbook/{name}', [AdminController::class, 'uploadLogbook'])->name('admin-upload-logbook');
     Route::get('/admin-go-profile/{traineeName}', [AdminController::class, 'adminGoTraineeProfile'])->name('admin-go-profile');

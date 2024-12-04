@@ -30,6 +30,14 @@
             border-radius: 10px;
         }
 
+        .button-container {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px; /* Space between buttons */
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+
         .small-text {
             font-size: 12px;
             color: #808080;
@@ -54,9 +62,15 @@
         }
 
         .card {
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.15);
         }
 
         .card-body {
@@ -74,9 +88,11 @@
         }
 
         .delete-resume-button {
-        background: none;
-        border: none;
-        cursor: pointer;
+            background: none;
+            border: none;
+            cursor: pointer;
+            bottom: 10px;
+            right: 10px;
         }
 
         .delete-resume-button i {
@@ -84,10 +100,21 @@
         }
 
         .upload-resume-form {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .custom-upload-btn {
+            background-color: #337ab7;
+            color: #fff;
+            border-color: #337ab7;
+        }
+
+        .custom-upload-btn:hover {
+            background-color: #286090;
+            border-color: #204d74;
         }
 
         /* Style for the "Choose a resume" input */
@@ -104,6 +131,7 @@
             border-radius: 5px;
             cursor: pointer;
             transition: background 0.3s, color 0.3s;
+            margin-right: 10px;
         }
 
         .custom-file-upload:hover {
@@ -123,6 +151,23 @@
 
         .upload-button:hover {
             background: #45a049; 
+        }
+
+        .modal-content {
+            border-radius: 8px;
+            box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-header {
+            border-bottom: none;
+            background-color: #f8f9fa;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .modal-footer {
+            border-top: none;
+            background-color: #f8f9fa;
+            border-radius: 0 0 8px 8px;
         }
     </style>
 </head>

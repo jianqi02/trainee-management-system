@@ -13,8 +13,9 @@ use App\Models\Supervisor;
 use App\Models\ActivityLog;
 use App\Models\Notification;
 use App\Models\TaskTimeline;
-use Illuminate\Http\Request;
 use App\Models\TraineeAssign;
+use App\Notifications\TelegramNotification;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
@@ -82,17 +83,26 @@ class TaskTimelineController extends Controller
                 $tasks = $tasks->reverse();
             }
         }
+
+        $totalTasks = TaskTimeline::where('trainee_id', $traineeID)->count();
+        $completedTasks = TaskTimeline::where('trainee_id', $traineeID)
+                                       ->where('task_status', 'Completed')
+                                       ->count();
+        $pendingTasks = TaskTimeline::where('trainee_id', $traineeID)
+                                     ->where('task_status', '!=', 'Completed')
+                                     ->count();
+
         //for trainee
         if($role == 3){
-            return view('trainee-task-timeline', compact('tasks'));
+            return view('trainee-task-timeline', compact('tasks','totalTasks', 'completedTasks', 'pendingTasks'));
         }
         //for supervisor 
         elseif($role == 2){
-            return view('sv-view-trainee-task-timeline', compact('tasks', 'traineeID'));
+            return view('sv-view-trainee-task-timeline', compact('tasks', 'traineeID', 'totalTasks', 'completedTasks', 'pendingTasks'));
         }
         // for admin
         else{
-            return view('admin-view-trainee-task-timeline', compact('tasks', 'traineeID'));
+            return view('admin-view-trainee-task-timeline', compact('tasks', 'traineeID', 'totalTasks', 'completedTasks', 'pendingTasks'));
         }
     }
 
@@ -104,24 +114,39 @@ class TaskTimelineController extends Controller
 
         //get all the task for this trainee
         $tasks = TaskTimeline::where('trainee_id', $trainee_id)->get();
+        $totalTasks = TaskTimeline::where('trainee_id', $trainee_id)->count();
+        $completedTasks = TaskTimeline::where('trainee_id', $trainee_id)
+                                    ->where('task_status', 'Completed')
+                                    ->count();
+        $pendingTasks = TaskTimeline::where('trainee_id', $trainee_id)
+                                    ->where('task_status', '!=', 'Completed')
+                                    ->count();
 
-        return view('trainee-task-timeline', compact('tasks'));
+        return view('trainee-task-timeline', compact('tasks','totalTasks', 'completedTasks', 'pendingTasks'));
     }
 
     public function svViewTraineeTaskTimeline($traineeID){
         //get all the task for this trainee
         $tasks = TaskTimeline::where('trainee_id', $traineeID)->get();
 
-        $trainee_name = Trainee::where('id', $traineeID)->pluck('name')->first();
-        $trainee_ref_id = AllTrainee::where('name', $trainee_name)->pluck('id')->first();
+        $traineeName = Trainee::where('id', $traineeID)->pluck('name')->first();
+        $trainee_ref_id = AllTrainee::where('name', $traineeName)->pluck('id')->first();
 
         //prevent other supervisor to access the task for the trainee that is not assigned to them.
         $supervisorID = Supervisor::where('sains_email', Auth::user()->email)->pluck('id')->first();
         if(TraineeAssign::where('trainee_id', $trainee_ref_id)->where('assigned_supervisor_id', $supervisorID)->first() == null){
             return redirect()->back()->with('error', 'You do not have access to view this page.');
         }
+        
+        $totalTasks = TaskTimeline::where('trainee_id', $traineeID)->count();
+        $completedTasks = TaskTimeline::where('trainee_id', $traineeID)
+                                       ->where('task_status', 'Completed')
+                                       ->count();
+        $pendingTasks = TaskTimeline::where('trainee_id', $traineeID) ->where('task_status', '!=', 'Completed') ->count();
 
-        return view('sv-view-trainee-task-timeline', compact('tasks', 'traineeID'));
+
+
+        return view('sv-view-trainee-task-timeline', compact('tasks', 'traineeName', 'traineeID', 'totalTasks', 'completedTasks', 'pendingTasks'));
     }
 
     public function adminViewTraineeTaskTimeline($traineeID){
@@ -130,8 +155,15 @@ class TaskTimelineController extends Controller
 
         //get the trainee name
         $traineeName = Trainee::where('id', $traineeID)->pluck('name')->first();
+        $totalTasks = TaskTimeline::where('trainee_id', $traineeID)->count();
+        $completedTasks = TaskTimeline::where('trainee_id', $traineeID)
+                                       ->where('task_status', 'Completed')
+                                       ->count();
+        $pendingTasks = TaskTimeline::where('trainee_id', $traineeID)
+                                     ->where('task_status', '!=', 'Completed')
+                                     ->count();
 
-        return view('admin-view-trainee-task-timeline', compact('tasks', 'traineeID', 'traineeName'));
+        return view('admin-view-trainee-task-timeline', compact('tasks', 'traineeID', 'traineeName', 'totalTasks', 'completedTasks', 'pendingTasks'));
     }
 
     public function traineeAddNewTask(Request $request){
@@ -450,6 +482,15 @@ class TaskTimelineController extends Controller
                         $supervisor_name = Supervisor::where('id', $assigned_supervisor_id)->pluck('name')->first();
                     }
                 }
+                $telegramNotification = new TelegramNotification(
+                    "Task Completed",
+                    $supervisor_name,
+                    $traineeName,
+                    "Your trainee: $traineeName has completed one of his/her task: $taskName."
+                );
+        
+                // Send the Telegram notification to the private channel
+                $telegramNotification->toTelegram(null);  // This sends the notification directly to Telegram.
             }
         }
         return redirect()->route('trainee-task-detail', $taskID)->with('success', 'New task added.');
