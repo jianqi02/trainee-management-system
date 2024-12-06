@@ -71,7 +71,18 @@ class RegisterController extends Controller
         $allowedDomains = explode(',', $settings->email_domain); // Get array of allowed domains set by admin
     
         return Validator::make($data, [
-            'name' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z\s]+$/'],
+            'name' => [
+                'required', 
+                'string', 
+                'max:255', 
+                'regex:/^[a-zA-Z\s]+$/',
+                function ($attribute, $value, $fail) {
+                    // Check if the name already exists in the users table
+                    if (\App\Models\User::where('name', $value)->exists()) {
+                        $fail('The name has already been taken.');
+                    }
+                }
+            ],
             'email' => [
                 'required',
                 'string',

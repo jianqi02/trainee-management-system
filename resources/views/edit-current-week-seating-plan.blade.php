@@ -15,12 +15,14 @@
         <div class="card">
             <div class="card-header">Seating Plan for the Week {{ \Carbon\Carbon::createFromFormat('d/m/Y', $currentSeatingPlan->start_date ?? now()->format('d/m/Y'))->format('d/m/Y') }} to
                 {{ \Carbon\Carbon::createFromFormat('d/m/Y', $currentSeatingPlan->end_date ?? now()->format('d/m/Y'))->format('d/m/Y') }}</div>
+            
             <!-- Buttons for creating table and adding row -->
             <div class="mb-3" style="margin-top: 15px; margin-left: 20px;">
                 <button type="button" id="create-table" class="btn btn-primary">Create Table</button>
                 <button type="button" id="add-row" class="btn btn-secondary">Add Row</button>
                 <button type="button" id="random-assign" class="btn btn-secondary" style="background-color:green;">Random Assign</button>
             </div>
+            
             <div class="card-body">
                 <table class="table table-bordered" id="seating-plan-table">
                     <thead>
@@ -113,42 +115,67 @@
             }
         });
 
-    // Create Table button click
-    document.getElementById('create-table').addEventListener('click', function() {
-        let rows = prompt("Enter number of rows:", "5");
-        let cols = 2; // Since we're working with seat code and assigned to
+        // Pre-generate the trainees list as a JavaScript array
+        let trainees = @json($trainees->pluck('name'));
 
-        if (rows !== null && rows > 0) {
-            let tbody = document.querySelector('#seating-plan-table tbody');
-            tbody.innerHTML = '';  // Clear existing table rows
+       // Create Table button click
+        document.getElementById('create-table').addEventListener('click', function() {
+            let rows = prompt("Enter number of rows:", "5");
+            let cols = 2; // Since we're working with seat code and assigned to
 
-            // Create the specified number of rows
-            for (let i = 0; i < rows; i++) {
-                let row = document.createElement('tr');
+            if (rows !== null && rows > 0) {
+                let tbody = document.querySelector('#seating-plan-table tbody');
+                tbody.innerHTML = '';  // Clear existing table rows
 
-                for (let j = 0; j < cols; j++) {
-                    let td = document.createElement('td');
-                    let input = document.createElement('input');
-                    input.type = 'text';
-                    input.className = 'form-control';
-                    input.name = `seat_detail[new_${i}_col_${j}]`;  // Use new seat names to avoid conflicts
-                    td.appendChild(input);
-                    row.appendChild(td);
+                // Create the specified number of rows
+                for (let i = 0; i < rows; i++) {
+                    let row = document.createElement('tr');
+
+                    // Seat Code column (col_0)
+                    let seatCodeTd = document.createElement('td');
+                    let seatCodeInput = document.createElement('input');
+                    seatCodeInput.type = 'text';
+                    seatCodeInput.className = 'form-control';
+                    seatCodeInput.name = `seat_detail[new_${i}_col_0]`; 
+                    seatCodeTd.appendChild(seatCodeInput);
+                    row.appendChild(seatCodeTd);
+
+                    // Assigned To column (col_1)
+                    let assignedToTd = document.createElement('td');
+                    let select = document.createElement('select');
+                    select.className = 'form-control';
+                    select.name = `seat_detail[new_${i}_col_1]`;  
+
+                    // Default option
+                    let defaultOption = document.createElement('option');
+                    defaultOption.value = '';
+                    defaultOption.text = 'Select Trainee';
+                    select.appendChild(defaultOption);
+
+                    // Add trainees to the dropdown
+                    trainees.forEach(function(trainee) {
+                        let option = document.createElement('option');
+                        option.value = trainee;
+                        option.text = trainee;
+                        select.appendChild(option);
+                    });
+
+                    assignedToTd.appendChild(select);
+                    row.appendChild(assignedToTd);
+
+                    // Add delete button
+                    let deleteTd = document.createElement('td');
+                    let deleteButton = document.createElement('button');
+                    deleteButton.type = 'button';
+                    deleteButton.className = 'btn btn-danger btn-sm delete-row';
+                    deleteButton.innerText = 'Delete';
+                    deleteTd.appendChild(deleteButton);
+                    row.appendChild(deleteTd);
+
+                    tbody.appendChild(row);
                 }
-
-                // Add delete button
-                let td = document.createElement('td');
-                let deleteButton = document.createElement('button');
-                deleteButton.type = 'button';
-                deleteButton.className = 'btn btn-danger btn-sm delete-row';
-                deleteButton.innerText = 'Delete';
-                td.appendChild(deleteButton);
-                row.appendChild(td);
-
-                tbody.appendChild(row);
             }
-        }
-    });
+        });
 
         // Random Assign button click
 document.getElementById('random-assign').addEventListener('click', function() {
@@ -197,25 +224,46 @@ function shuffleArray(array) {
 
         let row = document.createElement('tr');
 
-        // Create columns for seat code and assigned to
-        for (let i = 0; i < 2; i++) {
-            let td = document.createElement('td');
-            let input = document.createElement('input');
-            input.type = 'text';
-            input.className = 'form-control';
-            input.name = `seat_detail[new_${rowCount}_col_${i}]`;
-            td.appendChild(input);
-            row.appendChild(td);
-        }
+        // Seat Code column (col_0)
+        let seatCodeTd = document.createElement('td');
+        let seatCodeInput = document.createElement('input');
+        seatCodeInput.type = 'text';
+        seatCodeInput.className = 'form-control';
+        seatCodeInput.name = `seat_detail[new_${rowCount}_col_0]`;  
+        seatCodeTd.appendChild(seatCodeInput);
+        row.appendChild(seatCodeTd);
+
+        // Assigned To column (Dropdown) (col_1)
+        let assignedToTd = document.createElement('td');
+        let select = document.createElement('select');
+        select.className = 'form-control';
+        select.name = `seat_detail[new_${rowCount}_col_1]`;
+
+        // Default option
+        let defaultOption = document.createElement('option');
+        defaultOption.value = '';
+        defaultOption.text = 'Select Trainee';
+        select.appendChild(defaultOption);
+
+        // Add trainees to the dropdown
+        trainees.forEach(function(trainee) {
+            let option = document.createElement('option');
+            option.value = trainee;
+            option.text = trainee;
+            select.appendChild(option);
+        });
+
+        assignedToTd.appendChild(select);
+        row.appendChild(assignedToTd);
 
         // Add delete button
-        let td = document.createElement('td');
+        let deleteTd = document.createElement('td');
         let deleteButton = document.createElement('button');
         deleteButton.type = 'button';
         deleteButton.className = 'btn btn-danger btn-sm delete-row';
         deleteButton.innerText = 'Delete';
-        td.appendChild(deleteButton);
-        row.appendChild(td);
+        deleteTd.appendChild(deleteButton);
+        row.appendChild(deleteTd);
 
         tbody.appendChild(row);
     });

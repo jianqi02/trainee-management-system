@@ -216,7 +216,7 @@ class SeatingController extends Controller
             foreach ($request->file('new_images') as $file) {
                 if ($file->isValid()) {
                     // Upload the image and store the path
-                    $imagePath = $file->store('seating_images', 'public'); // Store in 'storage/app/public/seating_images'
+                    $imagePath = $file->store('seating_images', 'public');
                     $imagePathDetail[] = $imagePath;  // Append each new image path to the array
                 }
             }
@@ -224,13 +224,13 @@ class SeatingController extends Controller
 
         // If there are existing images, add them to the array
         if ($request->has('existing_images')) {
-            $existingImages = $request->input('existing_images'); // Retrieve existing image links
+            $existingImages = $request->input('existing_images'); 
             $imagePathDetail = array_merge($imagePathDetail, $existingImages); // Merge existing images with new ones
         }
 
         $seatingImage = SeatingImage::firstOrCreate(
-            ['week' => $request->selected_week],  // Find record by week
-            ['image_path' => json_encode([])]     // Default to an empty array if not found
+            ['week' => $request->selected_week],  
+            ['image_path' => json_encode([])]  // Default to an empty array if not found
         );
         
         // Update the record with the merged image paths as a JSON array
@@ -260,6 +260,8 @@ class SeatingController extends Controller
                 // This is an existing seat (not starting with 'new_')
                 $updatedSeatDetails[$key] = $value; // Keep existing seat code and its value
             }
+
+            
         }
     
         // Update the seating plan details with only the updated data
