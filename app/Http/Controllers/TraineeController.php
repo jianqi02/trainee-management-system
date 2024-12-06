@@ -18,7 +18,6 @@ use App\Models\TraineeAssign;
 use App\Notifications\TelegramNotification;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;

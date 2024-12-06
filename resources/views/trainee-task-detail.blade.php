@@ -263,10 +263,10 @@
         $timeline = (array)json_decode($task->timeline);
     @endphp
     <div class="task-container">
+        @if(session('warning'))
+                <div class="alert alert-warning" style="">{{ session('warning') }}</div>
+        @endif
         <div class="row align-details-comments">
-            @if(session('warning'))
-                <div class="alert alert-warning" style="width: 64.3%; margin-left: 15px;">{{ session('warning') }}</div>
-            @endif
             <div class="col details-section">
                 <h3>Detail</h3>
                 <div class="card mb-3">
