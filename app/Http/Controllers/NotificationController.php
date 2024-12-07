@@ -50,7 +50,7 @@ class NotificationController extends Controller
         }
         //notification for supervisor
         elseif($user->role_id == 2){
-            $supervisorID = Supervisor::where('sains_email', $user->email)->pluck('id')->first();
+            $supervisorID = Supervisor::where('email', $user->email)->pluck('id')->first();
             $notificationCount = DB::table('notifications')
             ->where('notifiable_id', $supervisorID)
             ->whereNot('notifiable_type', 'App\Models\Supervisor')
@@ -81,8 +81,8 @@ class NotificationController extends Controller
         }
         //notification for trainee
         else{
-            $trainee_id = Trainee::where('sains_email', $user->email)->pluck('id')->first();
-            $trainee_name = Trainee::where('sains_email', $user->email)->pluck('name')->first();
+            $trainee_id = Trainee::where('email', $user->email)->pluck('id')->first();
+            $trainee_name = Trainee::where('email', $user->email)->pluck('name')->first();
 
             // calculate the total number of notification that related to this trainee
             $notificationCount = DB::table('notifications')
@@ -142,7 +142,7 @@ class NotificationController extends Controller
         }
         //supervisor
         else if($user->role_id == 2){
-            $supervisorID = Supervisor::where('sains_email', $user->email)->pluck('id')->first();
+            $supervisorID = Supervisor::where('email', $user->email)->pluck('id')->first();
             $notifications = Notification::where('notifiable_id', $supervisorID)->whereNull('read_at')->get();
 
             foreach ($notifications as $notification) {
@@ -153,8 +153,8 @@ class NotificationController extends Controller
         }  
         //trainee
         else{
-            $trainee_name = Trainee::where('sains_email', $user->email)->pluck('name')->first();
-            $traineeID = Trainee::where('sains_email', $user->email)->pluck('id')->first();
+            $trainee_name = Trainee::where('email', $user->email)->pluck('name')->first();
+            $traineeID = Trainee::where('email', $user->email)->pluck('id')->first();
             $notifications = Notification::where('notifiable_id', $traineeID)
                 ->whereJsonContains('data->name', $trainee_name)
                 ->whereNull('read_at')
@@ -179,7 +179,7 @@ class NotificationController extends Controller
 
             //2 = supervisor , 3 = trainee
             if($userRole == 2){
-                $supervisorName = Supervisor::where('sains_email', $email)->pluck('name')->first();
+                $supervisorName = Supervisor::where('email', $email)->pluck('name')->first();
 
                 //generate a notification to admin.
                 $notification = new Notification();
@@ -202,7 +202,7 @@ class NotificationController extends Controller
                 $activityLog->save();
             }
             elseif($userRole == 3){
-                $traineeName = Trainee::where('sains_email', $email)->pluck('name')->first();
+                $traineeName = Trainee::where('email', $email)->pluck('name')->first();
 
                 //generate a notification to admin.
                 $notification = new Notification();

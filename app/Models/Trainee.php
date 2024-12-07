@@ -17,7 +17,7 @@ class Trainee extends Model
     protected $fillable = [
         'name',
         'personal_email',
-        'sains_email',
+        'email',
         'phone_number',
         'graduate_date',
         'expertise',

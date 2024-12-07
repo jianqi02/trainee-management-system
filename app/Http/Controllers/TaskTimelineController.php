@@ -30,7 +30,7 @@ class TaskTimelineController extends Controller
             if($role == 2){
                 return redirect()->back();
             }
-            $traineeID = Trainee::where('sains_email', $user->email)->pluck('id')->first();
+            $traineeID = Trainee::where('email', $user->email)->pluck('id')->first();
         }
         else{
             //broken access handling
@@ -42,7 +42,7 @@ class TaskTimelineController extends Controller
             $trainee_ref_id = AllTrainee::where('name', $trainee_name)->pluck('id')->first();
 
             //prevent other supervisor to access the task for the trainee that is not assigned to them.
-            $supervisorID = Supervisor::where('sains_email', Auth::user()->email)->pluck('id')->first();
+            $supervisorID = Supervisor::where('email', Auth::user()->email)->pluck('id')->first();
             if(TraineeAssign::where('trainee_id', $trainee_ref_id)->where('assigned_supervisor_id', $supervisorID)->first() == null){
                 return redirect()->back()->with('error', 'You do not have access to view this page.');
             }
@@ -110,7 +110,7 @@ class TaskTimelineController extends Controller
         $user = Auth::user();
 
         //get trainee id
-        $trainee_id = Trainee::where('sains_email', $user->email)->pluck('id')->first();
+        $trainee_id = Trainee::where('email', $user->email)->pluck('id')->first();
 
         //get all the task for this trainee
         $tasks = TaskTimeline::where('trainee_id', $trainee_id)->get();
@@ -133,7 +133,7 @@ class TaskTimelineController extends Controller
         $trainee_ref_id = AllTrainee::where('name', $traineeName)->pluck('id')->first();
 
         //prevent other supervisor to access the task for the trainee that is not assigned to them.
-        $supervisorID = Supervisor::where('sains_email', Auth::user()->email)->pluck('id')->first();
+        $supervisorID = Supervisor::where('email', Auth::user()->email)->pluck('id')->first();
         if(TraineeAssign::where('trainee_id', $trainee_ref_id)->where('assigned_supervisor_id', $supervisorID)->first() == null){
             return redirect()->back()->with('error', 'You do not have access to view this page.');
         }
@@ -170,7 +170,7 @@ class TaskTimelineController extends Controller
         $user = Auth::user();
 
         //get trainee id
-        $trainee_id = Trainee::where('sains_email', $user->email)->pluck('id')->first();
+        $trainee_id = Trainee::where('email', $user->email)->pluck('id')->first();
 
         $startDate = new DateTime($request->input('startDate'));
         $endDate = new DateTime($request->input('endDate'));
@@ -524,7 +524,7 @@ class TaskTimelineController extends Controller
         $user_role = Auth::user()->role_id;
     
         if ($user_role == 3) {
-            $trainee_id = Trainee::where('sains_email', Auth::user()->email)->pluck('id')->first();
+            $trainee_id = Trainee::where('email', Auth::user()->email)->pluck('id')->first();
 
             //prevent trainee to access other trainee's task.
             if(TaskTimeline::where('id', $taskID)->pluck('trainee_id')->first() != $trainee_id){
@@ -536,7 +536,7 @@ class TaskTimelineController extends Controller
             $trainee_ref_id = AllTrainee::where('name', Trainee::where('id', $trainee_id)->pluck('name')->first())->pluck('id')->first();
 
             //prevent other supervisor to access the task for the trainee that is not assigned to them.
-            $supervisorID = Supervisor::where('sains_email', Auth::user()->email)->pluck('id')->first();
+            $supervisorID = Supervisor::where('email', Auth::user()->email)->pluck('id')->first();
             if(TraineeAssign::where('trainee_id', $trainee_ref_id)->where('assigned_supervisor_id', $supervisorID)->first() == null){
                 return redirect()->back()->with('error', 'You do not have access to view this page.');
             }
@@ -596,7 +596,7 @@ class TaskTimelineController extends Controller
     
         $user_role = Auth::user()->role_id;
         if($user_role == 3){
-            $trainee_id = Trainee::where('sains_email', Auth::user()->email)->pluck('id')->first();
+            $trainee_id = Trainee::where('email', Auth::user()->email)->pluck('id')->first();
 
             //prevent trainee to access other trainee's task.
             if(TaskTimeline::where('id', $taskID)->pluck('trainee_id')->first() != $trainee_id){
@@ -609,7 +609,7 @@ class TaskTimelineController extends Controller
             $trainee_ref_id = AllTrainee::where('name', Trainee::where('id', $trainee_id)->pluck('name')->first())->pluck('id')->first();
 
             //prevent other supervisor to access the task for the trainee that is not assigned to them.
-            $supervisorID = Supervisor::where('sains_email', Auth::user()->email)->pluck('id')->first();
+            $supervisorID = Supervisor::where('email', Auth::user()->email)->pluck('id')->first();
             if(TraineeAssign::where('trainee_id', $trainee_ref_id)->where('assigned_supervisor_id', $supervisorID)->first() == null){
                 return redirect()->back()->with('error', 'You do not have access to view this page.');
             }
@@ -985,7 +985,7 @@ class TaskTimelineController extends Controller
 
     public function applyFilter(Request $request){
         $user = Auth::user();
-        $trainee_id = Trainee::where('sains_email', $user->email)->pluck('id')->first();
+        $trainee_id = Trainee::where('email', $user->email)->pluck('id')->first();
         $search_input = $request->input('search');
         $start_date_input = $request->input('taskStartDate');
         $end_date_input = $request->input('taskEndDate');

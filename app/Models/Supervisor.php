@@ -18,7 +18,7 @@ class Supervisor extends Model
         'section',
         'department',
         'expertise',
-        'sains_email',
+        'email',
         'trainee_status',
         'trainee_count',
     ];

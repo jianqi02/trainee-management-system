@@ -34,7 +34,7 @@ class SupervisorController extends Controller
     public function showProfileSV()
     {
         $user = Auth::user();
-        $supervisor = Supervisor::where('sains_email', $user->email)->first();
+        $supervisor = Supervisor::where('email', $user->email)->first();
         return view('sv-profile', compact('supervisor'));
     }
 
@@ -42,7 +42,7 @@ class SupervisorController extends Controller
         $user = Auth::user();
 
         //Get the supervisor ID using the email.
-        $supervisorID = Supervisor::where('sains_email', $user->email)->pluck('id')->first();
+        $supervisorID = Supervisor::where('email', $user->email)->pluck('id')->first();
 
         //search for his or her trainees
         $traineeIDs = TraineeAssign::where('assigned_supervisor_id', $supervisorID)
@@ -68,7 +68,7 @@ class SupervisorController extends Controller
                     'expertise' => 'Not Specified',
                     'phone_number' => '', 
                     'personal_email' => '', 
-                    'sains_email' => '', 
+                    'email' => '', 
                 ]);
                 $traineeBasicDatas[] = $defaultTrainee;
             }
@@ -84,7 +84,7 @@ class SupervisorController extends Controller
             
         // Check if the user is a supervisor
         if ($user->role_id == 2) {
-            $supervisor = Supervisor::where('sains_email', $user->email)->first();
+            $supervisor = Supervisor::where('email', $user->email)->first();
 
             if (!$supervisor) {
                 // Handle the case where the trainee is not found, e.g., show an error message.
@@ -105,7 +105,7 @@ class SupervisorController extends Controller
         // Get the currently logged-in user
         $user = Auth::user();
 
-        Supervisor::where('sains_email', $user->email)
+        Supervisor::where('email', $user->email)
         ->update([
             'phone_number' => $request->input('phoneNum'),
         ]);
@@ -139,7 +139,7 @@ class SupervisorController extends Controller
         $trainee_id = $trainee->id;
         $logbooks = Logbook::where('trainee_id', $trainee_id)->get();
 
-        $supervisor_id = Supervisor::where('sains_email', Auth::user()->email)
+        $supervisor_id = Supervisor::where('email', Auth::user()->email)
             ->pluck('id')
             ->first();
 
@@ -165,7 +165,7 @@ class SupervisorController extends Controller
         $traineeID = Trainee::where('name' , $traineeName)->pluck('id')->first();
 
         //prevent other supervisor to access the task for the trainee that is not assigned to them.
-        $supervisorID = Supervisor::where('sains_email', Auth::user()->email)->pluck('id')->first();
+        $supervisorID = Supervisor::where('email', Auth::user()->email)->pluck('id')->first();
         if(TraineeAssign::where('trainee_id', $traineeRef)->where('assigned_supervisor_id', $supervisorID)->first() == null){
             return redirect()->back()->with('error', 'You do not have access to view this page.');
         }
@@ -189,7 +189,7 @@ class SupervisorController extends Controller
         $trainee_ref_id = AllTrainee::where('name', $name)->pluck('id')->first();
 
         //reference id for supervisor
-        $sv_ref_id = Supervisor::where('sains_email', Auth::user()->email)->pluck('id')->first();
+        $sv_ref_id = Supervisor::where('email', Auth::user()->email)->pluck('id')->first();
 
         //check whether this trainee is under this supervisor.
         if (TraineeAssign::where('trainee_id', $trainee_ref_id)->where('assigned_supervisor_id', $sv_ref_id)->first() == null) {
@@ -207,7 +207,7 @@ class SupervisorController extends Controller
     public function svUploadLogbook(Request $request, $name)
     {
         $user = Auth::user();
-        $supervisor_name = Supervisor::where('sains_email', $user->email)->pluck('name')->first();
+        $supervisor_name = Supervisor::where('email', $user->email)->pluck('name')->first();
 
         // Get the trainee ID
         $trainee_id = Trainee::where('name', 'LIKE', $name)->pluck('id')->first();
@@ -331,7 +331,7 @@ class SupervisorController extends Controller
         $trainee_ref_id = AllTrainee::where('name', $name)->pluck('id')->first();
     
         // Retrieve the supervisor's reference ID
-        $sv_ref_id = Supervisor::where('sains_email', Auth::user()->email)->pluck('id')->first();
+        $sv_ref_id = Supervisor::where('email', Auth::user()->email)->pluck('id')->first();
     
         // Check if the supervisor is assigned to the trainee
         $assignment = TraineeAssign::where('trainee_id', $trainee_ref_id)
@@ -448,7 +448,7 @@ class SupervisorController extends Controller
         }
 
         $user = Auth::user();
-        $supervisor_id = Supervisor::where('sains_email', $user->email)->pluck('id')->first();
+        $supervisor_id = Supervisor::where('email', $user->email)->pluck('id')->first();
 
         //reference id for trainee
         $trainee_ref_id = AllTrainee::where('name', $name)->pluck('id')->first();
@@ -474,7 +474,7 @@ class SupervisorController extends Controller
         ]);
 
         $user = Auth::user();
-        $supervisor_id = Supervisor::where('sains_email', $user->email)->pluck('id')->first();
+        $supervisor_id = Supervisor::where('email', $user->email)->pluck('id')->first();
         $trainee_id = $request->trainee_id;
         $comment = $request->comment;
 

@@ -26,7 +26,7 @@ class HomeController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $trainee = Trainee::where('sains_email', $user->email)->first();
+        $trainee = Trainee::where('email', $user->email)->first();
         $userRole = $user->role_id;
         
         if ($userRole == 2) {

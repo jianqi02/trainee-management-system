@@ -35,9 +35,9 @@
                     <tbody>
                         @foreach (json_decode($currentSeatingPlan->seat_detail, true) as $seatCode => $assignedTo)
                             <tr>
-                                <td><input type="text" name="seat_detail[{{ $seatCode }}]" value="{{ $seatCode }}" class="form-control" /></td>
+                                <td><input type="text" name="seat_detail[{{ $loop->index }}][seat_code]" value="{{ $seatCode }}" class="form-control" /></td>
                                 <td>
-                                    <select name="seat_detail[{{ $seatCode }}]" class="form-control">
+                                    <select name="seat_detail[{{ $loop->index }}][trainee_name]" class="form-control">
                                         <option value="">Select Trainee</option> <!-- Default option -->
                                         @foreach ($trainees as $trainee)
                                             <option value="{{ $trainee->name }}" {{ $assignedTo == $trainee->name ? 'selected' : '' }}>
@@ -136,7 +136,7 @@
                     let seatCodeInput = document.createElement('input');
                     seatCodeInput.type = 'text';
                     seatCodeInput.className = 'form-control';
-                    seatCodeInput.name = `seat_detail[new_${i}_col_0]`; 
+                    seatCodeInput.name = `seat_detail[${i}][seat_code]`; 
                     seatCodeTd.appendChild(seatCodeInput);
                     row.appendChild(seatCodeTd);
 
@@ -144,7 +144,7 @@
                     let assignedToTd = document.createElement('td');
                     let select = document.createElement('select');
                     select.className = 'form-control';
-                    select.name = `seat_detail[new_${i}_col_1]`;  
+                    select.name = `seat_detail[${i}][trainee_name]`;  
 
                     // Default option
                     let defaultOption = document.createElement('option');
@@ -177,45 +177,44 @@
             }
         });
 
-        // Random Assign button click
-document.getElementById('random-assign').addEventListener('click', function() {
-    let trainees = @json($trainees); // This is the list of trainees
+    // Random Assign button click
+    document.getElementById('random-assign').addEventListener('click', function() {
+        let trainees = @json($trainees); 
 
-    // Get all the rows in the seating plan table
-    let rows = document.querySelectorAll('#seating-plan-table tbody tr');
+        // Get all the rows in the seating plan table
+        let rows = document.querySelectorAll('#seating-plan-table tbody tr');
 
-    // Shuffle the trainees array to get a random order
-    let shuffledTrainees = shuffleArray(trainees);
+        let shuffledTrainees = shuffleArray(trainees);
 
-    // Loop through each row and assign a random trainee
-    rows.forEach(function(row, index) {
-        let traineeSelect = row.querySelector('select');
+        // Loop through each row and assign a random trainee
+        rows.forEach(function(row, index) {
+            let traineeSelect = row.querySelector('select');
 
-        // Assign a trainee from the shuffled array, if there are more trainees than rows
-        if (shuffledTrainees[index]) {
-            // Find the option in the dropdown that matches the trainee's name and set it as selected
-            let traineeName = shuffledTrainees[index].name;
-            Array.from(traineeSelect.options).forEach(function(option) {
-                if (option.value === traineeName) {
-                    option.selected = true;
-                }
-            });
-        } else {
-            // If no more trainees available, set the dropdown to the default (unassigned)
-            traineeSelect.value = ''; // Set to empty if no trainee
-        }
+            // Assign a trainee from the shuffled array, if there are more trainees than rows
+            if (shuffledTrainees[index]) {
+                // Find the option in the dropdown that matches the trainee's name and set it as selected
+                let traineeName = shuffledTrainees[index].name;
+                Array.from(traineeSelect.options).forEach(function(option) {
+                    if (option.value === traineeName) {
+                        option.selected = true;
+                    }
+                });
+            } else {
+                // If no more trainees available, set to empty
+                traineeSelect.value = ''; 
+            }
+        });
     });
-});
 
-// Utility function to shuffle the trainees array
-function shuffleArray(array) {
-    let shuffledArray = array.slice(); // Create a copy of the array
-    for (let i = shuffledArray.length - 1; i > 0; i--) {
-        let j = Math.floor(Math.random() * (i + 1));
-        [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
+    // Utility function to shuffle the trainees array
+    function shuffleArray(array) {
+        let shuffledArray = array.slice(); // Create a copy of the array
+        for (let i = shuffledArray.length - 1; i > 0; i--) {
+            let j = Math.floor(Math.random() * (i + 1));
+            [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
+        }
+        return shuffledArray;
     }
-    return shuffledArray;
-}
 
     // Add Row button click
     document.getElementById('add-row').addEventListener('click', function() {
@@ -229,7 +228,7 @@ function shuffleArray(array) {
         let seatCodeInput = document.createElement('input');
         seatCodeInput.type = 'text';
         seatCodeInput.className = 'form-control';
-        seatCodeInput.name = `seat_detail[new_${rowCount}_col_0]`;  
+        seatCodeInput.name = `seat_detail[${rowCount}][seat_code]`; 
         seatCodeTd.appendChild(seatCodeInput);
         row.appendChild(seatCodeTd);
 
@@ -237,7 +236,7 @@ function shuffleArray(array) {
         let assignedToTd = document.createElement('td');
         let select = document.createElement('select');
         select.className = 'form-control';
-        select.name = `seat_detail[new_${rowCount}_col_1]`;
+        select.name = `seat_detail[${rowCount}][trainee_name]`;
 
         // Default option
         let defaultOption = document.createElement('option');
