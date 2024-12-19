@@ -416,7 +416,7 @@ class TaskTimelineController extends Controller
             ]);
     
             $activityLog->save();
-            return redirect()->back()->with('warning', 'The task name or task description is too long. Please try again.');
+            return redirect()->back()->with('warning', 'Invalid task name or description. Please try again.');
         }
 
         //add a new task to DB
@@ -645,7 +645,7 @@ class TaskTimelineController extends Controller
             ]);
     
             $activityLog->save();
-            return redirect()->back()->with('warning', 'The task name or task description is too long. Please try again.');
+            return redirect()->back()->with('warning', 'The task name or task description is invalid. Please try again.');
         }
 
         if(isset($timeline[$date])){
@@ -836,7 +836,7 @@ class TaskTimelineController extends Controller
 
                     $activityLog = new ActivityLog([
                         'username' => Auth::user()->name,
-                        'action' => 'Dail Task Note',
+                        'action' => 'Daily Task Note',
                         'outcome' => 'failed',
                         'details' => $errorMessages,
                     ]);
