@@ -190,7 +190,7 @@
         <div class="profile-info" style="text-align: left;">  
             <p><strong>Full Name</strong>: {{ $trainee->name }} </p>
             <p><strong>Personal Email</strong>: {{ $trainee->personal_email }}</p>
-            <p><strong>SAINS Email</strong>: {{ $trainee->sains_email }}</p>
+            <p><strong>Email</strong>: {{ $trainee->email }}</p>
             <p><strong>Phone Number</strong>: {{ $trainee->phone_number }}</p>
             <p><strong>Expertise</strong>: {{ $trainee->expertise }}</p>
             <p><strong>Internship Date (Start)</strong>: {{ $internship_dates->internship_start ?? "" }}

@@ -45,7 +45,7 @@ class NotificationComposer
         }
         //notification for supervisor
         elseif($user->role_id == 2){
-            $supervisorID = Supervisor::where('sains_email', $user->email)->pluck('id')->first();
+            $supervisorID = Supervisor::where('email', $user->email)->pluck('id')->first();
             $notificationCount = DB::table('notifications')
             ->where('notifiable_id', $supervisorID)
             ->whereNot('notifiable_type', 'App\Models\Supervisor')
@@ -74,8 +74,8 @@ class NotificationComposer
         }
         //notification for trainee
         else{
-            $trainee_id = Trainee::where('sains_email', $user->email)->pluck('id')->first();
-            $trainee_name = Trainee::where('sains_email', $user->email)->pluck('name')->first();
+            $trainee_id = Trainee::where('email', $user->email)->pluck('id')->first();
+            $trainee_name = Trainee::where('email', $user->email)->pluck('name')->first();
 
             // calculate the total number of notification that related to this trainee
             $notificationCount = DB::table('notifications')
@@ -168,12 +168,12 @@ class NotificationComposer
             }
         }
         elseif($user->role_id == 2){
-            $supervisorID = Supervisor::where('sains_email', $user->email)->pluck('id')->first();
+            $supervisorID = Supervisor::where('email', $user->email)->pluck('id')->first();
             $notification_number = Notification::where('notifiable_id', $supervisorID)->where('read_at', null)->count();
         }
         else{
-            $traineeID = Trainee::where('sains_email', $user->email)->pluck('id')->first();
-            $traineeName = Trainee::where('sains_email', $user->email)->pluck('name')->first();
+            $traineeID = Trainee::where('email', $user->email)->pluck('id')->first();
+            $traineeName = Trainee::where('email', $user->email)->pluck('name')->first();
             $notification_number = Notification::where('notifiable_id', $traineeID)
                 ->where('read_at', null)
                 ->whereJsonContains('data->name', $traineeName)

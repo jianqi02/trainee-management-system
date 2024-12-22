@@ -287,7 +287,7 @@ class AdminController extends Controller
             // 3. Supervisors with the least number of trainees (when all have at least 1)
             if($leastTraineeCount >= 1){
                 $traineeCount = $supervisor->trainee_count;
-                if ($totalTraineeCount == $leastTraineeCount) {
+                if ($traineeCount == $leastTraineeCount) {
                     $points += 1;
                 }
             }
@@ -413,6 +413,9 @@ class AdminController extends Controller
                 if ($existingAssignment) {
                     $existingAssignment->delete();
                 }
+
+                $trainee_counts = TraineeAssign::where('assigned_supervisor_id', $supervisorID)->count();
+                Supervisor::where('id', $supervisorID)->update(['trainee_count' => $trainee_counts ]);
 
                 // Check if there are any assignments left for this supervisor
                 if(TraineeAssign::where('assigned_supervisor_id', $supervisorID)->count() == 0){

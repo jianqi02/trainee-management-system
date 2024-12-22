@@ -146,7 +146,7 @@
                                             </svg>
                                         </button>
                                     </th>
-                                    <th>SAINS Email
+                                    <th>Email
                                         <button class="sort-button-trainee" data-column="2" style="border: none;">
                                             <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 320 512">
                                                 <path d="M137.4 41.4c12.5-12.5 32.8-12.5 45.3 0l128 128c9.2 9.2 11.9 22.9 6.9 34.9s-16.6 19.8-29.6 19.8H32c-12.9 0-24.6-7.8-29.6-19.8s-2.2-25.7 6.9-34.9l128-128zm0 429.3l-128-128c-9.2-9.2-11.9-22.9-6.9-34.9s16.6-19.8 29.6-19.8H288c12.9 0 24.6 7.8 29.6 19.8s2.2 25.7-6.9 34.9l-128 128c-12.5 12.5-32.8 12.5-45.3 0z"/>
@@ -168,7 +168,7 @@
                                     <tr id="trainee-{{ $trainee->name }}">
                                         <td>{{ $trainee->name }}</td>
                                         <td>{{ $trainee->personal_email }}</td>
-                                        <td>{{ $trainee->sains_email }}</td>
+                                        <td>{{ $trainee->email }}</td>
                                         <td>{{ $trainee->acc_status }}</td>
                                         <td style="width: 30%;">
                                             <a href="{{ route('admin-go-profile', ['traineeName' => urlencode($trainee->name)]) }}" style="text-decoration: none; font-size: 24px; color: grey; margin-left: 20px;" title="View Profile">
@@ -313,7 +313,7 @@
                                             </svg>
                                         </button>
                                     </th>
-                                    <th>SAINS Email
+                                    <th>Email
                                         <button class="sort-button-sv" data-column="4" style="border: none;">
                                             <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 320 512">
                                                 <path d="M137.4 41.4c12.5-12.5 32.8-12.5 45.3 0l128 128c9.2 9.2 11.9 22.9 6.9 34.9s-16.6 19.8-29.6 19.8H32c-12.9 0-24.6-7.8-29.6-19.8s-2.2-25.7 6.9-34.9l128-128zm0 429.3l-128-128c-9.2-9.2-11.9-22.9-6.9-34.9s16.6-19.8 29.6-19.8H288c12.9 0 24.6 7.8 29.6 19.8s2.2 25.7-6.9 34.9l-128 128c-12.5 12.5-32.8 12.5-45.3 0z"/>
@@ -330,7 +330,7 @@
                                         <td>{{ $supervisor->section }}</td>
                                         <td>{{ $supervisor->department }}</td>
                                         <td>{{ $supervisor->expertise }}</td>
-                                        <td>{{ $supervisor->sains_email }}</td>
+                                        <td>{{ $supervisor->email }}</td>
                                         <td style="width: 20%;">
                                             <a href="{{ route('admin-edit-profile', ['selected' => urlencode($supervisor->name)]) }}" style="text-decoration: none; color: grey; font-size: 24px; margin-left: 20px;" title="Edit Profile">
                                                 <i class="fa fa-pencil"></i>
@@ -441,9 +441,9 @@
                 const row = traineeTable.rows[i];
                 const name = row.cells[0].textContent.toLowerCase();
                 const personalEmail = row.cells[1].textContent.toLowerCase();
-                const sainsEmail = row.cells[2].textContent.toLowerCase();
+                const email = row.cells[2].textContent.toLowerCase();
                 
-                if (name.includes(searchValue) || personalEmail.includes(searchValue) || sainsEmail.includes(searchValue)) {
+                if (name.includes(searchValue) || personalEmail.includes(searchValue) || email.includes(searchValue)) {
                     row.style.display = "";
                 } else {
                     row.style.display = "none";
@@ -464,9 +464,9 @@
                 const row = svTable.rows[i];
                 const name = row.cells[0].textContent.toLowerCase();
                 const personalEmail = row.cells[3].textContent.toLowerCase();
-                const sainsEmail = row.cells[4].textContent.toLowerCase();
+                const email = row.cells[4].textContent.toLowerCase();
                 
-                if (name.includes(searchValue) || personalEmail.includes(searchValue) || sainsEmail.includes(searchValue)) {
+                if (name.includes(searchValue) || personalEmail.includes(searchValue) || email.includes(searchValue)) {
                     row.style.display = "";
                 } else {
                     row.style.display = "none";
