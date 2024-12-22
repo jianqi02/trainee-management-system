@@ -236,7 +236,7 @@
     <div class="task-container">
         <div class="row">
             <p style="margin-left: 5px;"><small>You are currently viewing on the daily task for task: <strong>{{ $taskName }}</strong>.</small></p>
-            <h3>Daily Task Detail</h3>
+            <h3>Daily Report Detail</h3>
             @if(session('warning'))
                 <div class="alert alert-warning" style="width: 64.3%; margin-left: 15px;">{{ session('warning') }}</div>
             @endif

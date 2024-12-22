@@ -416,7 +416,7 @@ class TaskTimelineController extends Controller
             ]);
     
             $activityLog->save();
-            return redirect()->back()->with('warning', 'The task name or task description is too long. Please try again.');
+            return redirect()->back()->with('warning', 'Invalid task name or description. Please try again.');
         }
 
         //add a new task to DB
@@ -478,9 +478,9 @@ class TaskTimelineController extends Controller
                             'data' => 'Your trainee ' . $traineeName . ' has completed task ' . $taskName,
                         ]);
                         $notification->save(); // Save the notification to the database
-
-                        $supervisor_name = Supervisor::where('id', $assigned_supervisor_id)->pluck('name')->first();
+                        
                     }
+                    $supervisor_name = Supervisor::where('id', $assigned_supervisor_id)->pluck('name')->first();
                 }
                 $telegramNotification = new TelegramNotification(
                     "Task Completed",
@@ -645,7 +645,7 @@ class TaskTimelineController extends Controller
             ]);
     
             $activityLog->save();
-            return redirect()->back()->with('warning', 'The task name or task description is too long. Please try again.');
+            return redirect()->back()->with('warning', 'The task name or task description is invalid. Please try again.');
         }
 
         if(isset($timeline[$date])){
@@ -836,7 +836,7 @@ class TaskTimelineController extends Controller
 
                     $activityLog = new ActivityLog([
                         'username' => Auth::user()->name,
-                        'action' => 'Dail Task Note',
+                        'action' => 'Daily Task Note',
                         'outcome' => 'failed',
                         'details' => $errorMessages,
                     ]);
@@ -992,6 +992,14 @@ class TaskTimelineController extends Controller
         $priority_input = $request->input('taskPriority');
         $status_input = $request->input('taskStatus');
 
+        $totalTasks = TaskTimeline::where('trainee_id', $trainee_id)->count();
+        $completedTasks = TaskTimeline::where('trainee_id', $trainee_id)
+                                       ->where('task_status', 'Completed')
+                                       ->count();
+        $pendingTasks = TaskTimeline::where('trainee_id', $trainee_id)
+                                     ->where('task_status', '!=', 'Completed')
+                                     ->count();
+
         //filter the task based on the input
         $query = TaskTimeline::where('trainee_id', $trainee_id);
 
@@ -1017,7 +1025,7 @@ class TaskTimelineController extends Controller
         
         $tasks = $query->get();
 
-        return view('trainee-task-timeline', compact('tasks'));
+        return view('trainee-task-timeline', compact('tasks', 'totalTasks', 'completedTasks', 'pendingTasks'));
     }
 
     //admin & spervisor method to apply the filter on the task
@@ -1027,6 +1035,14 @@ class TaskTimelineController extends Controller
         $end_date_input = $request->input('taskEndDate');
         $priority_input = $request->input('taskPriority');
         $status_input = $request->input('taskStatus');
+
+        $totalTasks = TaskTimeline::where('trainee_id', $traineeID)->count();
+        $completedTasks = TaskTimeline::where('trainee_id', $traineeID)
+                                       ->where('task_status', 'Completed')
+                                       ->count();
+        $pendingTasks = TaskTimeline::where('trainee_id', $traineeID)
+                                     ->where('task_status', '!=', 'Completed')
+                                     ->count();
 
         //filter the task based on the input
         $query = TaskTimeline::where('trainee_id', $traineeID);
@@ -1058,12 +1074,12 @@ class TaskTimelineController extends Controller
       
         //supervisor
         if($role_id == 2){
-            return view('sv-view-trainee-task-timeline', compact('tasks', 'traineeID'));
+            return view('sv-view-trainee-task-timeline', compact('tasks', 'traineeID', 'totalTasks', 'completedTasks', 'pendingTasks'));
         }
         //admin
         else{
             $traineeName = Trainee::where('id', $traineeID)->pluck('name')->first();
-            return view('admin-view-trainee-task-timeline', compact('tasks', 'traineeName', 'traineeID'));
+            return view('admin-view-trainee-task-timeline', compact('tasks', 'traineeName', 'traineeID', 'totalTasks', 'completedTasks', 'pendingTasks'));
         }
     }
 }
