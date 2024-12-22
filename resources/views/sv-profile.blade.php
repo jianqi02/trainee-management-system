@@ -60,7 +60,7 @@
         <h3 class="text-center">Profile</h3>
         <div class="profile-info" style="text-align: left; margin-left: 30%;">
             <p>Name: {{ $supervisor->name }} </p>
-            <p>SAINS Email: {{ $supervisor->sains_email }}</p>
+            <p>Email: {{ $supervisor->email }}</p>
             <p>Phone Number: {{ $supervisor->phone_number }}</p>
             <p>Section: {{ $supervisor->section }}</p>
             <p>Department: {{ $supervisor->department }}</p>

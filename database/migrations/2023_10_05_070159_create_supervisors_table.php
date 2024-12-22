@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('section')->nullable();
             $table->string('department')->nullable();
             $table->string('expertise')->nullable();
-            $table->string('sains_email')->unique();
+            $table->string('email')->unique();
             $table->string('trainee_status')->nullable();
             $table->integer('trainee_count')->nullable();
             $table->timestamps();

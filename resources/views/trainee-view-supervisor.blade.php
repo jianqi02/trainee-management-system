@@ -96,7 +96,7 @@
                   <div class="card">
                       <div class="card-body">
                           <h5 class="card-title text-center">{{ $supervisorData->name }}</h5><br>                          
-                          <p><strong>SAINS Email:</strong> {{ $supervisorData->sains_email }}</p>                          
+                          <p><strong>Email:</strong> {{ $supervisorData->email }}</p>                          
                           <p><strong>Department:</strong> {{ $supervisorData->department}}
                           <p><strong>Section:</strong> {{ $supervisorData->section }}</p>
                           <p><strong>Expertise:</strong> {{ $supervisorData->expertise }}</p>

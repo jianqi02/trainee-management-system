@@ -287,7 +287,7 @@ class AdminController extends Controller
             // 3. Supervisors with the least number of trainees (when all have at least 1)
             if($leastTraineeCount >= 1){
                 $traineeCount = $supervisor->trainee_count;
-                if ($totalTraineeCount == $leastTraineeCount) {
+                if ($traineeCount == $leastTraineeCount) {
                     $points += 1;
                 }
             }
@@ -414,6 +414,9 @@ class AdminController extends Controller
                     $existingAssignment->delete();
                 }
 
+                $trainee_counts = TraineeAssign::where('assigned_supervisor_id', $supervisorID)->count();
+                Supervisor::where('id', $supervisorID)->update(['trainee_count' => $trainee_counts ]);
+
                 // Check if there are any assignments left for this supervisor
                 if(TraineeAssign::where('assigned_supervisor_id', $supervisorID)->count() == 0){
                     Supervisor::where('id', $supervisorID)->update(['trainee_status' => 'Not Assigned']);
@@ -449,6 +452,10 @@ class AdminController extends Controller
     }
 
     public function createUser(Request $request){
+        $allowedDomains = Settings::pluck('email_domain')->first(); // Get the email_domain value (as a string)
+
+        // Convert the comma-separated string into an array
+        $allowedDomainsArray = explode(',', $allowedDomains);
         $request->validate([
             'name' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z\s]+$/'],
             'email' => [
@@ -458,7 +465,7 @@ class AdminController extends Controller
                 'max:255',
                 'unique:users',
                 'regex:/^(?=.{1,64}@)[A-Za-z0-9_]+(\.[A-Za-z0-9_]+)*@[^-][A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*(\.[A-Za-z]{2,})$/',
-                'ends_with:@sains.com.my',
+                'ends_with:' . implode(',', $allowedDomainsArray),
                 function ($attribute, $value, $fail) {
                     // Check if a special character is the first or last character
                     if (preg_match('/^[^A-Za-z0-9_]/', $value) || preg_match('/[^A-Za-z0-9_]$/', $value)) {
@@ -481,8 +488,8 @@ class AdminController extends Controller
             ],
         ],[
             'name.regex' => 'The name field should only contain letters and spaces.',
-            'email.regex' => 'The email field should be a valid SAINS email address.',
-            'email.ends_with' => 'The email field should end with @sains.com.my.',
+            'email.regex' => 'The email field should be a valid email address.',
+            'email.ends_with' => 'The email domain must be one of the allowed domains: ' . implode(', ', $allowedDomainsArray),
             'role.in' => 'The role field should be either 2 or 3.',
             'password.regex' => 'The password field should contain at least one uppercase letter and one special character.',
         ]);
@@ -498,7 +505,7 @@ class AdminController extends Controller
             Trainee::create([
                 'name' => $request->input('name'),
                 'personal_email' => NULL,
-                'sains_email' => $request->input('email'),
+                'email' => $request->input('email'),
                 'phone_number' => NULL,
                 'graduate_date' => NULL,
                 'expertise' => 'Not Specified',
@@ -519,7 +526,7 @@ class AdminController extends Controller
                 'name' => $request->input('name'), 
                 'section' => '',
                 'department' => 'CSM',
-                'sains_email' => $request->input('email'),
+                'email' => $request->input('email'),
                 'phone_number' => '',
                 'trainee_status' => 'Not Assigned',
             ]);
@@ -645,7 +652,7 @@ class AdminController extends Controller
             $target->name = $request->input('fullName');
             $target->save();
 
-            Supervisor::where('sains_email', $target->email)
+            Supervisor::where('email', $target->email)
             ->update([
                 'name' => $request->input('fullName'),
                 'expertise' => $request->input('expertise'),
@@ -666,7 +673,7 @@ class AdminController extends Controller
 
         } elseif ($target->role_id === 3) { //trainee
 
-            $target_trainee = Trainee::where('sains_email', $target->email)->first();
+            $target_trainee = Trainee::where('email', $target->email)->first();
 
             $validatedData = $request->validate([
                 'fullName' => 'required|regex:/^[A-Za-z\s]+$/',
@@ -718,7 +725,7 @@ class AdminController extends Controller
             }
     
             //Update the trainee basic information to table 'trainees'.
-            Trainee::where('sains_email', $target->email)
+            Trainee::where('email', $target->email)
             ->update([
                 'name' => $request->input('fullName'),
                 'phone_number' => $request->input('phoneNum'),
@@ -1128,7 +1135,7 @@ class AdminController extends Controller
             }
         }
 
-        $user_record = User::where('email', $acc->sains_email)->first();
+        $user_record = User::where('email', $acc->email)->first();
 
         $activityLog = new ActivityLog([
             'username' => Auth::user()->name,
@@ -1175,7 +1182,7 @@ class AdminController extends Controller
             }
         }
 
-        $user_record = User::where('email', $acc->sains_email)->first();
+        $user_record = User::where('email', $acc->email)->first();
 
         $activityLog = new ActivityLog([
             'username' => Auth::user()->name,
@@ -1198,7 +1205,7 @@ class AdminController extends Controller
     public function adminChangePassword(Request $request, $id, $type){
         if($type == 'Trainee'){
             $traineeRecord = Trainee::where('id', $id)->first();
-            $userRecord = User::where('email', $traineeRecord->sains_email)->first();
+            $userRecord = User::where('email', $traineeRecord->email)->first();
             
             $validator = Validator::make($request->all(), [
                 'newPassword' => ['required','string','min:8','regex:/^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).*$/'],
@@ -1255,7 +1262,7 @@ class AdminController extends Controller
         }
         else{
             $supervisorRecord = Supervisor::where('id',$id)->first();
-            $userRecord = User::where('email', $supervisorRecord->sains_email)->first();
+            $userRecord = User::where('email', $supervisorRecord->email)->first();
             
             $validator = Validator::make($request->all(), [
                 'newPassword' => ['required','string','min:8','regex:/^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).*$/'],
@@ -1318,12 +1325,12 @@ class AdminController extends Controller
             'new_password' => [
                 'required',
                 'string',
-                'min:12',
+                'min:8',
                 'regex:/^(?=.*[A-Z])(?=.*[!@#$%^&*()_+])[a-zA-Z0-9!@#$%^&*()_+]+$/',
             ],
             'confirm_password' => 'required|string|same:new_password',
         ], [
-            'new_password.min' => 'The password must have at least 12 characters.',
+            'new_password.min' => 'The password must have at least 8 characters.',
             'new_password.regex' => 'The format of the password is incorrect.',
             'confirm_password.same' => 'The confirm password does not match the new password.',
         ]);
@@ -1459,6 +1466,8 @@ class AdminController extends Controller
             'expertises.*' => 'string|max:255', 
             'departments' => 'array', // Validate departments input
             'departments.*' => 'string|max:255', 
+            'sections' => 'array', // Validate sections input
+            'sections.*' => 'string|max:255', 
         ]);        
     
         // Retrieve the settings or create a new instance if none exists

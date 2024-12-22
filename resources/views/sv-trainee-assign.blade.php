@@ -100,11 +100,11 @@
                           <p><strong>Expertise:</strong> {{ $traineeData->expertise }}</p>
                           <p><strong>H/P No.:</strong> {{ $traineeData->phone_number }}</p>
                           <p><strong>Personal Email: </strong>{{ $traineeData->personal_email }}</p>
-                          <p><strong>SAINS Email:</strong> {{ $traineeData->sains_email }}</p>
-                          @if($traineeData->sains_email != "")
+                          <p><strong>Email:</strong> {{ $traineeData->email }}</p>
+                          @if($traineeData->email != "")
                               <a href="{{ route('go-profile', ['traineeName' => $traineeData->name]) }}" class="btn btn-primary">Go To Profile</a>
                           @endif
-                          @if($traineeData->sains_email != "")
+                          @if($traineeData->email != "")
                               <a href="{{ route('go-task-timeline', ['traineeName' => $traineeData->name]) }}" class="btn btn-primary">Task Timeline</a>
                           @endif
                       </div>

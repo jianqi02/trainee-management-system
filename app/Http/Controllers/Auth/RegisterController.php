@@ -71,7 +71,18 @@ class RegisterController extends Controller
         $allowedDomains = explode(',', $settings->email_domain); // Get array of allowed domains set by admin
     
         return Validator::make($data, [
-            'name' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z\s]+$/'],
+            'name' => [
+                'required', 
+                'string', 
+                'max:255', 
+                'regex:/^[a-zA-Z\s]+$/',
+                function ($attribute, $value, $fail) {
+                    // Check if the name already exists in the users table
+                    if (\App\Models\User::where('name', $value)->exists()) {
+                        $fail('The name has already been taken.');
+                    }
+                }
+            ],
             'email' => [
                 'required',
                 'string',
@@ -110,6 +121,7 @@ class RegisterController extends Controller
             'name.regex' => 'The name field should only contain letters and spaces.',
             'email.regex' => 'The email field should be a valid email address.',
             'role.in' => 'The role field should be either 2 or 3.',
+            'password.min' => 'The password must have at least 8 characters.',
             'password.regex' => 'The password field should contain at least one uppercase letter and one special character.',
         ]);
     }
@@ -151,7 +163,7 @@ class RegisterController extends Controller
             Trainee::create([
                 'name' => $data['name'],
                 'personal_email' => NULL,
-                'sains_email' => $data['email'],
+                'email' => $data['email'],
                 'phone_number' => NULL,
                 'graduate_date' => NULL,
                 'expertise' => 'Not Specified',

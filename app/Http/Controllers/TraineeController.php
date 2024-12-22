@@ -7,26 +7,29 @@ use Ramsey\Uuid\Uuid;
 use App\Models\Logbook;
 use App\Models\Seating;
 use App\Models\Trainee;
+use App\Models\Settings;
 use App\Models\Expertise;
 use Illuminate\View\View;
 use App\Models\AllTrainee;
 use App\Models\Supervisor;
 use App\Models\ActivityLog;
+use Illuminate\Support\Str;
 use App\Models\Notification;
 use App\Models\TaskTimeline;
+use Illuminate\Http\Request;
 use App\Models\TraineeAssign;
-use App\Notifications\TelegramNotification;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\DB;
+use Spatie\Browsershot\Browsershot;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use Spatie\Browsershot\Browsershot;
-use Barryvdh\DomPDF\Facade\Pdf;
+use App\Notifications\TelegramNotification;
 
 class TraineeController extends Controller
 {
@@ -43,8 +46,7 @@ class TraineeController extends Controller
     
         // Check if the user is a trainee
         if ($user->role_id == 3) {
-            // Assuming that 'sains_email' is the email field in your 'trainees' table
-            $trainee = Trainee::where('sains_email', $user->email)->first();
+            $trainee = Trainee::where('email', $user->email)->first();
             $internship_dates = AllTrainee::where('name', 'LIKE', $user->name)
                 ->select('internship_start', 'internship_end')
                 ->first();
@@ -70,8 +72,7 @@ class TraineeController extends Controller
             
         // Check if the user is a trainee
         if ($user->role_id == 3) {
-            // Assuming that 'sains_email' is the email field in your 'trainees' table
-            $trainee = Trainee::where('sains_email', $user->email)->first();
+            $trainee = Trainee::where('email', $user->email)->first();
 
             if (!$trainee) {
                 // Handle the case where the trainee is not found, e.g., show an error message.
@@ -114,7 +115,7 @@ class TraineeController extends Controller
         // Get the currently logged-in user
         $user = Auth::user();
 
-        $trainee = Trainee::where('sains_email', $user->email)->first();
+        $trainee = Trainee::where('email', $user->email)->first();
 
         if ($trainee) {
             $trainee->phone_number = $request->input('phoneNum');
@@ -174,7 +175,7 @@ class TraineeController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $resumeExistCheck = Trainee::where('sains_email', $user->email)->first();
+        $resumeExistCheck = Trainee::where('email', $user->email)->first();
 
         if ($resumeExistCheck->resume_path != null) {
             $activityLog = new ActivityLog([
@@ -224,14 +225,14 @@ class TraineeController extends Controller
     public function traineeResume()
     {
         $user = Auth::user();
-        $trainee = Trainee::where('sains_email', $user->email)->first();
+        $trainee = Trainee::where('email', $user->email)->first();
         return view('trainee-upload-resume', compact('trainee'));
     }
 
     public function uploadLogbook(Request $request){
         $user = Auth::user();
-        $trainee = Trainee::where('sains_email', $user->email)->pluck('name')->first();
-        $id = Trainee::where('sains_email', $user->email)->pluck('id')->first();
+        $trainee = Trainee::where('email', $user->email)->pluck('name')->first();
+        $id = Trainee::where('email', $user->email)->pluck('id')->first();
 
         // Validate the uploaded logbook
         $validator = Validator::make($request->all(), [
@@ -366,7 +367,7 @@ class TraineeController extends Controller
         $user = Auth::user();
 
         // Find the trainee associated with this user
-        $trainee = Trainee::where('sains_email', $user->email)->first();
+        $trainee = Trainee::where('email', $user->email)->first();
         if (!$trainee) {
             return redirect()->route('trainee-upload-logbook')->with('error', 'Trainee not found');
         }
@@ -409,8 +410,11 @@ class TraineeController extends Controller
         // Fetch associated supervisors
         $supervisors = $allTrainees->supervisors;
 
+        // Fetch company name
+        $company_name = Settings::pluck('company_name')->first();
+
         // Load the view file and pass tasks, trainee, supervisors, dateGenerated, startMonth, and endMonth data
-        $pdf = PDF::loadView('logbook-summary', compact('tasks', 'trainee', 'supervisors', 'dateGenerated', 'startMonth', 'endMonth', 'isSingleMonth'));
+        $pdf = PDF::loadView('logbook-summary', compact('tasks', 'trainee', 'supervisors', 'dateGenerated', 'startMonth', 'endMonth', 'isSingleMonth', 'company_name'));
 
         // Optionally, set paper size and orientation
         $pdf->setPaper('A4', 'portrait');
@@ -423,7 +427,7 @@ class TraineeController extends Controller
     public function traineeLogbook()
     {
         $user = Auth::user();
-        $id = Trainee::where('sains_email', $user->email)->pluck('id')->first();
+        $id = Trainee::where('email', $user->email)->pluck('id')->first();
         $logbooks = Logbook::where('trainee_id', $id)->get();
         return view('trainee-upload-logbook', compact('logbooks'));
     }
@@ -478,7 +482,7 @@ class TraineeController extends Controller
     public function viewSeatPlan()
     {
         $user = Auth::user();
-        $name = Trainee::where('sains_email', $user->email)->pluck('name')->first();
+        $name = Trainee::where('email', $user->email)->pluck('name')->first();
 
         //get the current year and month.
         $year = date('Y');

@@ -216,7 +216,7 @@ class SeatingController extends Controller
             foreach ($request->file('new_images') as $file) {
                 if ($file->isValid()) {
                     // Upload the image and store the path
-                    $imagePath = $file->store('seating_images', 'public'); // Store in 'storage/app/public/seating_images'
+                    $imagePath = $file->store('seating_images', 'public');
                     $imagePathDetail[] = $imagePath;  // Append each new image path to the array
                 }
             }
@@ -224,50 +224,68 @@ class SeatingController extends Controller
 
         // If there are existing images, add them to the array
         if ($request->has('existing_images')) {
-            $existingImages = $request->input('existing_images'); // Retrieve existing image links
+            $existingImages = $request->input('existing_images'); 
             $imagePathDetail = array_merge($imagePathDetail, $existingImages); // Merge existing images with new ones
         }
 
         $seatingImage = SeatingImage::firstOrCreate(
-            ['week' => $request->selected_week],  // Find record by week
-            ['image_path' => json_encode([])]     // Default to an empty array if not found
+            ['week' => $request->selected_week],  
+            ['image_path' => json_encode([])]  // Default to an empty array if not found
         );
         
         // Update the record with the merged image paths as a JSON array
         $seatingImage->image_path = json_encode($imagePathDetail, JSON_UNESCAPED_SLASHES); // Store image paths as JSON
         $seatingImage->save();
     
-        // Get the seating details from the database
+       // Get the seating details from the database
         $existingSeatDetails = json_decode($seatingPlan->seat_detail, true) ?? [];
-    
-        // Initialize an array to hold updated seat details
+
+        // Initialize arrays to hold updated seat details and errors
         $updatedSeatDetails = [];
-    
+        $assignedTrainees = [];
+        $errors = [];
+
         // Iterate through the seat details provided in the form
-        foreach ($request->input('seat_detail') as $key => $value) {
-            // Check if the key represents a new seat entry
-            if (strpos($key, 'new_') !== false && strpos($key, 'col_0') !== false) {
-                // This is a new seat code
-                $seatCode = $value; // This is the new seat code (like "A2")
-                $assignedToKey = str_replace('col_0', 'col_1', $key); // Find the matching assigned name key
-                $assignedTo = $request->input("seat_detail.$assignedToKey", null); // Get the assigned person's name
-    
-                // Only include the seat in the final seating plan if seat code and assignedTo are not empty
-                if (!empty($seatCode) && !empty($assignedTo)) {
-                    $updatedSeatDetails[$seatCode] = $assignedTo; // Map new seat code to assigned person
+        foreach ($request->input('seat_detail') as $seatDetail) {
+            // Get seat code and trainee name from the current array entry
+            $seatCode = $seatDetail['seat_code'] ?? null;
+            $assignedTo = $seatDetail['trainee_name'] ?? null;
+
+            // Check if seat code is empty
+            if (empty($seatCode)) {
+                $errors[] = 'Seat code cannot be empty.';
+                continue; // Skip this entry, move to the next one
+            }
+
+            // Check if the same trainee is assigned to multiple seats
+            if (!empty($assignedTo)) {
+                if (in_array($assignedTo, $assignedTrainees)) {
+                    $errors[] = "Trainee $assignedTo is assigned to multiple seats.";
+                } else {
+                    $assignedTrainees[] = $assignedTo; // Track assigned trainees
                 }
-            } elseif (strpos($key, 'new_') === false) {
-                // This is an existing seat (not starting with 'new_')
-                $updatedSeatDetails[$key] = $value; // Keep existing seat code and its value
+            }
+
+            // Add to updated seat details if no errors
+            if (empty($errors)) {
+                $updatedSeatDetails[$seatCode] = $assignedTo; // Map seat code to trainee name
             }
         }
-    
-        // Update the seating plan details with only the updated data
+
+        // If there are any errors, return back to the form with error messages
+        if (!empty($errors)) {
+            return redirect()->route('seating-arrangement')
+                            ->withErrors($errors)
+                            ->withInput(); // Return form data to the view
+        }
+
+        // Update the seating plan details with the updated seat details
         $seatingPlan->seat_detail = json_encode($updatedSeatDetails);
         $seatingPlan->save();
-    
-        // Redirect with success message
+
+        // Redirect with a success message
         return redirect()->route('seating-arrangement')->with('success', 'Seating plan updated successfully.');
+
     }  
     
     public function createWeeklySeatingPlan(Request $request)
@@ -335,7 +353,7 @@ class SeatingController extends Controller
         // Validate the form input
         $request->validate([
             'seat_detail' => 'required|array',
-            'selected_week' => 'required', // Ensure the week is also provided
+            'selected_week' => 'required', 
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg|max:5120'
         ]);
     
@@ -365,6 +383,11 @@ class SeatingController extends Controller
         $seatingImage->image_path = json_encode($imagePaths);
         $seatingImage->save();
     
+        $errors = [];
+
+        // Array to track assigned trainees
+        $assignedTrainees = [];
+        
         // Iterate through the seat details provided in the form
         foreach ($request->input('seat_detail') as $key => $value) {
             // Check if the key is related to seat code or assigned trainee ID
@@ -372,17 +395,23 @@ class SeatingController extends Controller
                 // Extract the index number from the key (e.g., 0, 1)
                 preg_match('/new_(\d+)_/', $key, $matches);
                 $index = $matches[1];
-
+        
                 // Check if this key is for seat code or assigned trainee ID
                 if (strpos($key, 'seat_code') !== false) {
                     // This is a seat code (like "B1")
                     $seatCode = $value;
-
+        
                     // Find the corresponding assigned trainee ID (e.g., 'new_0_assigned_to')
                     $assignedToKey = "new_{$index}_assigned_to";
                     $assignedToId = $request->input("seat_detail.$assignedToKey");
-
-                    // Check if the seat has a code (not empty)
+        
+                    // Check if the seat code is empty
+                    if (empty($seatCode)) {
+                        // Add an error message if the seat code is empty
+                        $errors[] = "Seat code cannot be empty.";
+                    }
+        
+                    // If the seat code is not empty, proceed with further validation
                     if (!empty($seatCode)) {
                         // If assignedToId is empty, assign an empty string to the seat
                         if (empty($assignedToId)) {
@@ -390,16 +419,29 @@ class SeatingController extends Controller
                         } else {
                             // Find the trainee by ID and get the name
                             $trainee = AllTrainee::find($assignedToId);
+        
                             if ($trainee) {
-                                // Store trainee name instead of ID
-                                $newSeatDetails[$seatCode] = $trainee->name;
+                                // Check if the trainee has already been assigned to another seat
+                                if (in_array($trainee->name, $assignedTrainees)) {
+                                    $errors[] = "Trainee {$trainee->name} is assigned to multiple seats.";
+                                } else {
+                                    // Store trainee name instead of ID and mark trainee as assigned
+                                    $newSeatDetails[$seatCode] = $trainee->name;
+                                    $assignedTrainees[] = $trainee->name; // Keep track of assigned trainees
+                                }
                             }
                         }
                     }
                 }
             }
         }
-
+        
+        // If there are any errors, redirect back with the errors
+        if (!empty($errors)) {
+            return redirect()->route('seating-arrangement')
+                             ->withErrors($errors) // Pass the errors to the view
+                             ->withInput(); // Retain the form data
+        }
     
         // Get the selected week and format start and end dates
         $dateTime = new DateTime($request->input('selected_week'));
