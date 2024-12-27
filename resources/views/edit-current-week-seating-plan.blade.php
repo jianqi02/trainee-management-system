@@ -6,6 +6,13 @@
 @section('content')
 <div class="container">
     <h2>Edit Seating Plan for Current Week</h2>
+    @error('seat_detail')
+        <div class="alert alert-danger">{{ $message }}</div>
+    @enderror
+
+    @error('images.*')
+        <div class="alert alert-danger">{{ $message }}</div>
+    @enderror
     
     <form method="POST" action="{{ route('seating-plan.update') }}" enctype="multipart/form-data">
         @csrf

@@ -15,6 +15,13 @@
 
         <div class="card">
             <div class="card-header">Seating Plan for the Week {{ $startDate }} to {{ $endDate }}</div>
+            @error('seat_detail')
+                <div class="alert alert-danger">{{ $message }}</div>
+            @enderror
+
+            @error('images.*')
+                <div class="alert alert-danger">{{ $message }}</div>
+            @enderror
 
             <!-- Buttons for creating table and adding row -->
             <div class="mb-3" style="margin-top: 15px; margin-left: 20px;">

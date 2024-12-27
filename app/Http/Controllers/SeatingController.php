@@ -353,8 +353,14 @@ class SeatingController extends Controller
         // Validate the form input
         $request->validate([
             'seat_detail' => 'required|array',
-            'selected_week' => 'required', 
-            'images.*' => 'nullable|image|mimes:jpeg,png,jpg|max:5120'
+            'selected_week' => 'required',
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
+        ], [
+            'seat_detail.required' => 'You cannot create empty seating plan.',
+            'selected_week.required' => 'Please select a week.',
+            'images.*.image' => 'The file must be an image.',
+            'images.*.mimes' => 'Only jpeg, png, and jpg images are allowed.',
+            'images.*.max' => 'The image size must not exceed 5MB.',
         ]);
     
         // Initialize an array to hold the new seat details

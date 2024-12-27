@@ -457,7 +457,18 @@ class AdminController extends Controller
         // Convert the comma-separated string into an array
         $allowedDomainsArray = explode(',', $allowedDomains);
         $request->validate([
-            'name' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z\s]+$/'],
+            'name' => [
+                'required', 
+                'string', 
+                'max:255', 
+                'regex:/^[a-zA-Z\s]+$/',
+                function ($attribute, $value, $fail) {
+                    // Check if the name already exists in the users table
+                    if (\App\Models\User::where('name', $value)->exists()) {
+                        $fail('The name has already been taken.');
+                    }
+                }
+            ],
             'email' => [
                 'required',
                 'string',
@@ -551,10 +562,19 @@ class AdminController extends Controller
 
     public function createRecord(Request $request){
         $validator = Validator::make($request->all(), [
-            'name' => 'required|regex:/^[A-Za-z\s]+$/',
+            'name' => 'required|regex:/^[A-Za-z\s]+$/|unique:users,name',
             'internship_start' => 'required|date',
             'internship_end' => 'required|date',
+        ], [
+            'name.unique' => 'The name has already existed.',
         ]);
+    
+        // Check if validation fails
+        if ($validator->fails()) {
+            return redirect()->back()
+                             ->withErrors($validator)
+                             ->withInput();
+        }
         
         if ($validator->fails()) {
             // Extract error messages
