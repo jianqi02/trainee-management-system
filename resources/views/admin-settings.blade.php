@@ -67,7 +67,6 @@
             cursor: pointer;
         }
 
-        /* List of added domains */
         .domains-list {
             list-style: none;
             padding: 0;

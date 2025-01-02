@@ -34,7 +34,7 @@
         .button-container {
             display: flex;
             justify-content: flex-end;
-            gap: 10px; /* Space between buttons */
+            gap: 10px;
             margin-top: 10px;
             margin-bottom: 20px;
         }
@@ -80,7 +80,7 @@
         }
 
         .logbook-card {
-            flex: 0 0 calc(50% - 10px); /* Two cards per row with some spacing */
+            flex: 0 0 calc(50% - 10px);  
             margin-bottom: 20px;
         }
 
@@ -100,7 +100,7 @@
 
         .card-title a {
             text-decoration: none;
-            color: #333; /* Link color */
+            color: #333; 
         }
         .logbook-wrapper{
             display: flex;
@@ -117,7 +117,7 @@
         }
 
         .delete-logbook-button i {
-            color: #f44336; /* Red color for the bin icon */
+            color: #f44336; 
         }
 
         .upload-logbook-form {
@@ -127,9 +127,8 @@
         margin-top: 20px;
         }
 
-        /* Style for the "Choose a Logbook" input */
         .file-input {
-            display: none; /* Hide the default input element */
+            display: none; 
         }
 
         .custom-file-upload {
@@ -157,7 +156,6 @@
             color: #555;
         }
 
-        /* Style for the "Upload Logbook" button */
         .upload-button {
             background: #4caf50;
             color: #fff;
@@ -203,7 +201,7 @@
 
        .nav-tabs .nav-link:hover {
             color: #337ab7;
-            background-color: #eef3ff; /* Light blue */
+            background-color: #eef3ff; 
             border-color: #337ab7;
             text-decoration: none;
         }
@@ -218,8 +216,8 @@
             border: none;
             box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
         }
-         /* Tab content styling */
-         .tab-content {
+        
+        .tab-content {
             border: 1px solid #dee2e6;
             border-radius: 0 0 5px 5px;
             padding: 20px;
@@ -227,7 +225,6 @@
             box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
         }
 
-        /* Modal customization */
         .modal-content {
             border-radius: 8px;
             box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.15);

@@ -110,7 +110,7 @@ class LoginController extends Controller
                         'type' => 'Task Due Date',
                         'notifiable_type' => 'App\Models\TaskTimeline',
                         'notifiable_id' => $traineeID,
-                        'data->name' => $traineeName, // Assuming 'name' is stored in the 'data' field
+                        'data->name' => $traineeName, 
                     ])->first();
             
                     // If no similar notification exists, create and save a new one
@@ -141,12 +141,10 @@ class LoginController extends Controller
                 $activityLog->save();
 
                 if($trainee->personal_email == null || $trainee->phone_number == null){
-
-                    //save the session in the db
                     $user->session_id = session_id();
                     $user->last_login = now();
                     $user->save();
-                    return redirect('/trainee-edit-profile')->with('alert', 'Please complete your profile first!'); // Redirect trainees to trainee edit profile page
+                    return redirect('/trainee-edit-profile')->with('alert', 'Please complete your profile first!'); 
                 }
                 else{
                     return redirect('/homepage');

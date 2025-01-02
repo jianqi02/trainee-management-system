@@ -51,15 +51,15 @@
 
       .badge {
         position: absolute;
-        background-color: red; /* Set the background color */
-        color: white; /* Set the text color */
-        border-radius: 50%; /* Makes it a circle */
-        padding: 4px 8px; /* Adjust padding as needed */
+        background-color: red; 
+        color: white; 
+        border-radius: 50%; 
+        padding: 4px 8px; 
       }
 
       .icon img {
-        width: 22px; /* Adjust the width as needed */
-        height: 22px; /* Adjust the height as needed */
+        width: 22px;
+        height: 22px; 
       }
 
       .unread-notification {

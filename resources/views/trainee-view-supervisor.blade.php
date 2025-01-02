@@ -36,7 +36,7 @@
       background: none;
       border: none;
       margin-top: -120px;
-      font-size: 30px; /* Adjust the size as needed */
+      font-size: 30px;
       cursor: pointer;
     }
 
@@ -45,7 +45,7 @@
       border: none;
       margin-top: -20px;
       margin-bottom: -20px;
-      font-size: 32px; /* Adjust the size as needed */
+      font-size: 32px;
       cursor: pointer;
     }
 
@@ -55,7 +55,7 @@
       margin-top: -20px;
       margin-bottom: -20px;
       margin-left: 250px;
-      font-size: 32px; /* Adjust the size as needed */
+      font-size: 32px; 
       cursor: pointer;
     }
 

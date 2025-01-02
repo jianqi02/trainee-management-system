@@ -477,7 +477,7 @@ class TaskTimelineController extends Controller
                         $notification->data = json_encode([
                             'data' => 'Your trainee ' . $traineeName . ' has completed task ' . $taskName,
                         ]);
-                        $notification->save(); // Save the notification to the database
+                        $notification->save(); 
                         
                     }
                     $supervisor_name = Supervisor::where('id', $assigned_supervisor_id)->pluck('name')->first();

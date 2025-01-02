@@ -36,7 +36,7 @@
         .button-container {
             display: flex;
             justify-content: flex-end;
-            gap: 10px; /* Space between buttons */
+            gap: 10px; 
             margin-top: 10px;
             margin-bottom: 20px;
         }
@@ -60,7 +60,7 @@
         }
 
         .resume-card {
-            flex: 0 0 calc(50% - 10px); /* Two cards per row with some spacing */
+            flex: 0 0 calc(50% - 10px); 
             margin-bottom: 20px;
         }
 
@@ -78,7 +78,7 @@
 
         .card-title a {
             text-decoration: none;
-            color: #333; /* Link color */
+            color: #333; 
         }
         .resume-wrapper{
             display: flex;
@@ -115,9 +115,8 @@
             border-color: #204d74;
         }
 
-        /* Style for the "Choose a resume" input */
         .file-input {
-            display: none; /* Hide the default input element */
+            display: none; 
         }
 
         .custom-file-upload {
@@ -136,7 +135,6 @@
             background: #235a9b; 
         }
 
-        /* Style for the "Upload resume" button */
         .upload-button {
             background: #4caf50;
             color: #fff;

@@ -36,8 +36,8 @@
 
         /* Focus effect (when the button is selected) */
         .btn-primary:focus {
-            outline: none; /* Remove the default outline */
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add a subtle shadow on focus */
+            outline: none; 
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); 
         }
 
         .modal-edit-daily-task,
@@ -55,7 +55,7 @@
 
         .modal-content-edit-daily-task,
         .modal-content-comment {
-            background-color: #fff; /* White background */
+            background-color: #fff; 
             margin: 1% auto;
             padding: 20px;
             border-radius: 8px;
@@ -114,7 +114,6 @@
             font-size: 16px;
         }
 
-        /* Remove underline from links */
         .task-card-link {
             text-decoration: none;
         }
@@ -122,7 +121,7 @@
         /* Add a hover animation to links */
         .task-card-link:hover {
             color: #007bff; 
-            transition: color 0.2s ease; /* Add a smooth color transition effect */
+            transition: color 0.2s ease; 
         }
 
         .timeline {
@@ -155,10 +154,9 @@
 
         .timeline__component--bg:hover {
             background-color: #f0f0f0;
-            cursor: pointer; /* Change cursor to pointer on hover to indicate interactivity */
+            cursor: pointer; 
         }
 
-            /* LEAVE TILL LAST */
         .timeline__component--bottom {
         margin-bottom: 0;
         }
@@ -179,7 +177,6 @@
         border-radius: 50%;
         }
 
-        /* LEAVE TILL LAST */
         .timeline__point--bottom {
         top: initial;
         bottom: 0;
@@ -202,30 +199,30 @@
         .status-capsule {
             display: inline-block;
             padding: 5px 10px;
-            border-radius: 20px; /* Rounded capsule shape */
+            border-radius: 20px;
             font-size: 14px;
-            color: white; /* Text color */
+            color: white; 
             font-weight: bold;
-            text-transform: capitalize; /* Capitalize text */
+            text-transform: capitalize;
         }
 
         .status-capsule.not-started {
-            background-color: #ff4d4d; /* Red for Not Started */
+            background-color: #ff4d4d; 
         }
 
         .status-capsule.ongoing {
-            background-color: #87cefa; /* Light blue for Ongoing */
+            background-color: #87cefa; 
         }
 
         .status-capsule.completed {
-            background-color: #28a745; /* Green for Completed */
+            background-color: #28a745;
         }
 
         .status-capsule.postponed {
-            background-color: #6c757d; /* Grey for Postponed */
+            background-color: #6c757d; 
         }
         .status-capsule.unknown {
-            background-color: #d3d3d3; /* Fallback for unknown status */
+            background-color: #d3d3d3;
         }  
     </style>
 </head>

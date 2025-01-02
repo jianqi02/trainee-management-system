@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use DateTime;
+use Carbon\Carbon;
 use App\Models\User;
 use Ramsey\Uuid\Uuid;
 use App\Models\Comment;
@@ -16,18 +17,18 @@ use App\Models\AllTrainee;
 use App\Models\Department;
 use App\Models\Supervisor;
 use App\Models\ActivityLog;
+use Illuminate\Support\Str;
 use App\Models\Notification;
 use App\Models\TaskTimeline;
-use App\Models\TraineeAssign;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
+use App\Models\TraineeAssign;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
-use Barryvdh\DomPDF\Facade\Pdf;
 
 class AdminController extends Controller
 {
@@ -122,7 +123,73 @@ class AdminController extends Controller
         $hasCurrentSeatingPlan = !is_null($currentSeatingPlan);
         $currentSeatingDetails = $hasCurrentSeatingPlan ? json_decode($currentSeatingPlan->seat_detail, true) : [];
 
-        return view('admin-dashboard', compact('trainees','count', 'currentSeatingPlan', 'currentSeatingDetails', 'totalTrainee','logbooks','weeksInMonth', 'weeklyData','weekRequired','start_date','end_date'));
+        $newTraineesPerMonth = AllTrainee::selectRaw('YEAR(internship_start) as year, MONTH(internship_start) as month, COUNT(*) as count')
+        ->groupBy('year', 'month')
+        ->orderBy('year', 'asc')
+        ->orderBy('month', 'asc')
+        ->get();
+
+        // Get the selected year or default to the current year
+        $selectedYear = $request->input('year', Carbon::now()->year);
+
+        // Fetch new trainees per month for the selected year
+        $newTraineesPerMonth = AllTrainee::selectRaw('YEAR(internship_start) as year, MONTH(internship_start) as month, COUNT(*) as count')
+            ->whereYear('internship_start', $selectedYear)
+            ->groupBy('year', 'month')
+            ->orderBy('month', 'asc')
+            ->get();
+
+        // Prepare data for the chart
+        $months = [];
+        $newTrainees = [];
+
+        // Loop through all months (January to December)
+        for ($month = 1; $month <= 12; $month++) {
+            // Format month names like "January 2024"
+            $months[] = Carbon::create($selectedYear, $month, 1)->format('F Y');
+
+            // Check if there's trainee data for this month
+            $monthlyData = $newTraineesPerMonth->firstWhere('month', $month);
+
+            // If no data for this month, add 0 new trainees
+            $newTrainees[] = $monthlyData ? $monthlyData->count : 0;
+        }
+
+        // Prepare total trainees per month (cumulative count)
+        $totalTraineesPerMonth = [];
+        $cumulativeCount = 0;
+
+        // Loop through each month and calculate total trainees by the end of that month
+        for ($month = 1; $month <= 12; $month++) {
+            // Count the trainees who started in or before this month of the selected year
+            $traineesUpToThisMonth = AllTrainee::where('internship_start', '<=', Carbon::create($selectedYear, $month, 1)->endOfMonth())
+                ->count();
+            
+            // Store cumulative total trainees
+            $totalTraineesPerMonth[] = $traineesUpToThisMonth;
+        }
+
+        $traineeTaskStats = [];
+
+        foreach ($trainees as $trainee) {
+            // Fetch task data for each trainee using trainee_id
+            $totalTasks = TaskTimeline::where('trainee_id', $trainee->id)->count();
+            $taskStatusCounts = TaskTimeline::select('task_status', \DB::raw('count(*) as count'))
+                ->where('trainee_id', $trainee->id)
+                ->groupBy('task_status')
+                ->pluck('count', 'task_status');
+
+            // Prepare the stats for this trainee
+            $traineeTaskStats[$trainee->id] = [
+                'total' => $totalTasks,
+                'not_started' => $taskStatusCounts->get('Not Started', 0),
+                'completed' => $taskStatusCounts->get('Completed', 0),
+                'ongoing' => $taskStatusCounts->get('Ongoing', 0),
+                'postponed' => $taskStatusCounts->get('Postponed', 0),
+            ];
+        }
+
+        return view('admin-dashboard', compact('trainees','count', 'currentSeatingPlan', 'currentSeatingDetails', 'totalTrainee','logbooks','weeksInMonth', 'weeklyData','weekRequired','start_date','end_date', 'months', 'newTrainees', 'totalTraineesPerMonth', 'traineeTaskStats'));
     
     }
 
@@ -208,7 +275,7 @@ class AdminController extends Controller
         $updated_internship_start = $request->input('internship_start');
         $updated_internship_end = $request->input('internship_end');
 
-        // return an error messae when the admin choose invalid date (end date <= start date)
+        // return an error message when the admin choose invalid date (end date <= start date)
         if($updated_internship_end <= $updated_internship_start){
             $activityLog = new ActivityLog([
                 'username' => Auth::user()->name,
@@ -452,9 +519,8 @@ class AdminController extends Controller
     }
 
     public function createUser(Request $request){
-        $allowedDomains = Settings::pluck('email_domain')->first(); // Get the email_domain value (as a string)
+        $allowedDomains = Settings::pluck('email_domain')->first(); // Get the email_domain value
 
-        // Convert the comma-separated string into an array
         $allowedDomainsArray = explode(',', $allowedDomains);
         $request->validate([
             'name' => [
@@ -551,7 +617,6 @@ class AdminController extends Controller
             $activityLog->save();
         }
 
-        // Redirect to a success page or any other desired action
         return redirect()->back()->with('success', 'A new account successfully added.');
     }
 
@@ -596,7 +661,7 @@ class AdminController extends Controller
         $internship_start = $request->input('internship_start');
         $internship_end = $request->input('internship_end');
 
-        // return an error messae when the admin choose invalid date (end date <= start date)
+        // return an error message when the admin choose invalid date (end date <= start date)
         if($internship_end <= $internship_start){            
             $activityLog = new ActivityLog([
                 'username' => Auth::user()->name,
@@ -624,7 +689,6 @@ class AdminController extends Controller
 
         $activityLog->save();
 
-        // Redirect to a success page or any other desired action
         return redirect()->route('all-trainee-list')->with('status', 'Trainee Created Successfully');
     }
 
@@ -1495,7 +1559,7 @@ class AdminController extends Controller
     
         // Handle allowed domains
         $allowedDomains = $request->input('allowed_domains', []);
-        $settings->email_domain = implode(',', $allowedDomains); // Save as comma-separated string
+        $settings->email_domain = implode(',', $allowedDomains); 
     
         // Handle disable registration checkbox
         $settings->disable_registration = $request->input('disable_registration') === 'on';

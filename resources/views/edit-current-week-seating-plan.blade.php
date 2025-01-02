@@ -10,7 +10,7 @@
         <div class="alert alert-danger">{{ $message }}</div>
     @enderror
 
-    @error('images.*')
+    @error('new_images.*')
         <div class="alert alert-danger">{{ $message }}</div>
     @enderror
     

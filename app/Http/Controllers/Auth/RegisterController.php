@@ -185,7 +185,7 @@ class RegisterController extends Controller
                 'data' => 'A new trainee ' . $data['name'] . ' which is not in the list has registered.',
                 'style' => 'color: red; font-weight: bold;',
             ]);
-            $notification->save(); // Save the notification to the database
+            $notification->save();
 
             $activityLog = new ActivityLog([
                 'username' => $data['name'],
@@ -205,7 +205,7 @@ class RegisterController extends Controller
             $notification->data = json_encode([
                 'data' => 'Trainee ' . $data['name'] . ' has registered.',
             ]);
-            $notification->save(); // Save the notification to the database
+            $notification->save();
 
             $activityLog = new ActivityLog([
                 'username' => $data['name'],

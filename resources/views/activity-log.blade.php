@@ -42,7 +42,7 @@
         }
 
         .table td.details {
-            max-width: 600px; /* Adjust the max-width as needed */
+            max-width: 600px; 
             word-wrap: break-word;
         }
 

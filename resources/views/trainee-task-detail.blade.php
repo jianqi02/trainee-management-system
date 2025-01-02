@@ -27,31 +27,31 @@
 
         .align-details-comments {
             display: flex;
-            gap: 15px; /* Optional spacing between the columns */
+            gap: 15px;
         }
 
         .details-section,
         .comments-section {
-            flex: 1; /* Equal width for both sections */
+            flex: 1; 
             display: flex;
-            flex-direction: column; /* Align children vertically */
-            min-height: 400px; /* Set a minimum height for consistency */
-            max-height: 100%; /* Ensure height doesn't overflow */
-            overflow: hidden; /* Prevent content from overflowing */
+            flex-direction: column; 
+            min-height: 400px; 
+            max-height: 100%; 
+            overflow: hidden; 
         }
 
         .card {
-            flex: 1; /* Make the card take up available space */
+            flex: 1; 
             display: flex;
             flex-direction: column;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-            border-radius: 10px; /* Align card content */
+            border-radius: 10px; 
         }
 
         .card-body {
-            flex: 1; /* Make the card content stretch equally */
-            overflow-wrap: break-word; /* Handle long text */
-            word-wrap: break-word; /* Fallback for older browsers */
+            flex: 1; 
+            overflow-wrap: break-word;
+            word-wrap: break-word;
         }
 
         .btn-add-task {
@@ -140,7 +140,6 @@
             box-sizing: border-box;
         }
 
-        /* Remove underline from links */
         .task-card-link {
             text-decoration: none;
         }
@@ -162,8 +161,7 @@
 
         .timeline__date{
             font-size: 20px;
-             /* Remove any extra margin */
-            text-align: center; /* Optional: align text closer to the middle */
+            text-align: center; 
             
         }
 
@@ -186,7 +184,6 @@
             cursor: pointer; 
         }
 
-        /* LEAVE TILL LAST */
         .timeline__component--bottom {
             margin-bottom: 0;
         }
@@ -207,8 +204,7 @@
             border-radius: 50%;
         }
 
-        /* LEAVE TILL LAST */
-            .timeline__point--bottom {
+        .timeline__point--bottom {
             top: initial;
             bottom: 0;
         }
@@ -230,30 +226,30 @@
         .status-capsule {
             display: inline-block;
             padding: 5px 10px;
-            border-radius: 20px; /* Rounded capsule shape */
+            border-radius: 20px;
             font-size: 14px;
-            color: white; /* Text color */
+            color: white; 
             font-weight: bold;
-            text-transform: capitalize; /* Capitalize text */
+            text-transform: capitalize; 
         }
 
         .status-capsule.not-started {
-            background-color: #ff4d4d; /* Red for Not Started */
+            background-color: #ff4d4d;
         }
 
         .status-capsule.ongoing {
-            background-color: #87cefa; /* Light blue for Ongoing */
+            background-color: #87cefa; 
         }
 
         .status-capsule.completed {
-            background-color: #28a745; /* Green for Completed */
+            background-color: #28a745; 
         }
 
         .status-capsule.postponed {
-            background-color: #6c757d; /* Grey for Postponed */
+            background-color: #6c757d;
         }
         .status-capsule.unknown {
-            background-color: #d3d3d3; /* Fallback for unknown status */
+            background-color: #d3d3d3; 
         }  
     </style>
 </head>

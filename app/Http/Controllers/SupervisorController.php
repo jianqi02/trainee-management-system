@@ -51,7 +51,7 @@ class SupervisorController extends Controller
 
         $traineeBasicDatas[] = null;
 
-        //This code retrieves all trainees associated with a given supervisor.
+        //retrieves all trainees associated with a given supervisor.
         foreach ($traineeIDs as $traineeID) {
             //get the trainee name
             $traineeName = AllTrainee::where('id', $traineeID)->pluck('name')->first();
@@ -296,7 +296,7 @@ class SupervisorController extends Controller
             'data' => 'Your supervisor ' . $supervisor_name . ' has signed your logbook.',
             'name' => $name,
         ]);
-        $notification->save(); // Save the notification to the database
+        $notification->save();
 
         // Log the activity
         $activityLog = new ActivityLog([

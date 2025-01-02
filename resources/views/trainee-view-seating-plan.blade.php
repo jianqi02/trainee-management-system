@@ -14,7 +14,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
     <style>
-        /* Adjust table and card to make it more compact and modern */
         .seating-container {
             width: 1000px;
             display: flex;
@@ -31,9 +30,9 @@
         }
         .table-container {
             width: 550px;
-            max-width: 800px; /* Set a maximum width */
-            margin: 0 auto;   /* Center the table */
-            overflow-x: auto; /* Enable horizontal scrolling on small screens */
+            max-width: 800px; 
+            margin: 0 auto;   
+            overflow-x: auto; 
         }
         .table-card {
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -41,7 +40,7 @@
             overflow: hidden;
         }
         .table th, .table td {
-            padding: 0.75rem; /* Adjust table padding */
+            padding: 0.75rem; 
         }
         .table th {
             background-color: #f8f9fa;
@@ -56,7 +55,6 @@
         .table-bordered th, .table-bordered td {
             border: 1px solid #dee2e6;
         }
-        /* Make buttons smaller and well-aligned */
         .btn-modern {
             padding: 0.75rem 1.5rem;
             font-size: 1rem;

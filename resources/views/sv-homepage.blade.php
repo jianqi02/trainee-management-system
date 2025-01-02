@@ -12,7 +12,7 @@
     <style>
         body {
             font-family: 'Verdana', Geneva, Tahoma, sans-serif;
-            background-color: #f8f9fa; /* Set a light background color */
+            background-color: #f8f9fa; 
             margin: 0;
             padding: 0;
             overflow-x: hidden;
@@ -55,12 +55,12 @@
           justify-content: center;
           width: 200px;
           height: 70px;
-          background-color: rgba(255, 255, 255, 0.7); /* Button background color with 70% opacity */
-          color: #000000; /* Button text color */
-          border: 1px solid #000000; /* 1px solid black border */
+          background-color: rgba(255, 255, 255, 0.7);
+          color: #000000;
+          border: 1px solid #000000; 
           border-radius: 5px;
           box-shadow: 0px 4px 8px rgba(23, 213, 223, 0.1);
-          transition: box-shadow 0.3s ease-in-out; /* Smooth transition for hover effect */
+          transition: box-shadow 0.3s ease-in-out; 
           font-size: 1.2em;
           text-decoration: none;
         }

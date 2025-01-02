@@ -63,63 +63,52 @@
             font-family: Arial, sans-serif;
         }
 
-        /* Style for the message when there's no resume */
         .no-resume-message {
             color: #777;
             font-style: italic;
         }
 
-        /* Style for the list of resume cards */
         .resume-cards {
             list-style: none;
             padding: 0;
         }
 
-        /* Style for individual resume cards */
         .resume-card {
             margin-top: 10px;
         }
 
-        /* Style for the resume links */
         .resume-link {
             color: blue;
             text-decoration: none;
         }
 
-        /* Hover effect for resume links */
         .resume-link:hover {
             text-decoration: underline;
         }
 
-        /* Style for the "No logbooks uploaded yet" message */
         .no-logbooks-message {
             color: #777;
             font-style: italic;
         }
 
-        /* Style for the list of logbook cards */
         .logbook-cards {
             list-style: none;
             padding: 0;
         }
 
-        /* Style for individual logbook cards */
         .logbook-card {
             margin-top: 10px;
         }
 
-        /* Style for the logbook links */
         .logbook-link {
             color: blue;
             text-decoration: none;
         }
 
-        /* Hover effect for logbook links */
         .logbook-link:hover {
             text-decoration: underline;
         }
 
-        /* Style for the logbook created time */
         .logbook-created-time {
             color: #555;
         }
@@ -138,15 +127,13 @@
             border-radius: 50px;
         }
 
-        /* Style for the comment labels */
         .comment-label {
             font-weight: bold;
             color: #333;
         }
 
-        /* Style for the comment textarea */
         .comment-text {
-            width: 100%; /* Expand the textarea to fill its container */
+            width: 100%; 
             min-height: 50px;
             height: auto;
             padding: 10px;

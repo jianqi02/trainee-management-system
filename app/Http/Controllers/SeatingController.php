@@ -14,7 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-
+use Illuminate\Support\Facades\Validator;
 
 class SeatingController extends Controller
 {
@@ -29,7 +29,6 @@ class SeatingController extends Controller
         // Query the database to fetch seating data for the selected week
         $seatingData = Seating::where('week', $week)->get();
     
-        // You can return the data as JSON (or any other format you prefer)
         return response()->json($seatingData);
     }
 
@@ -93,7 +92,7 @@ class SeatingController extends Controller
         $role_id = Auth::user()->role_id;
         $user_name = Auth::user()->name;
 
-        // Get the current week data (for initial page load)
+        // Get the current week data
         $currentWeek = now()->format('Y-\WW');  // Get current week in YYYY-WW format
     
         // Get the selected week from the request (default to current week)
@@ -184,14 +183,31 @@ class SeatingController extends Controller
 
         // Fetch the selected week's seating plan
         $seatingPlan = Seating::where('week', $week)->first();
-    
-        // Validate the form input
-        $request->validate([
+
+        $validator = Validator::make($request->all(), [
             'seat_detail' => 'required|array',
             'existing_images' => 'nullable|array', 
             'new_images' => 'nullable|array', 
             'new_images.*' => 'image|mimes:jpeg,png,jpg|max:5120',
+        ], [
+            'seat_detail.required' => 'You cannot have empty seating plan.',
+            'new_images.*.mimes' => 'Only jpeg, png, and jpg images are allowed.',
+            'new_images.*.max' => 'The image size must not exceed 5MB.',
         ]);
+
+        if ($validator->fails()) {
+            $activityLog = new ActivityLog([
+                'username' => Auth::user()->name,
+                'action' => 'Edit Seating Plan',
+                'outcome' => 'failed',
+                'details' => 'Validation failed when editing seating plan for week ' . $week . '.',
+            ]);
+    
+            $activityLog->save();
+            return redirect()->back()
+                        ->withErrors($validator)
+                        ->withInput();
+        }
 
         $currentSeatingImage = SeatingImage::where('week', $week)->first();
         $currentImagePaths = $currentSeatingImage ? json_decode($currentSeatingImage->image_path, true) : [];
@@ -237,7 +253,7 @@ class SeatingController extends Controller
         $seatingImage->image_path = json_encode($imagePathDetail, JSON_UNESCAPED_SLASHES); // Store image paths as JSON
         $seatingImage->save();
     
-       // Get the seating details from the database
+        // Get the seating details from the database
         $existingSeatDetails = json_decode($seatingPlan->seat_detail, true) ?? [];
 
         // Initialize arrays to hold updated seat details and errors
@@ -254,7 +270,7 @@ class SeatingController extends Controller
             // Check if seat code is empty
             if (empty($seatCode)) {
                 $errors[] = 'Seat code cannot be empty.';
-                continue; // Skip this entry, move to the next one
+                continue; 
             }
 
             // Check if the same trainee is assigned to multiple seats
@@ -272,18 +288,35 @@ class SeatingController extends Controller
             }
         }
 
-        // If there are any errors, return back to the form with error messages
+        // If there are any errors, redirect back with the errors
         if (!empty($errors)) {
+            $activityLog = new ActivityLog([
+                'username' => Auth::user()->name,
+                'action' => 'Edit Seating Plan',
+                'outcome' => 'failed',
+                'details' => 'Errors occurred when editing seating plan for week ' . $week . ' Errors: ' . implode(', ', $errors), 
+            ]);        
+    
+            $activityLog->save();
+
             return redirect()->route('seating-arrangement')
-                            ->withErrors($errors)
-                            ->withInput(); // Return form data to the view
+                             ->withErrors($errors) 
+                             ->withInput(); 
         }
 
         // Update the seating plan details with the updated seat details
         $seatingPlan->seat_detail = json_encode($updatedSeatDetails);
         $seatingPlan->save();
 
-        // Redirect with a success message
+        $activityLog = new ActivityLog([
+            'username' => Auth::user()->name,
+            'action' => 'Edit Seating Plan',
+            'outcome' => 'success',
+            'details' => 'Seating Plan for Week ' . $week . ' is edited.',
+        ]);        
+
+        $activityLog->save();
+
         return redirect()->route('seating-arrangement')->with('success', 'Seating plan updated successfully.');
 
     }  
@@ -312,7 +345,6 @@ class SeatingController extends Controller
         })
         ->get();
     
-        // Pass the selected week to the view
         return view('create-weekly-seating-plan', compact('selectedWeek', 'startDate', 'endDate', 'trainees'));
     }
 
@@ -337,6 +369,15 @@ class SeatingController extends Controller
                 }
             }
             SeatingImage::where('week', $selectedWeek)->delete();
+
+            $activityLog = new ActivityLog([
+                'username' => Auth::user()->name,
+                'action' => 'Remove Seating Plan',
+                'outcome' => 'success',
+                'details' => 'Seating Plan for Week ' . $selectedWeek . ' is removed.',
+            ]);        
+    
+            $activityLog->save();
             
             // Redirect back to the seating arrangement view with a success message
             return redirect()->route('seating-arrangement')
@@ -351,7 +392,7 @@ class SeatingController extends Controller
     public function createNewWeeklySeatingPlan(Request $request)
     {
         // Validate the form input
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'seat_detail' => 'required|array',
             'selected_week' => 'required',
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
@@ -362,6 +403,20 @@ class SeatingController extends Controller
             'images.*.mimes' => 'Only jpeg, png, and jpg images are allowed.',
             'images.*.max' => 'The image size must not exceed 5MB.',
         ]);
+
+        if ($validator->fails()) {
+            $activityLog = new ActivityLog([
+                'username' => Auth::user()->name,
+                'action' => 'Create New Seating Plan',
+                'outcome' => 'failed',
+                'details' => 'Validation failed when creating new seating plan for week ' . $request->input('selected_week'),
+            ]);
+    
+            $activityLog->save();
+            return redirect()->back()
+                        ->withErrors($validator)
+                        ->withInput();
+        }
     
         // Initialize an array to hold the new seat details
         $newSeatDetails = [];
@@ -444,9 +499,18 @@ class SeatingController extends Controller
         
         // If there are any errors, redirect back with the errors
         if (!empty($errors)) {
+            $activityLog = new ActivityLog([
+                'username' => Auth::user()->name,
+                'action' => 'Create New Seating Plan',
+                'outcome' => 'failed',
+                'details' => 'Errors occurred when creating new seating plan for week ' . $request->input('selected_week') . ' Errors: ' . implode(', ', $errors), 
+            ]);        
+    
+            $activityLog->save();
+
             return redirect()->route('seating-arrangement')
-                             ->withErrors($errors) // Pass the errors to the view
-                             ->withInput(); // Retain the form data
+                             ->withErrors($errors) 
+                             ->withInput(); 
         }
     
         // Get the selected week and format start and end dates
@@ -463,10 +527,17 @@ class SeatingController extends Controller
         $seatingPlan->start_date = $startDate;
         $seatingPlan->end_date = $endDate;
     
-        // Save the new seating plan to the database
         $seatingPlan->save();
+
+        $activityLog = new ActivityLog([
+            'username' => Auth::user()->name,
+            'action' => 'Create New Seating Plan',
+            'outcome' => 'success',
+            'details' => 'A new seating plan from ' . $startDate . ' to ' . $endDate . ' has created.',
+        ]);
+
+        $activityLog->save();
     
-        // Redirect with success message
         return redirect()->route('seating-arrangement')->with('success', 'Seating plan created successfully.');
     }
       

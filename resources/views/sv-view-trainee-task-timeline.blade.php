@@ -36,8 +36,8 @@
 
         /* Focus effect (when the button is selected) */
         .btn-add-task:focus {
-            outline: none; /* Remove the default outline */
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add a subtle shadow on focus */
+            outline: none; 
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); 
         }
 
         .btn-secondary {
@@ -49,7 +49,7 @@
         .button-container {
             display: flex;
             justify-content: flex-end;
-            gap: 10px; /* Space between buttons */
+            gap: 10px; 
             margin-top: 10px;
             margin-bottom: 20px;
         }
@@ -61,12 +61,12 @@
             bottom: 10px;
             right: 10px;
             display: flex;
-            gap: 10px; /* Add space between the buttons */
+            gap: 10px;  
             margin-bottom: 5px;
         }
 
         .button-container-card .btn {
-            margin: 0px; /* Ensure no margin on buttons */
+            margin: 0px; 
         }
 
         .card {
@@ -77,13 +77,13 @@
         }
 
         .card-body {
-            position: relative; /* Required for absolute positioning inside it */
+            position: relative; 
         }
 
         .number-card {
             width: 100%;
             height: 100%;
-            margin-bottom: 10px; /* Space below each card */
+            margin-bottom: 10px; 
         }
 
         .number-card-title {
@@ -102,12 +102,12 @@
 
         .custom-filter-btn,
         .custom-addtask-btn {
-            width: 150px; /* Set the same width */
-            height: 40px; /* Set the same height */
-            display: inline-block; /* Ensure they align consistently */
+            width: 150px; 
+            height: 40px;
+            display: inline-block; 
             text-align: center;
-            font-size: 16px; /* Adjust as needed */
-            border-radius: 4px; /* Optional: for rounded corners */
+            font-size: 16px; 
+            border-radius: 4px; 
         }
 
         .custom-filter-btn {
@@ -135,27 +135,27 @@
         .status-capsule {
             display: inline-block;
             padding: 5px 10px;
-            border-radius: 20px; /* Rounded capsule shape */
+            border-radius: 20px;
             font-size: 14px;
-            color: white; /* Text color */
+            color: white; 
             font-weight: bold;
-            text-transform: capitalize; /* Capitalize text */
+            text-transform: capitalize;
         }
 
         .status-capsule.not-started {
-            background-color: #ff4d4d; /* Red for Not Started */
+            background-color: #ff4d4d;
         }
 
         .status-capsule.ongoing {
-            background-color: #87cefa; /* Light blue for Ongoing */
+            background-color: #87cefa;
         }
 
         .status-capsule.completed {
-            background-color: #28a745; /* Green for Completed */
+            background-color: #28a745;
         }
 
         .status-capsule.postponed {
-            background-color: #6c757d; /* Grey for Postponed */
+            background-color: #6c757d;
         }
 
         .modal-add-task,
@@ -204,7 +204,6 @@
             border-radius: 4px;
         }
 
-        /* Remove underline from links */
         .task-card-link {
             text-decoration: none;
         }
@@ -212,7 +211,7 @@
         /* Add a hover animation to links */
         .task-card-link:hover {
             color: #007bff; 
-            transition: color 0.2s ease; /* Add a smooth color transition effect */
+            transition: color 0.2s ease; 
         }
 
         img{
