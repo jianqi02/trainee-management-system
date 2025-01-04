@@ -3,145 +3,247 @@
 
 @section('breadcrumbs', Breadcrumbs::render('sv-assign'))
 
-@section('content') 
+@section('content')
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
-    <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
-        .breadcrumb{
-            width: 1500px;
-        } 
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f6f9;
+        }
+
+        .sort-button i {
+            font-size: 14px;
+            color: black;
+        }
+
+        .content {
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 22px;
+            font-weight: bold;
+            color: #343a40;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .trainee-assign-container {
+            background-color: #ffffff;
+            padding: 20px;
+            width: 100%; 
+            max-width: 1200px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group input {
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .btn-outline-secondary {
+            border-radius: 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            transition: background-color 0.3s ease;
+            font-size: 14px;
+        }
+
+        .btn-outline-secondary:hover {
+            background-color: #0056b3;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #343a40;
+            color: white;
+        }
+
+        .sort-button {
+            margin-left: 5px;
+            cursor: pointer;
+            color: white;
+            background: none;
+            border: none;
+        }
+
+        .sort-button svg {
+            width: 10px;
+            height: 10px;
+        }
+
+        tbody tr:hover {
+            background-color: #f1f3f5;
+        }
+
+        .action-btn {
+            cursor: pointer;
+            transition: color 0.3s ease;
+            font-size: 18px;
+        }
+
+        .action-btn:hover {
+            color: #007bff;
+        }
+
+        .alert-success {
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        /* Modern scrollbar */
+        .scrollable-table {
+            max-height: 350px; 
+            overflow-y: auto;
+        }
+
+        .scrollable-table::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .scrollable-table::-webkit-scrollbar-thumb {
+            background-color: #007bff;
+            border-radius: 10px;
+        }
     </style>
 </head>
 <body>
-    <div class="content">
-        <h1>Supervisor Assignment For Trainee</h1>
-    <main>
-        <div class="trainee-assign-container">
-            @if (session('status'))
-                <div class="alert alert-success">
-                    {{ session('status') }}
-                </div>
-            @endif
-            <div class="tab-content" id="myTabContent">
-                <div class="input-group trainee-assign-input-group mb-3">
-                    <input type="text" class="form-control" placeholder="Search trainee or supervisor..." id="assign-trainee-for-sv-search">
-                    <button class="btn btn-outline-secondary" type="button" id="search-button">Search</button>
-                </div>
-                    <div style="max-height: 350px; overflow-y: scroll;">
-                        <table class="assign-supervisor-to-trainee-list" id="assign-supervisor-to-trainee-list">
-                            <thead>
-                                <tr class="trainee-assign-tr">
-                                    <th class="trainee-assign-th">Trainee Name
-                                        <button class="sort-button" data-column="0" style="border: none;">
-                                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 320 512">
-                                                <path d="M137.4 41.4c12.5-12.5 32.8-12.5 45.3 0l128 128c9.2 9.2 11.9 22.9 6.9 34.9s-16.6 19.8-29.6 19.8H32c-12.9 0-24.6-7.8-29.6-19.8s-2.2-25.7 6.9-34.9l128-128zm0 429.3l-128-128c-9.2-9.2-11.9-22.9-6.9-34.9s16.6-19.8 29.6-19.8H288c12.9 0 24.6 7.8 29.6 19.8s2.2 25.7-6.9 34.9l-128 128c-12.5 12.5-32.8 12.5-45.3 0z"/>
-                                            </svg>
-                                        </button>
-                                    </th>
-                                    <th class="trainee-assign-th">Current Assigned Supervisor
-                                        <button class="sort-button" data-column="1" style="border: none;">
-                                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 320 512">
-                                                <path d="M137.4 41.4c12.5-12.5 32.8-12.5 45.3 0l128 128c9.2 9.2 11.9 22.9 6.9 34.9s-16.6 19.8-29.6 19.8H32c-12.9 0-24.6-7.8-29.6-19.8s-2.2-25.7 6.9-34.9l128-128zm0 429.3l-128-128c-9.2-9.2-11.9-22.9-6.9-34.9s16.6-19.8 29.6-19.8H288c12.9 0 24.6 7.8 29.6 19.8s2.2 25.7-6.9 34.9l-128 128c-12.5 12.5-32.8 12.5-45.3 0z"/>
-                                            </svg>
-                                        </button>
-                                    </th>
-                                    <th class="trainee-assign-th">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($trainees as $trainee)
-                                    <tr id="supervisor-{{ $trainee->name }}" class="trainee-assign-tr">
-                                        <td style="width: 30%;" class="trainee-assign-td">{{ $trainee->name}}</td>
-                                        <td class="trainee-assign-td">
-                                            @foreach ($assignedSupervisorList as $assignment)
-                                            <!-- Check if the current trainee is assigned to the current supervisor -->
-                                                @if (strcasecmp($assignment->trainee->name, $trainee->name) === 0)
-                                                    {{ $assignment->supervisor->name }}<br>
-                                                @endif
-                                            @endforeach
-                                        </td>
-                                        <td class="trainee-assign-td">
-                                            <a href="{{ route('admin-assign-supervisor-function', ['selected_trainee' => urlencode($trainee->name)]) }}" style="text-decoration: none;" title="Assign Supervisor">
-                                                <i class="fas fa-user-plus action-btn" style="color: grey; font-size: 24px;"></i>
-                                            </a>
-                                            <a href="{{ route('admin-remove-assigned-supervisor-function', ['selected_trainee' => urlencode($trainee->name)]) }}" style="text-decoration: none; margin-left: 20px;" title="Remove Assigned Supervisor">
-                                                <i class="fa fa-trash" style="color: grey; font-size: 24px;"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+
+<div class="content">
+    <div class="trainee-assign-container">
+        <h1>Supervisor Assignment</h1>
+
+        @if (session('status'))
+            <div class="alert alert-success">
+                {{ session('status') }}
             </div>
+        @endif
+
+        <!-- Search Bar -->
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" placeholder="Search trainee or supervisor..." id="assign-trainee-for-sv-search">
+            <button class="btn btn-outline-secondary" type="button" id="search-button">Search</button>
         </div>
-    </main>
+
+        <!-- Table -->
+        <div class="scrollable-table">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Trainee Name
+                            <button class="sort-button" data-column="0">
+                                <i class="fas fa-sort"></i>
+                            </button>
+                        </th>
+                        <th>Current Assigned Supervisor
+                            <button class="sort-button" data-column="1">
+                                <i class="fas fa-sort"></i>
+                            </button>
+                        </th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($trainees as $trainee)
+                        <tr>
+                            <td>{{ $trainee->name }}</td>
+                            <td>
+                                @foreach ($assignedSupervisorList as $assignment)
+                                    @if (strcasecmp($assignment->trainee->name, $trainee->name) === 0)
+                                        {{ $assignment->supervisor->name }}<br>
+                                    @endif
+                                @endforeach
+                            </td>
+                            <td>
+                                <a href="{{ route('admin-assign-supervisor-function', ['selected_trainee' => urlencode($trainee->name)]) }}" title="Assign Supervisor">
+                                    <i class="fas fa-user-plus action-btn"></i>
+                                </a>
+                                <a href="{{ route('admin-remove-assigned-supervisor-function', ['selected_trainee' => urlencode($trainee->name)]) }}" title="Remove Assigned Supervisor" style="margin-left: 15px;">
+                                    <i class="fa fa-trash action-btn"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
-</body>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script>
     const filterButtons = document.querySelectorAll('.sort-button');
-    let columnToSort = -1; // Track the currently sorted column
-    let ascending = true; // Track the sorting order
+    let columnToSort = -1;
+    let ascending = true;
 
-    //search function for searching supervisor
     document.addEventListener("DOMContentLoaded", function () {
-    const searchInput = document.getElementById("assign-trainee-for-sv-search");
-    const svTable = document.getElementById("assign-supervisor-to-trainee-list");
+        const searchInput = document.getElementById("assign-trainee-for-sv-search");
+        const svTable = document.querySelector('tbody');
 
+        // Search filter
         searchInput.addEventListener("keyup", function () {
             const searchValue = searchInput.value.toLowerCase();
 
-            for (let i = 1; i < svTable.rows.length; i++) {
-                const row = svTable.rows[i];
+            for (const row of svTable.rows) {
                 const traineeName = row.cells[0].textContent.toLowerCase();
                 const svName = row.cells[1].textContent.toLowerCase();
-                
-                if (traineeName.includes(searchValue) || svName.includes(searchValue)) {
-                    row.style.display = "";
-                } else {
-                    row.style.display = "none";
-                }
+
+                row.style.display = (traineeName.includes(searchValue) || svName.includes(searchValue)) ? "" : "none";
             }
         });
     });
-    
+
+    // Sorting logic
     filterButtons.forEach((button) => {
         button.addEventListener('click', () => {
             const column = button.dataset.column;
-            if (column === columnToSort) {
-                ascending = !ascending; // Toggle sorting order if the same column is clicked
-            } else {
-                columnToSort = column;
-                ascending = true; // Default to ascending order for the clicked column
-            }
-
-            // Call the function to sort the table
+            ascending = column === columnToSort ? !ascending : true;
+            columnToSort = column;
             sortTable(column, ascending);
         });
     });
 
     function sortTable(column, ascending) {
-        const table = document.getElementById('assign-supervisor-to-trainee-list');
-        const tbody = table.querySelector('tbody');
-        const rows = Array.from(tbody.querySelectorAll('tr'));
+        const rows = Array.from(document.querySelector('tbody').rows);
 
         rows.sort((a, b) => {
-            const cellA = a.querySelectorAll('td')[column].textContent;
-            const cellB = b.querySelectorAll('td')[column].textContent;
+            const cellA = a.cells[column].textContent.trim().toLowerCase();
+            const cellB = b.cells[column].textContent.trim().toLowerCase();
+
             return ascending ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
         });
 
-        tbody.innerHTML = '';
-        rows.forEach((row) => {
-            tbody.appendChild(row);
-        });
+        document.querySelector('tbody').append(...rows);
     }
 </script>
+
+</body>
 </html>
 
 @endsection
