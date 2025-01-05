@@ -112,7 +112,7 @@
             }}</p>
 
             <!-- Week Selection Form -->
-            <form method="GET" action="{{ route('seating-plan.view-other-weeks') }}" class="text-center mb-4">
+            <form method="GET" action="{{ route('sv-view-seating-plan') }}" class="text-center mb-4">
                 <div class="form-group">
                     <label for="week">Select a Week:</label>
                     <input type="week" name="week" id="week" class="form-control d-inline-block w-auto mx-2" 

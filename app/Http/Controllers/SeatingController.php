@@ -127,7 +127,7 @@ class SeatingController extends Controller
                 'selectedEndDate' => $end_date,
             ]);
         }
-        elseif($role_id ==3 ){
+        elseif($role_id == 3 ){
             return view('trainee-view-seating-plan', [
                 'traineeName' => $user_name,
                 'currentWeek' => $currentWeek,
