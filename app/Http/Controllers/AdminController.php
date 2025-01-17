@@ -74,6 +74,7 @@ class AdminController extends Controller
         $seatings = Seating::all();
         $logbooks = Logbook::all();
         $count = Trainee::where('acc_status', 'Active')->count();
+        /*
         $weeksInMonth = Seating::whereYear(DB::raw("STR_TO_DATE(start_date, '%d/%m/%Y')"), $year)
             ->whereMonth(DB::raw("STR_TO_DATE(start_date, '%d/%m/%Y')"), $month)
             ->select('week')
@@ -82,6 +83,7 @@ class AdminController extends Controller
             ->get()
             ->pluck('week')
             ->toArray();
+        */
 
         $totalTrainee = AllTrainee::count();
 
@@ -189,7 +191,7 @@ class AdminController extends Controller
             ];
         }
 
-        return view('admin-dashboard', compact('trainees','count', 'currentSeatingPlan', 'currentSeatingDetails', 'totalTrainee','logbooks','weeksInMonth', 'weeklyData','weekRequired','start_date','end_date', 'months', 'newTrainees', 'totalTraineesPerMonth', 'traineeTaskStats'));
+        return view('admin-dashboard', compact('trainees','count', 'currentSeatingPlan', 'currentSeatingDetails', 'totalTrainee','logbooks', 'weeklyData','weekRequired','start_date','end_date', 'months', 'newTrainees', 'totalTraineesPerMonth', 'traineeTaskStats'));
     
     }
 

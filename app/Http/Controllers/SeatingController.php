@@ -308,6 +308,26 @@ class SeatingController extends Controller
         $seatingPlan->seat_detail = json_encode($updatedSeatDetails);
         $seatingPlan->save();
 
+        $dateTime = new DateTime($request->input('selected_week'));
+
+        $traineeList = AllTrainee::where('internship_start', '<=', $dateTime->format('Y-m-d'))
+            ->where(function($query) {
+                $query->whereNull('internship_end') // If no end date is specified
+                    ->orWhere('internship_end', '>=', now()->format('Y-m-d')); // or internship has not ended yet
+            })
+            ->pluck('name') 
+            ->toArray(); 
+        
+        // Check for unassigned trainees
+        $unassignedTrainees = array_diff($traineeList, $assignedTrainees);
+        $warningMessage = null;
+    
+        if (!empty($unassignedTrainees)) {
+            // Prepare a warning message
+            $unassignedNames = implode(', ', $unassignedTrainees);
+            $warningMessage = "The following trainees do not have a seat assigned: {$unassignedNames}.";
+        }
+
         $activityLog = new ActivityLog([
             'username' => Auth::user()->name,
             'action' => 'Edit Seating Plan',
@@ -317,8 +337,9 @@ class SeatingController extends Controller
 
         $activityLog->save();
 
-        return redirect()->route('seating-arrangement')->with('success', 'Seating plan updated successfully.');
-
+        return redirect()->route('seating-arrangement')
+        ->with('success', 'Seating plan updated successfully.')
+        ->with('warning', $warningMessage);
     }  
     
     public function createWeeklySeatingPlan(Request $request)
@@ -403,7 +424,7 @@ class SeatingController extends Controller
             'images.*.mimes' => 'Only jpeg, png, and jpg images are allowed.',
             'images.*.max' => 'The image size must not exceed 5MB.',
         ]);
-
+    
         if ($validator->fails()) {
             $activityLog = new ActivityLog([
                 'username' => Auth::user()->name,
@@ -421,7 +442,7 @@ class SeatingController extends Controller
         // Initialize an array to hold the new seat details
         $newSeatDetails = [];
         $imagePaths = [];
-
+    
         // Handle multiple image uploads if provided
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
@@ -433,22 +454,22 @@ class SeatingController extends Controller
                 }
             }
         }
-
+    
         // Retrieve existing record for the selected week or create a new one
         $seatingImage = SeatingImage::firstOrCreate(
             ['week' => $request->selected_week],  // Find record by week
             ['image_path' => json_encode([])]    // Default empty array if not found
         );
-
+    
         // Update the record with the merged image paths as a JSON array
         $seatingImage->image_path = json_encode($imagePaths);
         $seatingImage->save();
     
         $errors = [];
-
+    
         // Array to track assigned trainees
         $assignedTrainees = [];
-        
+    
         // Iterate through the seat details provided in the form
         foreach ($request->input('seat_detail') as $key => $value) {
             // Check if the key is related to seat code or assigned trainee ID
@@ -456,22 +477,22 @@ class SeatingController extends Controller
                 // Extract the index number from the key (e.g., 0, 1)
                 preg_match('/new_(\d+)_/', $key, $matches);
                 $index = $matches[1];
-        
+    
                 // Check if this key is for seat code or assigned trainee ID
                 if (strpos($key, 'seat_code') !== false) {
                     // This is a seat code (like "B1")
                     $seatCode = $value;
-        
+    
                     // Find the corresponding assigned trainee ID (e.g., 'new_0_assigned_to')
                     $assignedToKey = "new_{$index}_assigned_to";
                     $assignedToId = $request->input("seat_detail.$assignedToKey");
-        
+    
                     // Check if the seat code is empty
                     if (empty($seatCode)) {
                         // Add an error message if the seat code is empty
                         $errors[] = "Seat code cannot be empty.";
                     }
-        
+    
                     // If the seat code is not empty, proceed with further validation
                     if (!empty($seatCode)) {
                         // If assignedToId is empty, assign an empty string to the seat
@@ -480,7 +501,7 @@ class SeatingController extends Controller
                         } else {
                             // Find the trainee by ID and get the name
                             $trainee = AllTrainee::find($assignedToId);
-        
+    
                             if ($trainee) {
                                 // Check if the trainee has already been assigned to another seat
                                 if (in_array($trainee->name, $assignedTrainees)) {
@@ -496,21 +517,21 @@ class SeatingController extends Controller
                 }
             }
         }
-        
+    
         // If there are any errors, redirect back with the errors
         if (!empty($errors)) {
             $activityLog = new ActivityLog([
                 'username' => Auth::user()->name,
                 'action' => 'Create New Seating Plan',
                 'outcome' => 'failed',
-                'details' => 'Errors occurred when creating new seating plan for week ' . $request->input('selected_week') . ' Errors: ' . implode(', ', $errors), 
-            ]);        
+                'details' => 'Errors occurred when creating new seating plan for week ' . $request->input('selected_week') . ' Errors: ' . implode(', ', $errors),
+            ]);
     
             $activityLog->save();
-
+    
             return redirect()->route('seating-arrangement')
-                             ->withErrors($errors) 
-                             ->withInput(); 
+                             ->withErrors($errors)
+                             ->withInput();
         }
     
         // Get the selected week and format start and end dates
@@ -518,7 +539,7 @@ class SeatingController extends Controller
         $dateTime->setISODate($dateTime->format('o'), $dateTime->format('W'), 1);
         $startDate = $dateTime->format('d/m/Y');  // Start of the week
         $dateTime->setISODate($dateTime->format('o'), $dateTime->format('W'), 7);
-        $endDate = $dateTime->format('d/m/Y');  // End of the week 
+        $endDate = $dateTime->format('d/m/Y');  // End of the week
     
         // Create a new instance of the Seating model
         $seatingPlan = new Seating();
@@ -529,16 +550,38 @@ class SeatingController extends Controller
     
         $seatingPlan->save();
 
+        $traineeList = AllTrainee::where('internship_start', '<=', $dateTime->format('Y-m-d'))
+            ->where(function($query) {
+                $query->whereNull('internship_end') // If no end date is specified
+                    ->orWhere('internship_end', '>=', now()->format('Y-m-d')); // or internship has not ended yet
+            })
+            ->pluck('name') 
+            ->toArray(); 
+        
+        // Check for unassigned trainees
+        $unassignedTrainees = array_diff($traineeList, $assignedTrainees);
+        $warningMessage = null;
+    
+        if (!empty($unassignedTrainees)) {
+            // Prepare a warning message
+            $unassignedNames = implode(', ', $unassignedTrainees);
+            $warningMessage = "The following trainees do not have a seat assigned: {$unassignedNames}.";
+        }
+    
         $activityLog = new ActivityLog([
             'username' => Auth::user()->name,
             'action' => 'Create New Seating Plan',
             'outcome' => 'success',
             'details' => 'A new seating plan from ' . $startDate . ' to ' . $endDate . ' has created.',
         ]);
-
+    
         $activityLog->save();
     
-        return redirect()->route('seating-arrangement')->with('success', 'Seating plan created successfully.');
+        // Return with success message and warning message if unassigned trainees exist
+        return redirect()->route('seating-arrangement')
+                         ->with('success', 'Seating plan created successfully.')
+                         ->with('warning', $warningMessage);
     }
+    
       
 }
